@@ -1,0 +1,107 @@
+---------------------------------------------------------------------------------------------------
+Version: 1.4.3
+Date: 04-04-25
+  Changes:
+    - UPS optimisation, thanks to 1righteousgod @ Discord
+    - Bugfixes
+---------------------------------------------------------------------------------------------------
+Version: 1.4.0
+Date: 03-04-25
+  Changes:
+    - Platform requests scanner - constant combinator outputting orbiting platform requests sorted by platforms. Can be connected to logistic container in set requests mode.
+    - Ported Fueler Tower, can insert burnable fuel to vehicles and take burnt results
+    - Also made fueler supply ammo-turret, artillery-turret, artillery-wagon in range from it own inventory 
+    - Fueler inventory larger and support filters
+    - Ported supersonic EM-trains, with working to full extent EM trains upgrade technologies
+    - Ported several Krastorio entities: steel pipe, steel pump, planetary teleporter, wind turbine, gas power station, energy storage, deitherium fusion reactor, advanced steam turbine, antimatter reactor, immersite quarry drill, small roboport, big roboport, greenhouse, electrolysis plant, filtration plant, atmospheric condenser, fluid flare stack, advanced chemical plant, quantum computer, matter plant, matter associator, stablizer charging station, air purifier, fluids, intermediates, immersite and antimatter ammo and rockets, and intergalactic transceiver
+    - Rockets can lift up to 20 tons, starter pack weight 20T and create platform with 2000 foundation
+    - Larger rocket silo inventory, use custom minimum payload from hub gui to deliver underfull rockets
+    - Biolabs feed on nutrients instead of electricity
+    - Stone brick can be crushed back to stone  
+    - Large foundry fluid buffer
+    - Can dump items to water tiles on Nauvis, Gleba, Aquilo as well as on Fulgora
+    - Oil ocean yields crude oil
+    - Artificial soil can be placed anywhere
+  Notes:
+    - Plans to rework rockets later with expensive but reusable carrier rockets and expendable cargo pods
+    - Port more entities to place in Simulation Computer Age stage thats looks quite empty now comparing to others
+    - Will balance / simplify / merge recipes and items during gameplay
+    - K2 intergalactic transceiver - working, but without victory trigger, for use in scenario, that, maybe will be later
+---------------------------------------------------------------------------------------------------
+Version: 1.3.6
+Date: 18-03-25
+  Changes:
+    - AAI: burner-assembling-machine replaced in recipes with ei-steam-assembler
+    - Laser tech prerequisites fix
+---------------------------------------------------------------------------------------------------
+Version: 1.3.5
+Date: 18-03-25
+  Changes:
+    - Yellow splitter and loader use iron-mechanical-parts
+    - Some tech order and unlocks glitches fixed 
+---------------------------------------------------------------------------------------------------
+Version: 1.3.3
+Date: 16-03-25
+  Changes:
+    - Buffed pure ore - molten - cast recipes
+    - Option to disable EI dynamic tech scaling
+    - New recipe: ammonia gas => ammonia in hypercooler
+    - Fixed ei-fusion ( Thermonuclear fusion reactor )
+    - Concrete and refined-concrete need iron-stick instead of mechanical parts again
+    - Lignumis Compatibility fixes, locale fixes
+---------------------------------------------------------------------------------------------------
+Version: 1.3.0
+Date: 12-03-25
+  Changes:
+    - Dedicated filter inserter gone, as all inserters can now filter
+    - Filter EI containers now 20 / 40 / 120 slots, non-filter 50 / 250 / 1000
+    - Fixed some locale strings
+    - Removed duplicating recipes - iron and copper smelting 
+    - aai-industry: added stone-tablet recipe unlock to electronics
+---------------------------------------------------------------------------------------------------
+Version: 1.2.1
+Date: 09-03-25
+  Changes:
+    - Option to setup all trigger tech with Computer Age science packs.
+    - Morphium pools on Gaia can be landfilled
+    - Reduced build restricted area behind thrusters.
+---------------------------------------------------------------------------------------------------
+Version: 1.2.0
+Date: 04-03-25
+  Changes:
+    - Basic Lignumis Compatibility
+    - Wood science pack => Dark Age science pack 
+    - Steam science pack => Steam Age science pack  
+    - This two recipes changed to Lignumis ones
+    - Some starting recipes shifted to steam age
+---------------------------------------------------------------------------------------------------
+Version: 1.1.3
+Date: 03-03-25
+  Changes:
+    - Compatibility 
+    - Localization 
+    - Check and remove hidden tech in prerequisites rendering tech unresearchable
+    - Option to flatten tech tree (default off)
+---------------------------------------------------------------------------------------------------
+Version: 1.1.2
+Date: 01-03-25
+  Changes:
+    - Compatibility fixes
+  Marked as conflicting:
+    - tenebris
+    - tenebris-prime
+    - WideChests
+    - factorioplus
+---------------------------------------------------------------------------------------------------
+Version: 1.1.0
+Date: 01-03-25
+  Changes:
+    - Many fixes for compatibility between different mods
+    - Some fixes for future compatibility between different planets 
+    - May dump items into water tiles on main planets
+    - Poor chunks removed
+    - Some vanilla changes reverted, sticks, gears craftable
+    - EI containers / loaders / advanced bots back on menu, fueler and trains not yet, later
+    - Muluna (planet-muluna) compatibility
+    - Fixed recipes
+    - Foxed localization

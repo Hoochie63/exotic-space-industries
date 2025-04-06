@@ -1,0 +1,68 @@
+{
+    "name": "exotic-space-industries",
+    "version": "1.4.3",
+    "title": "Exotic Space Industries",
+    "author": "Eliont",
+    "factorio_version": "2.0",
+    "description": "Fork of Exotic Industries to Space Age. Adds various game mechanics, a variety of new resources, big machines, and new planet to visit. On the other side of the star lies a mysterious Gaia holding the remains of an alien crystalline civilization.",
+    "dependencies": [
+        "base >= 2.0.0",
+        "informatron",
+        "space-age",
+
+        "? visible-planets",
+        "? Better_Starmap_Background",
+        "? its-about-time",
+        "? Flare Stack",
+        "? snouz-big-solar-panel",
+        "? snouz-big-accumulator",
+        "? simpleadjustableinserters",
+        "? Redrawn-Space-Connections",
+        "? Placeables",
+        "? K1_Advanced_fluid_continued",
+        "? HandyHandsRefactored",
+        "? grappling-gun",
+        "? FluidMustFlow",
+        "? fct-barreling-machine",
+        "? kry-space-platform-chests",
+        "? atan-nuclear-science",
+        "? apm_nuclear_ldinc",
+        "? CW_hydrogen_revolution",
+
+        "? planet-muluna",
+
+        "? Cerys-Moon-of-Fulgora",
+        "? castra",
+        "? janus",
+        "? lignumis",
+        "? maraxsis",
+        "? Moshine",
+        "? naufulglebunusilo",
+
+        "? secretas",
+        "? tenebris",
+        "? tenebris-prime",
+        "? terrapalus",
+        "? corrundum",
+        "? fall-of-promethea",
+        "? cubium",
+
+        "? metal-and-stars",
+        "? dea-dia-system",
+        "? SolarSystems",
+        
+        "! WideChests",
+        "! factorioplus",
+        "! no-triggers",
+
+        "? aai-containers",
+        "? aai-industry",
+        "? Warp-Drive-Machine",
+        "? bztin",
+        "? periodic-madness",
+
+        "exotic-space-industries-graphics-1",
+        "exotic-space-industries-graphics-2",
+        "exotic-space-industries-graphics-3"
+    ]
+}
