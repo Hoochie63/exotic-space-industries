@@ -254,6 +254,6 @@ style.ei_inner_content_flow_vertical_centered = {
 
 if ei_lib.config("expanded-gui") then
   data.raw["utility-constants"]["default"].inventory_width = 10
-  data.raw["utility-constants"]["default"].select_slot_row_count = 25
+  data.raw["utility-constants"]["default"].select_slot_row_count = 28
   data.raw["utility-constants"]["default"].select_group_row_count = 17
 end

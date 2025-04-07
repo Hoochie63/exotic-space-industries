@@ -23,6 +23,8 @@ ei_data = require("lib/data")
 --MAIN CONTENT CODE
 --====================================================================================================
 
+require("prototypes/_K2_/data")
+
 -- add new categories, entities, items, techs, recipes fluids, resources
 
 require("prototypes/pipe-covers")

@@ -12,6 +12,13 @@ function contains(s, word) return tostring(s):find(word, 1, true) ~= nil end
 --FINAL FIXES
 --===========
 
+require("prototypes/_K2_/libraries/flare-stack").auto_generate()
+
+require("prototypes/_K2_/generate-matter-recipes")
+require("prototypes/_K2_/set-new-resource-autoplace")
+
+-- =======================================================================================
+
 require("scripts/data-final-updates/final-tech-fixes")
 require("scripts/data-final-updates/final-recipe-fixes")
 require("scripts/data-final-updates/set_age_packs")
@@ -84,6 +91,14 @@ data.raw.item["artificial-yumako-soil"].place_as_tile.condition.layers = {}
 data.raw.item["overgrowth-yumako-soil"].place_as_tile.condition_size = 1
 data.raw.item["overgrowth-yumako-soil"].place_as_tile.tile_condition = nil
 data.raw.item["overgrowth-yumako-soil"].place_as_tile.condition.layers = {}
+
+-- =======================================================================================
+
+for _, inserter in pairs(data.raw.inserter) do
+  if inserter.energy_source and inserter.energy_source.type == "burner" then
+    inserter.allow_burner_leech = true
+  end
+end
 
 -- =======================================================================================
 
