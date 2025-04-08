@@ -69,42 +69,27 @@ data:extend({
       order  = "a8",
   },
   {
+      name = "ei-loader-prototype-complexity",
+      type = "bool-setting",
+      setting_type = "startup",
+      default_value = true,
+      order  = "a9",
+  },
+  {
+      name = "ei-rocket-lift-capacity-buff",
+      type = "int-setting",
+      setting_type = "startup",
+      default_value = 0,
+      minimum_value = 0,
+      maximum_value = 20,
+      order  = "a10",
+  },
+  {
       name = "ei-beacon-overload",
       type = "bool-setting",
       setting_type = "startup",
-      default_value = false,
+      default_value = true,
       order  = "b1",
-  },
-
-  -- {--gradually lowers tick updates below threshold
-  --     name = "ei-ups_threshold",
-  --     type = "int-setting",
-  --     setting_type = "startup",
-  --     default_value = 60,
-  --     minimum_value = 1,
-  --     maximum_value = 360,
-  --     order  = "b2",
-  -- },
-  
-  {
-      name = "ei-ticks_per_spaced_update",
-      type = "int-setting",
-      setting_type = "startup",
-      default_value = 10,
-      minimum_value = 1,
-      maximum_value = 100,
-      order  = "b3",
-      hidden = true
-  },
-  {
-      name = "ei-updates_per_spaced_tick",
-      type = "int-setting",
-      setting_type = "startup",
-      default_value = 2,
-      minimum_value = 1,
-      maximum_value = 4,
-      order  = "b4",
-      hidden = true
   },
   {
       name = "ei-max_updates_per_tick",
@@ -114,6 +99,15 @@ data:extend({
       minimum_value = 1,
       maximum_value = 100,
       order  = "b5",
+  },
+  {
+      name = "ei_ticks_per_full_update",
+      type = "int-setting",
+      setting_type = "startup",
+      default_value = 60,
+      minimum_value = 8, --At least 1 tick per entity updater type
+      maximum_value = 6000,
+      order  = "b6",
   },
   {
       name = "ei-expanded-gui",

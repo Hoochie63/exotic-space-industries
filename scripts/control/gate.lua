@@ -52,6 +52,9 @@ function model.check_global_init()
         storage.ei.gate.gate = {}
     end
 
+--    if not storage.ei.gate.gate_break_point then
+--        storage.ei.gate.gate_break_point = nil
+
     if not storage.ei.gate.exit_platform then
         storage.ei.gate.exit_platform = {}
     end
@@ -1064,13 +1067,42 @@ function model.update()
     if not storage.ei.gate.gate then
         return
     end
-
     model.update_player_guis()
+    --model.update_player_guis()
     -- fixed in remote-config
     -- model.update_player_permissions()
 
     -- gate loop
 
+
+    -- if no current break point then try to make a new one
+    if not storage.ei.gate.gate_break_point and next(storage.ei.gate.gate) then
+       storage.ei.gate.gate_break_point,_ = next(storage.ei.gate.gate)
+    end
+
+    -- if no current break point then return
+    if not storage.ei.gate.gate_break_point then
+        return
+    end
+
+    -- get current break point
+    local break_id = storage.ei.gate.gate_break_point
+
+    local gate = storage.ei.gate.gate[break_id].gate
+    model.check_for_teleport(break_id, gate)
+    model.update_renders(break_id, gate)
+    model.update_energy(break_id, gate)
+
+
+    -- get next break point
+    if next(storage.ei.gate.gate, break_id) then
+        storage.ei.gate.gate_break_point,_ = next(storage.ei.gate.gate, break_id)
+    else
+       storage.ei.gate.gate_break_point = nil
+    end
+
+end
+--[[
     for unit,v in pairs(storage.ei.gate.gate) do
 
         local gate = storage.ei.gate.gate[unit].gate
@@ -1082,7 +1114,7 @@ function model.update()
     end
 
 end
-
+]]
 
 function model.used_remote(event)
 
@@ -1190,7 +1222,6 @@ function model.on_gui_click(event)
 end
 
 return model
-
 -- TODO:
 -- have gates that turned off due to power restart when power is back?
 -- allow logistic chests as endpoints?

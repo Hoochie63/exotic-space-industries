@@ -1444,7 +1444,7 @@ function model.update()
 
     model.update_render_queue(tick)
     model.update_dirty()
-    if tick % 10 == 0 then
+    if tick % 15 == 0 then
         model.update_player_guis()
     end
 

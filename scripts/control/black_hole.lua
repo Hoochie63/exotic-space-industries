@@ -599,10 +599,11 @@ end
 
 
 function model.update()
-
+    local tick = game.tick
     model.update_black_holes()
-
-    model.update_player_guis()
+    if tick % 15 == 0 then
+        model.update_player_guis()
+    end
 
 end
 

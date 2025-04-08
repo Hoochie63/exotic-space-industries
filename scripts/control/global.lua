@@ -18,7 +18,7 @@ function ei_global.init()
     storage.ei["neutron_collector_animation"] = {}
     storage.ei["neutron_sources"] = {}
     storage.ei["spawner_queue"] = {}
-
+    storage.ei["orbital_combinators"] = {}
     storage.ei.spaced_updates = 0
     storage.ei.alien = {}
     
@@ -60,6 +60,10 @@ function ei_global.check_init()
 
     if not storage.ei["spawner_queue"] then
         storage.ei["spawner_queue"] = {}
+    end
+
+    if not storage.ei["orbital_combinators"] then
+        storage.ei["orbital_combinators"] = {}
     end
 
     if not storage.ei.spaced_updates then

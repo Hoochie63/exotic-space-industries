@@ -49,6 +49,7 @@ orbital_combinator = require("scripts/control/orbital_combinator")
 script.on_init(function()
     -- setup storage table
     ei_global.init()
+    ei_global.check_init()
 
     -- init other
     ei_tech_scaling.init()
@@ -59,7 +60,7 @@ script.on_init(function()
     ei_victory.init()
 
     em_trains_gui.mark_dirty()
-
+    ei_compat.check_init()
     orbital_combinator.check_init()
 end)
 
@@ -102,11 +103,11 @@ end)
 script.on_event(defines.events.on_tick, function() 
     updater()
 end)
-
+--[[
 script.on_nth_tick(settings.startup["ei-ticks_per_spaced_update"].value, function(e)
     spaced_updater()
 end)
-
+]]
 script.on_nth_tick(240, function(e)
     ei_compat.nth_tick(e)
 end)
@@ -279,38 +280,120 @@ end)
 --====================================================================================================
 --HANDLERS
 --====================================================================================================
-
---splits total load from storage.ei.spaced_updates in 60 ticks
---schedules up to 100 operations in 1 tick
-
-local update_step = 1  -- Tracks which entity type is updated next
+local update_step = 0  -- Tracks which entity type is updated next, skips first tick
 local update_functions = {
-    function() ei_powered_beacon.update() end,
-    function() ei_powered_beacon.update_fluid_storages() end,
-    function() ei_neutron_collector.update() end,
-    function() ei_matter_stabilizer.update() end,
-    function() ei_induction_matrix.update() end,
-    function() ei_black_hole.update() end,
-    function() orbital_combinator.update() end,
+    function() ei_powered_beacon.update() end, --1
+    function() ei_powered_beacon.update_fluid_storages() end, --2
+    function() ei_neutron_collector.update() end, --3
+    function() ei_matter_stabilizer.update() end, --4
+    function() orbital_combinator.update() end, --5
+    function() ei_fueler.updater() end, --6
+    function() ei_gate.update() end, --7
+    function() em_trains_charger.updater() end,--8
 }
+--60/14=x4 executions/handler/second (default, customizable update length 8-6000 ticks)
+local ticksPerFullUpdate = settings.startup["ei_ticks_per_full_update"].value -- How many ticks to spread updates over
+local divisor = ticksPerFullUpdate / #update_functions -- How many times each entity updater is called per cycle
+local maxUpdates = settings.startup["ei-max_updates_per_tick"].value -- Ceiling on entity updates per tick
 
 function updater()
-  ei_global.check_init()
-  ei_compat.check_init()
-  
-  -- Update only one type per tick, cycling through available updates
-  for i = 1, settings.startup["ei-max_updates_per_tick"].value do
-    update_functions[update_step]()  -- Call the current update function
-    update_step = update_step + 1  -- Move to the next function
+    local updates_needed = 1
+   -- Hardcoded checks against update_step are quick
+   -- Whichever is less: max_updates_per_tick OR total of entities divided by the number of execution cycles
+   if update_step < 5 then -- Reduces the average number of `if` checks
+--        if update_step == 0 then
+--            ei_global.check_init()
+--            update_step = 1
+--            end
+       if update_step == 1 then
+           if storage.ei and storage.ei.spaced_updates and storage.ei.spaced_updates > 0 then
+               updates_needed = math.min(math.ceil(storage.ei.spaced_updates / divisor), maxUpdates)
+               end
+           for i = 1, updates_needed do
+               ei_powered_beacon.update()
+           end
 
-    -- Reset to 1 if we exceed the number of update types
-    if update_step > #update_functions then
-      update_step = 1
-    end
-  end
-end
+       elseif update_step == 2 then
+           if storage.ei and storage.ei.spaced_updates and storage.ei.spaced_updates > 0 then
+               updates_needed = math.min(math.ceil(storage.ei.spaced_updates / divisor), maxUpdates)
+               end
+           updates_needed = math.min(math.ceil(storage.ei.spaced_updates / divisor), maxUpdates)
+           for i = 1, updates_needed do
+               ei_powered_beacon.update_fluid_storages()
+           end
 
+       elseif update_step == 3 then
+           if storage.ei and storage.ei["neutron_sources"] and #storage.ei["neutron_sources"] then
+               updates_needed = math.max(1,math.min(math.ceil(#storage.ei["neutron_sources"] / divisor), maxUpdates))
+               end
+           for i = 1, updates_needed do
+               ei_neutron_collector.update()
+           end
 
+       elseif update_step == 4 then
+           if storage.ei and storage.ei.matter_machines and #storage.ei.matter_machines then
+               updates_needed = math.max(1,math.min(math.ceil(#storage.ei.matter_machines / divisor), maxUpdates))
+               end
+           for i = 1, updates_needed do
+               ei_matter_stabilizer.update()
+           end
+       end
+
+   else -- Otherwise, update_step is >= 5
+
+       if update_step == 5 then
+           if storage.ei and storage.ei.orbital_combinators and #storage.ei.orbital_combinators then
+                updates_needed = math.max(1,math.min(math.ceil(#storage.ei.orbital_combinators / divisor), maxUpdates))
+                end
+           for i = 1, updates_needed do
+               orbital_combinator.update()
+           end
+
+       elseif update_step == 6 then
+           if storage.ei and storage.ei.fueler_queue and #storage.ei.fueler_queue then
+               updates_needed = math.max(1,math.min(math.ceil(#storage.ei.fueler_queue / divisor), maxUpdates))
+               end
+           for i = 1, updates_needed do
+               ei_fueler.updater()
+           end
+
+       elseif update_step == 7 then
+           if storage.ei and storage.ei.gate and storage.ei.gate.gate and #storage.ei.gate.gate then
+                updates_needed = math.max(1,math.min(math.ceil(#storage.ei.gate.gate / divisor), maxUpdates))
+                end
+           for i = 1, updates_needed do
+               ei_gate.update()
+           end
+
+       elseif update_step == 8 then
+           if storage.ei_emt and #storage.ei_emt.trains_register then
+                updates_needed = math.max(1,math.min(math.ceil(#storage.ei_emt.trains_register / divisor), maxUpdates))
+                end
+           for i = 1, updates_needed do
+               em_trains_charger.updater()
+           end
+           em_trains_gui.updater()
+       end
+   end
+
+   -- Increment update_step and loop back to 1 if needed
+   update_step = update_step + 1
+   if update_step > #update_functions then
+       update_step = 1
+   end
+
+   -- Essential updates that run every tick (e.g., timers, global effects)
+   ei_alien_spawner.update()
+   ei_gaia.update()
+   ei_induction_matrix.update()
+   ei_black_hole.update()
+   end
+--Check global once per entity updater cycle
+local globalCheckTicks = settings.startup["ei_ticks_per_full_update"].value / 8
+script.on_nth_tick(globalCheckTicks, function(event)
+    ei_global.check_init()
+end)
+--[[
 function spaced_updater()
     ei_global.check_init()
     ei_gate.update()
@@ -328,7 +411,7 @@ script.on_nth_tick(60, function()
   ei_gaia.update()
   ei_alien_spawner.update()
 end)
-
+]]
 function on_built_entity(e)
     if not e["entity"] then
       return
@@ -339,7 +422,7 @@ function on_built_entity(e)
     end
 
     if ei_powered_beacon.counts_for_fluid_handling(e["entity"]) then
-        ei_register.register_fluid_entity(e["entity"]) 
+        ei_register.register_fluid_entity(e["entity"])
     end
 
     if e["entity"].name == "ei-copper-beacon" then

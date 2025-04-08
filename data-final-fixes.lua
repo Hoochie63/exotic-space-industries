@@ -70,10 +70,14 @@ data.raw["assembling-machine"]["foundry"].fluid_boxes[3].volume = 5000
 data.raw["assembling-machine"]["foundry"].fluid_boxes[4].volume = 5000
 
 -- =======================================================================================
-
+if mods["fulgora-extended"] then
+    if settings.startup["fext-chemical-mire-gives-muck"] then
+        goto skip
+    end
+end
 data.raw.tile["oil-ocean-shallow"].fluid="crude-oil"
 data.raw.tile["oil-ocean-deep"].fluid="crude-oil"
-
+::skip::
 -- =======================================================================================
 
 data.raw.item["artificial-jellynut-soil"].place_as_tile.condition_size = 1

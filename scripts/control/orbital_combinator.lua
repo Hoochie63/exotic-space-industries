@@ -16,6 +16,9 @@ function model.check_init()
   if not storage.ei.orbital_combinators then
     storage.ei.orbital_combinators = {}
   end
+  if not storage.ei.orbital_combinators_break_point then
+    storage.ei.orbital_combinators_break_point = nil
+  end
 end
 
 
@@ -125,8 +128,37 @@ function model.update_orbital_combinators(entity)
   set_combinator(entity,requests)
 end
 
+function model.update()
+    if not storage.ei and storage.ei.orbital_combinators then
+        return
+    end
 
+    -- if no current break point then try to make a new one
+    if not storage.ei.orbital_combinators_break_point and next(storage.ei.orbital_combinators) then
+       storage.ei.orbital_combinators_break_point,_ = next(storage.ei.orbital_combinators)
+    end
 
+    -- if no current break point then return
+    if not storage.ei.orbital_combinators_break_point then
+        return
+    end
+
+    -- get current break point
+    local break_id = storage.ei.orbital_combinators_break_point
+
+    model.update_orbital_combinators(storage.ei.orbital_combinators[break_id])
+
+    -- get next break point
+    if next(storage.ei.orbital_combinators, break_id) then
+        storage.ei.orbital_combinators_break_point,_ = next(storage.ei.orbital_combinators, break_id)
+    else
+       storage.ei.orbital_combinators_break_point = nil
+    end
+
+end
+
+return model
+--[[
 function model.update()
   if not storage.ei.orbital_combinators then
     return
@@ -139,3 +171,4 @@ function model.update()
 end
 
 return model
+]]
