@@ -366,7 +366,7 @@ function updater()
            end
 
        elseif update_step == 8 then
-           if storage.ei_emt and #storage.ei_emt.trains_register then
+           if storage.ei_emt and and storage.ei_emt.trains_register and #storage.ei_emt.trains_register then
                 updates_needed = math.max(1,math.min(math.ceil(#storage.ei_emt.trains_register / divisor), maxUpdates))
                 end
            for i = 1, updates_needed do
