@@ -71,7 +71,7 @@ data:extend({
     category = "smelting",
     energy_required = 16,
     ingredients = {
-      { type = "item", name = "stone", amount = 16 },
+      { type = "item", name = "ei-sand", amount = 16 },
     },
     results = {
       { type = "item", name = "glass", amount = 8 },
