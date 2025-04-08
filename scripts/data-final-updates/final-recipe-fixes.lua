@@ -145,6 +145,8 @@ for name,recipe in pairs(data.raw.recipe) do
     ei_lib.recipe_swap(name, "ei-space-data", "space-science-pack")
     ei_lib.recipe_swap(name, "ei-space-data", "space-science-pack")
     ei_lib.recipe_swap(name, "burner-assembling-machine", "ei-steam-assembler")
+    ei_lib.recipe_swap(name, "iron-beam", "iron-plate")
+    ei_lib.recipe_swap(name, "steel-beam", "steel-plate")
 end
 
 ei_lib.recipe_swap("concrete", "ei-copper-mechanical-parts", "iron-stick")
