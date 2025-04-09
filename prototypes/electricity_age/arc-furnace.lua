@@ -156,6 +156,7 @@ data:extend({
         energy_source = {
             type = 'electric',
             usage_priority = 'secondary-input',
+            emissions_per_minute = { pollution = 5 },
         },
         energy_usage = "2MW",
         result_inventory_size = 1,
@@ -212,12 +213,57 @@ data:extend({
                   }
                 },
                 {
+
                     light = {
                     type = "basic",
-                    intensity = 1,
-                    size = 15
+                    flicker_interval = 6,
+                    flicker_min_modifier = 0.3,
+                    flicker_max_modifier = 0.8,
+                    offset_flicker = true,
+                    intensity = 0.8,
+                    size = 15,
+                    color = {r = 0.1, g = 0.4, b = 1.0} -- Bright electric blue
                     }
-                }
+                },
+                {
+
+                    light = {
+                    type = "basic",
+                    flicker_interval = 4,
+                    flicker_min_modifier = 0.1,
+                    flicker_max_modifier = 0.7,
+                    offset_flicker = true,
+                    intensity = 0.9,
+                    size = 15,
+                    color = {r = 1.0, g = 0.4, b = 0.0} -- Hot orange with a hint of red (molten feel)
+                    }
+                },
+                {
+
+                    light = {
+                    type = "basic",
+                    flicker_interval = 2,
+                    flicker_min_modifier = 0,
+                    flicker_max_modifier = 1,
+                    offset_flicker = true,
+                    intensity = 1,
+                    size = 5,
+                    color = {r = 1.0, g = 0.5, b = 1.0} -- White ish
+                    }
+                },
+                {
+
+                    light = {
+                    type = "basic",
+                    flicker_interval = 1,
+                    flicker_min_modifier = 0,
+                    flicker_max_modifier = 0.2,
+                    offset_flicker = true,
+                    intensity = 1,
+                    size = 65,
+                    color = {r = 1, g = 0.8, b = 1.0} -- White ish
+                    }
+                },
             },
         },
         working_sound =

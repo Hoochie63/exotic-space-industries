@@ -57,6 +57,7 @@ data:extend({
         energy_source = {
             type = 'electric',
             usage_priority = 'secondary-input',
+            emissions_per_minute = { pollution = 1 },
         },
         energy_usage = "300kW",
         graphics_set = {
@@ -90,10 +91,29 @@ data:extend({
                   }
                 },
                 {
+
                     light = {
                     type = "basic",
+                    flicker_interval = 5,
+                    flicker_min_modifier = 0.7,
+                    flicker_max_modifier = 1,
+                    offset_flicker = true,
+                    intensity = 0.9,
+                    size = 12,
+                    color = {r = 0.6, g = 0.4, b = 0.0} -- darker orange
+                    }
+                },
+                {
+
+                    light = {
+                    type = "basic",
+                    flicker_interval = 4,
+                    flicker_min_modifier = 0.9,
+                    flicker_max_modifier = 1,
+                    offset_flicker = true,
                     intensity = 1,
-                    size = 15
+                    size = 3,
+                    color = {r = 1.0, g = 0.5, b = 1.0} -- White ish
                     }
                 }
             },
