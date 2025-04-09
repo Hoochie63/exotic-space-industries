@@ -73,6 +73,12 @@ data.raw["assembling-machine"]["foundry"].fluid_boxes[4].volume = 5000
 
 data.raw["assembling-machine"]["ei-steam-assembler"].crafting_categories = table.deepcopy(data.raw["assembling-machine"]["assembling-machine-1"].crafting_categories)
 
+for _, crafting_category in pairs({"ei-steam-assembler", "crafting", "crafting-with-fluid", "electronics"}) do 
+  if not ei_lib.table_contains_value(data.raw["assembling-machine"]["ei-steam-assembler"].crafting_categories,crafting_category) then 
+    table.insert(data.raw["assembling-machine"]["ei-steam-assembler"].crafting_categories,crafting_category)
+  end
+end
+
 -- =======================================================================================
 
 if mods["fulgora-extended"] then
