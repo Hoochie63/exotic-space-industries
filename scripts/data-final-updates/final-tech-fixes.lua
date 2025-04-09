@@ -555,6 +555,7 @@ end
 
 
 for i,v in pairs(data.raw.technology) do
+  data.raw.technology[i].hidden = false
 
   if data.raw.technology[i].unit then
     if data.raw.technology[i].unit.count and data.raw.technology[i].unit.ingredients then
@@ -611,3 +612,11 @@ table.insert(data.raw["technology"]["ei-computer-age"].effects, {
 
 ei_lib.remove_tech("steam-power")
 ei_lib.remove_tech("wdm_ship_fix_lock")
+
+ei_lib.remove_tech("ei-temp")
+ei_lib.remove_tech("ei-steam-age-dummy")
+ei_lib.remove_tech("ei-electricity-age-dummy")
+ei_lib.remove_tech("ei-computer-age-dummy")
+ei_lib.remove_tech("ei-quantum-age-dummy")
+ei_lib.remove_tech("ei-exotic-age-dummy")
+
