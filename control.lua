@@ -280,8 +280,8 @@ end)
 --====================================================================================================
 --HANDLERS
 --====================================================================================================
-local update_step = 0  -- Tracks which entity type is updated next, skips first tick
-local update_functions = {
+ei_update_step = 0  -- Tracks which entity type is updated next, skips first tick
+ei_update_functions = {
     function() ei_powered_beacon.update() end, --1
     function() ei_powered_beacon.update_fluid_storages() end, --2
     function() ei_neutron_collector.update() end, --3
@@ -292,94 +292,127 @@ local update_functions = {
     function() em_trains_charger.updater() end,--8
 }
 --60/14=x4 executions/handler/second (default, customizable update length 8-6000 ticks)
-local ticksPerFullUpdate = settings.startup["ei_ticks_per_full_update"].value -- How many ticks to spread updates over
-local divisor = ticksPerFullUpdate / #update_functions -- How many times each entity updater is called per cycle
-local maxUpdates = settings.startup["ei-max_updates_per_tick"].value -- Ceiling on entity updates per tick
+ei_ticksPerFullUpdate = settings.startup["ei_ticks_per_full_update"].value -- How many ticks to spread updates over
+local divisor = ei_ticksPerFullUpdate / #ei_update_functions -- How many times each entity updater is called per cycle
+ei_maxEntityUpdates = settings.startup["ei-max_updates_per_tick"].value -- Ceiling on entity updates per tick
 
 function updater()
     local updates_needed = 1
-   -- Hardcoded checks against update_step are quick
+   -- Hardcoded checks against ei_update_step are quick
    -- Whichever is less: max_updates_per_tick OR total of entities divided by the number of execution cycles
-   if update_step < 5 then -- Reduces the average number of `if` checks
---        if update_step == 0 then
+   if ei_update_step < 5 then -- Reduces the average number of `if` checks
+--        if ei_update_step == 0 then
 --            ei_global.check_init()
---            update_step = 1
+--            ei_update_step = 1
 --            end
-       if update_step == 1 then
+       if ei_update_step == 1 then
            if storage.ei and storage.ei.spaced_updates and storage.ei.spaced_updates > 0 then
-               updates_needed = math.min(math.ceil(storage.ei.spaced_updates / divisor), maxUpdates)
+               updates_needed = math.max(1,math.min(math.ceil(storage.ei.spaced_updates / divisor), ei_maxEntityUpdates))
                end
            for i = 1, updates_needed do
+               --Abort loop if the queue changes to avoid null reference
+               if storage.ei and storage.ei.spaced_updates and
+               math.max(1,math.min(math.ceil(storage.ei.spaced_updates / divisor), ei_maxEntityUpdates)) ~= updates_needed then
+                   goto skip
+                   end
                ei_powered_beacon.update()
            end
 
-       elseif update_step == 2 then
+       elseif ei_update_step == 2 then
            if storage.ei and storage.ei.spaced_updates and storage.ei.spaced_updates > 0 then
-               updates_needed = math.min(math.ceil(storage.ei.spaced_updates / divisor), maxUpdates)
+               updates_needed = math.max(1,math.min(math.ceil(storage.ei.spaced_updates / divisor), ei_maxEntityUpdates))
                end
-           updates_needed = math.min(math.ceil(storage.ei.spaced_updates / divisor), maxUpdates)
+           updates_needed = math.min(math.ceil(storage.ei.spaced_updates / divisor), ei_maxEntityUpdates)
            for i = 1, updates_needed do
+               if storage.ei and storage.ei.spaced_updates and
+               math.max(1,math.min(math.ceil(storage.ei.spaced_updates / divisor), ei_maxEntityUpdates)) ~= updates_needed then
+                   goto skip
+                   end
                ei_powered_beacon.update_fluid_storages()
            end
 
-       elseif update_step == 3 then
+       elseif ei_update_step == 3 then
            if storage.ei and storage.ei["neutron_sources"] and #storage.ei["neutron_sources"] then
-               updates_needed = math.max(1,math.min(math.ceil(#storage.ei["neutron_sources"] / divisor), maxUpdates))
+               updates_needed = math.max(1,math.min(math.ceil(#storage.ei["neutron_sources"] / divisor), ei_maxEntityUpdates))
                end
            for i = 1, updates_needed do
+               if storage.ei and storage.ei["neutron_sources"] and
+               math.max(1,math.min(math.ceil(#storage.ei["neutron_sources"] / divisor), ei_maxEntityUpdates)) ~= updates_needed then
+                   goto skip
+                   end
                ei_neutron_collector.update()
            end
 
-       elseif update_step == 4 then
+       elseif ei_update_step == 4 then
            if storage.ei and storage.ei.matter_machines and #storage.ei.matter_machines then
-               updates_needed = math.max(1,math.min(math.ceil(#storage.ei.matter_machines / divisor), maxUpdates))
+               updates_needed = math.max(1,math.min(math.ceil(#storage.ei.matter_machines / divisor), ei_maxEntityUpdates))
                end
            for i = 1, updates_needed do
+               if storage.ei and storage.ei.matter_machines and
+               math.max(1,math.min(math.ceil(#storage.ei.matter_machines / divisor), ei_maxEntityUpdates)) ~= updates_needed then
+                   goto skip
+                   end
                ei_matter_stabilizer.update()
            end
        end
 
-   else -- Otherwise, update_step is >= 5
+   else -- Otherwise, ei_update_step is >= 5
 
-       if update_step == 5 then
+       if ei_update_step == 5 then
            if storage.ei and storage.ei.orbital_combinators and #storage.ei.orbital_combinators then
-                updates_needed = math.max(1,math.min(math.ceil(#storage.ei.orbital_combinators / divisor), maxUpdates))
+                updates_needed = math.max(1,math.min(math.ceil(#storage.ei.orbital_combinators / divisor), ei_maxEntityUpdates))
                 end
            for i = 1, updates_needed do
+               if storage.ei and storage.ei.orbital_combinators and
+               math.max(1,math.min(math.ceil(#storage.ei.orbital_combinators / divisor), ei_maxEntityUpdates)) ~= updates_needed then
+                   goto skip
+                   end
                orbital_combinator.update()
            end
 
-       elseif update_step == 6 then
+       elseif ei_update_step == 6 then
            if storage.ei and storage.ei.fueler_queue and #storage.ei.fueler_queue then
-               updates_needed = math.max(1,math.min(math.ceil(#storage.ei.fueler_queue / divisor), maxUpdates))
+               updates_needed = math.max(1,math.min(math.ceil(#storage.ei.fueler_queue / divisor), ei_maxEntityUpdates))
                end
            for i = 1, updates_needed do
+               if storage.ei and storage.ei.fueler_queue and
+               math.max(1,math.min(math.ceil(#storage.ei.fueler_queue / divisor), ei_maxEntityUpdates)) ~= updates_needed then
+                   goto skip
+                   end
                ei_fueler.updater()
            end
 
-       elseif update_step == 7 then
+       elseif ei_update_step == 7 then
            if storage.ei and storage.ei.gate and storage.ei.gate.gate and #storage.ei.gate.gate then
-                updates_needed = math.max(1,math.min(math.ceil(#storage.ei.gate.gate / divisor), maxUpdates))
+                updates_needed = math.max(1,math.min(math.ceil(#storage.ei.gate.gate / divisor), ei_maxEntityUpdates))
                 end
            for i = 1, updates_needed do
+               if storage.ei and storage.ei.gate.gate and
+               math.max(1,math.min(math.ceil(#storage.ei.gate.gate / divisor), ei_maxEntityUpdates)) ~= updates_needed then
+                   goto skip
+                   end
                ei_gate.update()
            end
 
-       elseif update_step == 8 then
+       elseif ei_update_step == 8 then
            if storage.ei_emt and storage.ei_emt.trains_register and #storage.ei_emt.trains_register then
-                updates_needed = math.max(1,math.min(math.ceil(#storage.ei_emt.trains_register / divisor), maxUpdates))
+                updates_needed = math.max(1,math.min(math.ceil(#storage.ei_emt.trains_register / divisor), ei_maxEntityUpdates))
                 end
            for i = 1, updates_needed do
+               if storage.ei_emt and storage.ei_emt.trains_register and
+               math.max(1,math.min(math.ceil(#storage.ei_emt.trains_register / divisor), ei_maxEntityUpdates)) ~= updates_needed then
+                   goto skip
+                   end
                em_trains_charger.updater()
            end
            em_trains_gui.updater()
        end
    end
-
-   -- Increment update_step and loop back to 1 if needed
-   update_step = update_step + 1
-   if update_step > #update_functions then
-       update_step = 1
+    ::skip::
+   -- Increment ei_update_step and loop back to 1 if needed
+   ei_update_step = ei_update_step + 1
+   if ei_update_step > #ei_update_functions then
+       ei_update_step = 1
    end
 
    -- Essential updates that run every tick (e.g., timers, global effects)
@@ -389,7 +422,7 @@ function updater()
    ei_black_hole.update()
    end
 --Check global once per entity updater cycle
-local globalCheckTicks = settings.startup["ei_ticks_per_full_update"].value / 8
+local globalCheckTicks = ei_ticksPerFullUpdate
 script.on_nth_tick(globalCheckTicks, function(event)
     ei_global.check_init()
 end)
