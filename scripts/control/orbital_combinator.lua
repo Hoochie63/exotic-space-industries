@@ -60,7 +60,42 @@ local function get_logistic_content(entity)
   return lst
 end
 
+local function set_slot(section,index,filter)
+  -- sl({section,index,filter})
+  local slot
+  local exists = {}
 
+  if not filter.value then return end
+  
+  for i = 1,section.filters_count do
+    slot = section.get_slot(i)
+    if slot and slot.value then 
+      -- sl({slot.value.name,filter.value})
+      exists[slot.value.name] = true
+    end
+  end
+
+  if exists[filter.value] then 
+    for i = 1,section.filters_count do
+      slot = section.get_slot(i)
+      if slot and slot.value and slot.value.name == filter.value then 
+        -- sl({slot,filter})
+        -- sl({slot.value.name,slot.min,filter.min})
+        section.clear_slot(i)
+        if slot.min ~= nil and filter.min ~= nil then
+          filter.min = filter.min + slot.min
+          section.set_slot(i,filter)     
+        end
+        return   
+      end
+    end
+
+    return 
+  end
+
+  section.clear_slot(index)
+  section.set_slot(index,filter)
+end
 
 local function set_combinator(entity,requests)
   -- sl("set_logistic_sections - 1")
@@ -94,19 +129,20 @@ local function set_combinator(entity,requests)
 
   -- sl("set_logistic_sections - 3")
   
+  
+
   for name,request in pairs(requests) do 
     for i = 1,control.sections_count do
       local section = control.get_section(i)
       if section.group == name then 
-        local index = 1
 
         for i = 1,section.filters_count do
           section.clear_slot(i)
         end
-    
+
+        local index = 1
         for name,data in pairs(request) do
-          -- sl(data)
-          section.set_slot(index,{value=data["name"],min=data["min"],max=data["max"]})
+          set_slot(section,index,{value=data["name"],min=data["min"],max=data["max"]})
           index = index + 1
         end
 
@@ -119,10 +155,17 @@ end
 
 
 function model.update_orbital_combinators(entity)
+  if not entity then return end
+  if not entity.valid then return end
+
   requests = {}
 
   for index,platform in pairs(entity.force.platforms) do
-    requests[platform.name] = get_logistic_content(platform.hub)
+    if platform and platform.valid then 
+      if platform.space_location and platform.space_location.name == entity.surface.name then
+        requests[platform.name] = get_logistic_content(platform.hub)
+      end
+    end
   end
 
   set_combinator(entity,requests)
