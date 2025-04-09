@@ -68,7 +68,7 @@ data:extend({
     type = "recipe",
     name = "glass",
     enabled = false,
-    category = "smelting",
+    category = "crafting",
     energy_required = 16,
     ingredients = {
       { type = "item", name = "ei-sand", amount = 16 },
