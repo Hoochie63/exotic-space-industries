@@ -120,6 +120,7 @@ data:extend({
         energy_source = {
             type = 'electric',
             usage_priority = 'secondary-input',
+            emissions_per_minute = { pollution = 3 },
         },
         energy_usage = "70MW",
         result_inventory_size = 1,

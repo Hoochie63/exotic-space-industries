@@ -1,4 +1,23 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.4.8
+Date: 4-10-25
+    Additions:
+        - Colorful animated glow effects for Arc Furnace, Plasma Heater, Gate, & Caster working states. (Current sprites imported from Glow Trees; credit to asher_sky)
+        - Loader Complexity Patch: Startup setting which significantly increases material input complexity for loaders and REWARDS YOU by enabling filtering for the Express loader and stacking for the Neodymium loader
+        - Rocket lift capacity multiplier added to startup settings
+        - Entity update cycle length adjustment added to startup settings. This setting determines over how many ticks the 8 entity update stages run. Default 60 ie all entities are looped once per 60 ticks ie 1 second
+    Changes:
+        - Loaders now require electricity and can be wired
+        - Arc Furnace energy requirement 5MW -> 30MW, pollution value 0 -> 6
+        - Plasma Heater energy requirement 20Mw -> 70MW, craft speed 1 -> 1.25, now accepts Quality module, pollution value 0 -> 3
+        - Caster module slots 1 -> 2, now accepts Quality module, pollution value 0 -> 1
+        - Skip converting Fulgora oceans into crude oil if Fulgora Extended is enabled & chemical-mire-gives-muck is enabled
+    Fixes:
+        - Additional checks to prevent null references in on tick updater & gate updater
+        - Startup settings tooltips were configured inconsistently, tooltips should all work now
+    Notes:
+        - Several quick fixes have been implemented to allow the use of K2 imports, final implementations pending
+---------------------------------------------------------------------------------------------------
 Version: 1.4.3
 Date: 04-04-25
   Changes:
