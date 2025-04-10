@@ -500,11 +500,68 @@ end
 function model.render_animation(gate)
 
     local gate_unit = gate.unit_number
-
+    local pick = math.random(1,4)
+    if pick == 1 then
+        local light = rendering.draw_light {
+            sprite = "gate_glow",
+            scale = 3,
+            intensity = 0.2,
+            color = {r = 0, g = 0.4, b = 1.0},
+            target = gate,
+            surface = gate.surface,
+            time_to_live = ei_ticksPerFullUpdate*2,
+            players = game.connected_players,
+            blend_mode = "multiplicative",
+            apply_runtime_tint = true,
+            draw_as_glow = true,
+        }
+    elseif pick == 2 then
+        local light = rendering.draw_light {
+            sprite = "gate_glow",
+            scale = 3,
+            intensity = 0.2,
+            color = {r = 0.4, g = 0.2, b = 1.0},
+            target = gate,
+            surface = gate.surface,
+            time_to_live = ei_ticksPerFullUpdate*2,
+            players = game.connected_players,
+            blend_mode = "multiplicative",
+            apply_runtime_tint = true,
+            draw_as_glow = true,
+        }
+    elseif pick == 3 then
+        local light = rendering.draw_light {
+            sprite = "gate_glow",
+            scale = 3,
+            intensity = 0.2,
+            color = {r = 0.2, g = 0.2, b = 1.0},
+            target = gate,
+            surface = gate.surface,
+            time_to_live = ei_ticksPerFullUpdate*2,
+            players = game.connected_players,
+            blend_mode = "multiplicative",
+            apply_runtime_tint = true,
+            draw_as_glow = true,
+        }
+    elseif pick == 4 then
+        local light = rendering.draw_light {
+            sprite = "gate_glow",
+            scale = 3,
+            intensity = 0.2,
+            color = {r = 0.4, g = 0.1, b = 0.8},
+            target = gate,
+            surface = gate.surface,
+            time_to_live = ei_ticksPerFullUpdate*2,
+            players = game.connected_players,
+            blend_mode = "multiplicative",
+            apply_runtime_tint = true,
+            draw_as_glow = true,
+        }
+    end
     if storage.ei.gate.gate[gate_unit].animation then return end
 
     animation = rendering.draw_animation{
-        animation = "ei-gate-runnig",
+        animation = "ei-gate-running",
         target = gate,
         surface = gate.surface,
         render_layer = "object",
@@ -1087,12 +1144,14 @@ function model.update()
 
     -- get current break point
     local break_id = storage.ei.gate.gate_break_point
-
-    local gate = storage.ei.gate.gate[break_id].gate
-    model.check_for_teleport(break_id, gate)
-    model.update_renders(break_id, gate)
-    model.update_energy(break_id, gate)
-
+    if break_id and storage.ei.gate.gate and storage.ei.gate.gate[break_id] then
+        local gate = storage.ei.gate.gate[break_id].gate
+        if gate then
+            model.check_for_teleport(break_id, gate)
+            model.update_renders(break_id, gate)
+            model.update_energy(break_id, gate)
+        end
+    end
 
     -- get next break point
     if next(storage.ei.gate.gate, break_id) then

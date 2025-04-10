@@ -3,8 +3,20 @@ ei_data = require("lib/data")
 --====================================================================================================
 --ARC FURNACE
 --====================================================================================================
+local arc_furnace_glow = {
+    type = "sprite",
+    name = "arc_furnace_glow",
+    filename = "__exotic-space-industries__/graphics/glow/small_pngs/frame_count_3/glow_3.png",
+    priority = "high",
+    width = 205,
+    height = 207,
+    scale = 1,
+    frame_count = 3,
+    animation_speed = 0.4,
+}
 
 data:extend({
+        arc_furnace_glow,
     {
         name = "ei-arc-furnace",
         type = "recipe-category",
@@ -156,9 +168,9 @@ data:extend({
         energy_source = {
             type = 'electric',
             usage_priority = 'secondary-input',
-            emissions_per_minute = { pollution = 5 },
+            emissions_per_minute = { pollution = 6 },
         },
-        energy_usage = "2MW",
+        energy_usage = "30MW",
         result_inventory_size = 1,
         source_inventory_size = 1,
         allowed_effects = {"speed", "consumption", "pollution"},
@@ -216,52 +228,68 @@ data:extend({
 
                     light = {
                     type = "basic",
+                    sprite = "arc_furnace_glow",
                     flicker_interval = 6,
                     flicker_min_modifier = 0.3,
                     flicker_max_modifier = 0.8,
                     offset_flicker = true,
                     intensity = 0.8,
                     size = 15,
-                    color = {r = 0.1, g = 0.4, b = 1.0} -- Bright electric blue
+                    color = {r = 0.1, g = 0.4, b = 1.0}, -- Bright electric blue
+                    blend_mode = "multiplicative",
+                    apply_runtime_tint = true,
+                    draw_as_glow = true,
                     }
                 },
                 {
 
                     light = {
                     type = "basic",
+                    sprite = "arc_furnace_glow",
                     flicker_interval = 4,
                     flicker_min_modifier = 0.1,
                     flicker_max_modifier = 0.7,
                     offset_flicker = true,
                     intensity = 0.9,
                     size = 15,
-                    color = {r = 1.0, g = 0.4, b = 0.0} -- Hot orange with a hint of red (molten feel)
+                    color = {r = 1.0, g = 0.4, b = 0.0}, -- Hot orange with a hint of red (molten feel)
+                    blend_mode = "multiplicative",
+                    apply_runtime_tint = true,
+                    draw_as_glow = true,
                     }
                 },
                 {
 
                     light = {
                     type = "basic",
+                    sprite = "arc_furnace_glow",
                     flicker_interval = 2,
                     flicker_min_modifier = 0,
                     flicker_max_modifier = 1,
                     offset_flicker = true,
                     intensity = 1,
                     size = 5,
-                    color = {r = 1.0, g = 0.5, b = 1.0} -- White ish
+                    color = {r = 1.0, g = 0.5, b = 1.0}, -- White ish
+                    blend_mode = "multiplicative",
+                    apply_runtime_tint = true,
+                    draw_as_glow = true,
                     }
                 },
                 {
 
                     light = {
                     type = "basic",
+                    sprite = "arc_furnace_glow",
                     flicker_interval = 1,
                     flicker_min_modifier = 0,
-                    flicker_max_modifier = 0.2,
+                    flicker_max_modifier = 0.3,
                     offset_flicker = true,
-                    intensity = 1,
+                    intensity = 0.4,
                     size = 65,
-                    color = {r = 1, g = 0.8, b = 1.0} -- White ish
+                    color = {r = 1, g = 0.8, b = 1.0}, -- White ish
+                    blend_mode = "multiplicative",
+                    apply_runtime_tint = true,
+                    draw_as_glow = true,
                     }
                 },
             },

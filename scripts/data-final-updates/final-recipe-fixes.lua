@@ -204,7 +204,7 @@ ei_lib.add_unlock_recipe("ei-glass","glass")
 ei_lib.add_unlock_recipe("steel-processing","steel-gear-wheel")
 
 ei_lib.recipe_swap("splitter", "electronic-circuit", "ei-iron-mechanical-parts")
-ei_lib.recipe_swap("ei-loader", "electronic-circuit", "ei-iron-mechanical-parts")
+--ei_lib.recipe_swap("ei-loader", "electronic-circuit", "ei-iron-mechanical-parts") --This overrides loader patch
 
 ei_lib.add_unlock_recipe("ei-advanced-port","kr-small-roboport")
 ei_lib.add_unlock_recipe("ei-advanced-port","kr-big-roboport")

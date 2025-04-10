@@ -32,12 +32,18 @@ local belt_like = {
 local container_like = {
     "container",
     "logistic-container",
+    "linked-container",
     "assembling-machine",
     "furnace",
     "lab",
     "rocket-silo",
     "reactor",
     "boiler",
+    "fusion-reactor",
+    "asteroid-collector",
+    "ammo-turret",
+    "agricultural-tower",
+    "mining-drill",
 }
 
 local loader_like = {
@@ -276,5 +282,33 @@ function ei_loaders_lib.snap_belt(belt)
     ei_loaders_lib.call_snap_input(belt, output_pos)
 end
 
+function ei_loaders_addEnergyDraw(loader)
+    if not loader  then
+        return false
+        end
+    -- Items per second, according to docs
+    local items_per_second = loader.speed * 480
+    -- Speed level 1 is 15 items per second, higher tiers are multiples
+    local level = (loader.speed * 480) / 15
+
+    if level < 1 then
+        level = 0
+    else
+        level = level - 1
+    end
+
+    local item_cost = 6000 / (1 + level / 10)
+    -- buffer for exactly 1 second
+    local buffer_cap = items_per_second * item_cost + 2000
+
+    loader.energy_source = {
+        type = "electric",
+        buffer_capacity = tostring(buffer_cap) .. "J",
+        usage_priority = "secondary-input",
+        drain = "2kW",
+    }
+    loader.energy_per_item = tostring(item_cost) .. "J"
+    return loader
+end
 
 return ei_loaders_lib

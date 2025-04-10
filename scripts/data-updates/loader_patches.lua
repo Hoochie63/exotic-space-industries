@@ -69,6 +69,7 @@ ei_lib.recipe_new("ei-neo-loader", {
     {type="item", name="stack-inserter", amount=2},
 })
 
+
     local loader = data.raw["loader-1x1"]["ei-express-loader"]
     loader.max_belt_stack_size = 1
     loader.filter_count = 2

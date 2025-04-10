@@ -387,7 +387,7 @@ function updater()
                 updates_needed = math.max(1,math.min(math.ceil(#storage.ei.gate.gate / divisor), ei_maxEntityUpdates))
                 end
            for i = 1, updates_needed do
-               if storage.ei and storage.ei.gate.gate and
+               if storage.ei and storage.ei.gate and storage.ei.gate.gate and
                math.max(1,math.min(math.ceil(#storage.ei.gate.gate / divisor), ei_maxEntityUpdates)) ~= updates_needed then
                    goto skip
                    end

@@ -74,7 +74,21 @@ function ei_loaders_lib.make_loader(tier, next_upgrade, belt_animation_set, spee
     loader.minable.result = "ei-"..tier.."loader"
     loader.speed = speed
     loader.belt_animation_set = belt_animation_set
+    loader.circuit_connector =  circuit_connector_definitions.create_vector(
+      universal_connector_template,
+      {
+        { variation = 4, main_offset = util.by_pixel(3, 2), shadow_offset = util.by_pixel(7.5, 7.5), show_shadow = false },
+        { variation = 2, main_offset = util.by_pixel(-11, -5), shadow_offset = util.by_pixel(7.5, 7.5), show_shadow = false },
+        { variation = 0, main_offset = util.by_pixel(-3, -23), shadow_offset = util.by_pixel(7.5, 7.5), show_shadow = false },
+        { variation = 6, main_offset = util.by_pixel(10, -17), shadow_offset = util.by_pixel(7.5, 7.5), show_shadow = false },
 
+        { variation = 0, main_offset = util.by_pixel(-3, -23), shadow_offset = util.by_pixel(7.5, 7.5), show_shadow = false },
+        { variation = 6, main_offset = util.by_pixel(10, -17), shadow_offset = util.by_pixel(7.5, 7.5), show_shadow = false },
+        { variation = 4, main_offset = util.by_pixel(3, 2), shadow_offset = util.by_pixel(7.5, 7.5), show_shadow = false },
+        { variation = 2, main_offset = util.by_pixel(-11, -5), shadow_offset = util.by_pixel(7.5, 7.5), show_shadow = false },
+      }
+    )
+    loader.circuit_wire_max_distance = transport_belt_circuit_wire_max_distance
     loader.structure.direction_in.sheet.filename = ei_loaders_entity_path..tier.."loader.png"
     loader.structure.direction_out.sheet.filename = ei_loaders_entity_path..tier.."loader.png"
 
@@ -127,7 +141,7 @@ data:extend({
         ingredients =
         {
             {type="item", name="transport-belt", amount=4},
-            {type="item", name="electronic-circuit", amount=6},
+            {type="item", name="ei-iron-mechanical-parts", amount=6}, --circuit
             {type="item", name="iron-plate", amount=6},
         },
         results = {{type="item", name="ei-loader", amount=1}},
@@ -217,6 +231,12 @@ ei_loaders_lib.make_loader("neo", nil, neo_belt.belt_animation_set, neo_belt.spe
 
 -- set next replacable for express loader
 data.raw["loader-1x1"]["ei-express-loader"].next_upgrade = "ei-neo-loader"
+
+--Add electricity use scaled by items/s
+data.raw["loader-1x1"]["ei-loader"] = ei_loaders_addEnergyDraw(data.raw["loader-1x1"]["ei-loader"])
+data.raw["loader-1x1"]["ei-fast-loader"] = ei_loaders_addEnergyDraw(data.raw["loader-1x1"]["ei-fast-loader"])
+data.raw["loader-1x1"]["ei-express-loader"] = ei_loaders_addEnergyDraw(data.raw["loader-1x1"]["ei-express-loader"])
+data.raw["loader-1x1"]["ei-neo-loader"] = ei_loaders_addEnergyDraw(data.raw["loader-1x1"]["ei-neo-loader"])
 
 table.insert(data.raw["technology"]["logistics"].effects, {
     type = "unlock-recipe",

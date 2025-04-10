@@ -3,8 +3,20 @@ ei_data = require("lib/data")
 --====================================================================================================
 --PLASMA HEATER
 --====================================================================================================
+local plasma_heater_glow = {
+    type = "sprite",
+    name = "plasma_heater_glow",
+    filename = "__exotic-space-industries__/graphics/glow/small_pngs/frame_count_3/glow_3_25.png",
+    priority = "high",
+    width = 205,
+    height = 207,
+    scale = 1,
+    frame_count = 3,
+    animation_speed = 20,
+}
 
 data:extend({
+        plasma_heater_glow,
     {
         name = "ei-plasma-heater",
         type = "recipe-category",
@@ -104,15 +116,15 @@ data:extend({
         selection_box = {{-2.5, -2.5}, {2.5, 2.5}},
         map_color = ei_data.colors.assembler,
         crafting_categories = {"ei-arc-furnace", "ei-plasma-heater"},
-        crafting_speed = 1,
+        crafting_speed = 1.25,
         energy_source = {
             type = 'electric',
             usage_priority = 'secondary-input',
         },
-        energy_usage = "20MW",
+        energy_usage = "70MW",
         result_inventory_size = 1,
         source_inventory_size = 1,
-        allowed_effects = {"speed", "consumption", "pollution"},
+        allowed_effects = {"speed", "consumption", "pollution","quality"},
         module_slots = 2,
         fluid_boxes = {
             
@@ -162,13 +174,73 @@ data:extend({
                     run_mode = "backward",
                   }
                 },
-                {
+               {
+
                     light = {
                     type = "basic",
-                    intensity = 1,
-                    size = 15
+                    sprite = "plasma_heater_glow",
+                    flicker_interval = 15,
+                    flicker_min_modifier = 0.4,
+                    flicker_max_modifier = 0.9,
+                    offset_flicker = true,
+                    intensity = 0.9,
+                    size = 22,
+                    color = {r = 0.1, g = 0.4, b = 1.0}, -- Bright electric blue
+                    blend_mode = "multiplicative",
+                    apply_runtime_tint = true,
+                    draw_as_glow = true,
                     }
-                }
+                },
+                {
+
+                    light = {
+                    type = "basic",
+                    sprite = "plasma_heater_glow",
+                    flicker_interval = 12,
+                    flicker_min_modifier = 0.2,
+                    flicker_max_modifier = 0.8,
+                    offset_flicker = true,
+                    intensity = 1.0,
+                    size = 22,
+                    color = {r = 1.0, g = 0.4, b = 0.0}, -- Hot orange with a hint of red (molten feel)
+                    blend_mode = "multiplicative",
+                    apply_runtime_tint = true,
+                    draw_as_glow = true,
+                    }
+                },
+                {
+
+                    light = {
+                    type = "basic",
+                    sprite = "plasma_heater_glow",
+                    flicker_interval = 10,
+                    flicker_min_modifier = 0.1,
+                    flicker_max_modifier = 1,
+                    offset_flicker = true,
+                    intensity = 0.7,
+                    size = 16,
+                    color = {r = 1.0, g = 0.5, b = 1.0}, -- White ish
+                    blend_mode = "multiplicative",
+                    apply_runtime_tint = true,
+                    }
+                },
+                {
+
+                    light = {
+                    type = "basic",
+                    sprite = "plasma_heater_glow",
+                    flicker_interval = 20,
+                    flicker_min_modifier = 0.3,
+                    flicker_max_modifier = 0.5,
+                    offset_flicker = true,
+                    intensity = 0.5,
+                    size = 24,
+                    color = {r = 1, g = 0.8, b = 1.0}, -- White ish
+                    blend_mode = "multiplicative",
+                    apply_runtime_tint = true,
+                    draw_as_glow = true,
+                    }
+                },
             },
         },
         working_sound =

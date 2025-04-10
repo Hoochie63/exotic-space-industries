@@ -3,8 +3,19 @@ ei_data = require("lib/data")
 --====================================================================================================
 --CASTER
 --====================================================================================================
+local caster_glow = {
+    type = "sprite",
+    name = "caster_glow",
+    filename = "__exotic-space-industries__/graphics/glow/small_pngs/frame_count_3/glow_3.png",
+    width = 205,
+    height = 207,
+    scale = 1,
+    frame_count = 3,
+    animation_speed = 8,
+}
 
 data:extend({
+        caster_glow,
     {
         name = "ei-casting",
         type = "recipe-category",
@@ -94,32 +105,38 @@ data:extend({
 
                     light = {
                     type = "basic",
-                    flicker_interval = 5,
-                    flicker_min_modifier = 0.7,
-                    flicker_max_modifier = 1,
+                    sprite = "caster_glow",
+                    flicker_interval = 9,
+                    flicker_min_modifier = 0.6,
+                    flicker_max_modifier = 0.9,
                     offset_flicker = true,
                     intensity = 0.9,
-                    size = 12,
-                    color = {r = 0.6, g = 0.4, b = 0.0} -- darker orange
+                    size = 14,
+                    color = {r = 0.6, g = 0.4, b = 0.0}, -- darker orange
+                    blend_mode = "multiplicative",
+                    apply_runtime_tint = true,
+                    draw_as_glow = true,
                     }
                 },
                 {
 
                     light = {
                     type = "basic",
-                    flicker_interval = 4,
-                    flicker_min_modifier = 0.9,
+                    sprite = "caster_glow",
+                    flicker_interval = 7,
+                    flicker_min_modifier = 0.8,
                     flicker_max_modifier = 1,
                     offset_flicker = true,
                     intensity = 1,
-                    size = 3,
-                    color = {r = 1.0, g = 0.5, b = 1.0} -- White ish
+                    size = 5,
+                    color = {r = 1.0, g = 0.5, b = 1.0}, -- White ish
+                    apply_runtime_tint = true,
                     }
                 }
             },
         },
-        allowed_effects = {"speed", "consumption", "pollution"},
-        module_slots = 1,
+        allowed_effects = {"speed", "consumption", "pollution","quality"},
+        module_slots = 2,
         fluid_boxes = {
             {   
                 volume = 200,
