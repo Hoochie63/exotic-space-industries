@@ -233,10 +233,10 @@ ei_loaders_lib.make_loader("neo", nil, neo_belt.belt_animation_set, neo_belt.spe
 data.raw["loader-1x1"]["ei-express-loader"].next_upgrade = "ei-neo-loader"
 
 --Add electricity use scaled by items/s
-data.raw["loader-1x1"]["ei-loader"] = ei_loaders_addEnergyDraw(data.raw["loader-1x1"]["ei-loader"])
-data.raw["loader-1x1"]["ei-fast-loader"] = ei_loaders_addEnergyDraw(data.raw["loader-1x1"]["ei-fast-loader"])
-data.raw["loader-1x1"]["ei-express-loader"] = ei_loaders_addEnergyDraw(data.raw["loader-1x1"]["ei-express-loader"])
-data.raw["loader-1x1"]["ei-neo-loader"] = ei_loaders_addEnergyDraw(data.raw["loader-1x1"]["ei-neo-loader"])
+ei_loaders_lib.addEnergyDraw(data.raw["loader-1x1"]["ei-loader"],"1000","60000")
+ei_loaders_lib.addEnergyDraw(data.raw["loader-1x1"]["ei-fast-loader"],"2000","120000")
+ei_loaders_lib.addEnergyDraw(data.raw["loader-1x1"]["ei-express-loader"],"3000","180000")
+ei_loaders_lib.addEnergyDraw(data.raw["loader-1x1"]["ei-neo-loader"],"4000","240000")
 
 table.insert(data.raw["technology"]["logistics"].effects, {
     type = "unlock-recipe",

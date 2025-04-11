@@ -282,33 +282,14 @@ function ei_loaders_lib.snap_belt(belt)
     ei_loaders_lib.call_snap_input(belt, output_pos)
 end
 
-function ei_loaders_addEnergyDraw(loader)
-    if not loader  then
-        return false
-        end
-    -- Items per second, according to docs
-    local items_per_second = loader.speed * 480
-    -- Speed level 1 is 15 items per second, higher tiers are multiples
-    local level = (loader.speed * 480) / 15
-
-    if level < 1 then
-        level = 0
-    else
-        level = level - 1
-    end
-
-    local item_cost = 6000 / (1 + level / 10)
-    -- buffer for exactly 1 second
-    local buffer_cap = items_per_second * item_cost + 2000
-
+function ei_loaders_lib.addEnergyDraw(loader, energy_per_item, energy_buffer)
     loader.energy_source = {
         type = "electric",
-        buffer_capacity = tostring(buffer_cap) .. "J",
+        buffer_capacity = tostring(energy_buffer) .. "J",
         usage_priority = "secondary-input",
         drain = "2kW",
     }
-    loader.energy_per_item = tostring(item_cost) .. "J"
-    return loader
+    loader.energy_per_item = tostring(energy_per_item) .. "J"
 end
 
 return ei_loaders_lib
