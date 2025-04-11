@@ -72,7 +72,7 @@ function model.on_entity_logistic_slot_changed(event)
     end
 
     if entity.name == "sp-spiderling" then
-        model.remove_nonfuel_requests(entity, inbound_slots)
+        model.remove_nonfuel_requests(entity)
     end
 
 end
