@@ -43,12 +43,14 @@ pipe.fluid_box.filter = "ei-computing-power"
 -- if filename has pipe in it, without the path part:
 -- set hr version to nil and double scale, size of normal version
 for k, v in pairs(pipe.pictures) do
-    local filename = v.filename:match("^.+/(.+)$")
-    if filename ~= "visualization.png" and filename ~= "disabled-visualization.png" then
-        if filename == "steam.png" or filename == "fluid-background.png" then
-            v.filename = ei_graphics_data_pipe_path.."hr-"..filename
-        else
-            v.filename = ei_graphics_data_pipe_path..filename
+    if v.filename then
+        local filename = v.filename:match("^.+/(.+)$")
+        if filename ~= "visualization.png" and filename ~= "disabled-visualization.png" then
+            if filename == "steam.png" or filename == "fluid-background.png" then
+                v.filename = ei_graphics_data_pipe_path.."hr-"..filename
+            else
+                v.filename = ei_graphics_data_pipe_path..filename
+            end
         end
     end
 end

@@ -166,12 +166,14 @@ pipe.minable.result = "ei-insulated-pipe"
 -- loop over pictures and swap first part of filename with ei_graphics_insulated_path
 -- also treat the hr version of the picture
 for k, v in pairs(pipe.pictures) do
-    local filename = v.filename:match("^.+/(.+)$")
-    if filename and filename ~= "visualization.png" and filename ~= "disabled-visualization.png" then
-        if filename ~= "fluid-flow-high-temperature.png" and filename ~= "fluid-flow-low-temperature.png" and filename ~= "fluid-flow-medium-temperature.png" then
-            v.filename = ei_graphics_insulated_path.."hr-"..filename
-        else
-            v.filename = ei_graphics_insulated_path..filename
+    if v.filename then
+        local filename = v.filename:match("^.+/(.+)$")
+        if filename and filename ~= "visualization.png" and filename ~= "disabled-visualization.png" then
+            if filename ~= "fluid-flow-high-temperature.png" and filename ~= "fluid-flow-low-temperature.png" and filename ~= "fluid-flow-medium-temperature.png" then
+                v.filename = ei_graphics_insulated_path.."hr-"..filename
+            else
+                v.filename = ei_graphics_insulated_path..filename
+            end
         end
     end
 end
