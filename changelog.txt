@@ -1,6 +1,12 @@
 ---------------------------------------------------------------------------------------------------
 Version: 1.4.8
 Date: 4-10-25
+    Fixes:
+        - Sanity check when creating insulated pipe from default pipe, this mitigates crashes caused by multi layered sprites. While it will not crash, other mods changing entities to use multiple layer sprites will cause insulated pipe graphics to display incorrectly. Proper resolution pending.
+        - Electronic components now tied to EI electronic parts technology
+---------------------------------------------------------------------------------------------------
+Version: 1.4.8
+Date: 4-10-25
     Additions:
         - Colorful animated glow effects for Arc Furnace, Plasma Heater, Gate, & Caster working states. (Current sprites imported from Glow Trees; credit to asher_sky)
         - Loader Complexity Patch: Startup setting which significantly increases material input complexity for loaders and REWARDS YOU by enabling filtering for the Express loader and stacking for the Neodymium loader
