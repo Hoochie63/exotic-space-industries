@@ -3,31 +3,13 @@ local model = {}
 --====================================================================================================
 --SPIDERTRON LIMITER
 --====================================================================================================
-function model.get_request_logistic_section(player, logistic_point)
-    local section_name = model.get_logistic_section_name(player)
-    for _, section in ipairs(logistic_point.sections) do
-        if section.group == section_name then
-            return section
-        end
-    end
-    return nil
-end
-
-function model.remove_nonfuel_requests(entity, slot_id)
- local spider = entity.entity
-    if spider then
-        local section = get_request_logistic_section(spider, logistic_point, true)
-        if section then
-            for i, request in ipairs(section.filters) do
-                if request and request.value then
-                    local item = request.value.name
-                    if item and item.fuel_category then
-                        if not (item.fuel_category == "ei-fusion-fuel" or item.fuel_category == "ei-nuclear-fuel" or item.fuel_category == "chemical") then
-                            section.clear_slot(i)
-                            game.print("Only fuel items can be requested for this spidertron.")
-                            end
-                    end
-                end
+function model.remove_nonfuel_requests(event)
+    if event.entity and event.section and event.slot_index then
+        local name = event.section.get_slot(event.slot_index)
+        if name and name.value and name.value.name then
+            if not ei_lib.endswith(name.value.name,"fuel") then
+               event.section.clear_slot(event.slot_index)
+               game.print("Only fuel items can be requested for this spidertron.")
             end
         end
     end
@@ -72,7 +54,7 @@ function model.on_entity_logistic_slot_changed(event)
     end
 
     if entity.name == "sp-spiderling" then
-        model.remove_nonfuel_requests(entity)
+        model.remove_nonfuel_requests(event)
     end
 
 end
