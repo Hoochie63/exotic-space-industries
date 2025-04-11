@@ -249,6 +249,9 @@ for _, recipe in pairs(data.raw.recipe) do
   recipe.result_is_always_fresh = true
   recipe.unlock_results = true
 
+  if ei_lib.contains(recipe.name,"recycler") then recipe.surface_conditions = nil end
+  if ei_lib.contains(recipe.name,"crusher") then recipe.surface_conditions = nil end
+
   if ei_lib.endswith(recipe.name,"-asteroid-crushing") then 
     ei_lib.add_unlock_recipe("crusher",recipe.name)
   end

@@ -130,8 +130,12 @@ for _, machine_type in pairs(base_machine_types) do
   if data.raw[machine_type] then
     for _, prototype in pairs(data.raw[machine_type]) do
       if prototype then
+        if contains(prototype.name,"recycler") then prototype.surface_conditions = nil end
+        if contains(prototype.name,"crusher") then prototype.surface_conditions = nil end
         prototype.match_animation_speed_to_activity = false
       end
     end
   end
 end
+
+-- error(serpent.block(data.raw["furnace"]["recycler"]))
