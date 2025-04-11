@@ -4,7 +4,7 @@
     "title": "Exotic Space Industries",
     "author": "Eliont",
     "factorio_version": "2.0",
-    "description": "In a warped twist of fate, this offshoot of Exotic Industries thrusts you into a dystopian Space Age—a realm where titanic machines, esoteric game mechanics, and a cornucopia of bizarre new resources redefine progress. Out there, on a forlorn, uncharted planet, a cryptic Gaia looms—a spectral entity cradling the shattered relics of a long-dead alien crystalline empire. The cosmos is no longer your playground; it's an arena of decay, wonder, and bleak ambition.",
+    "description": "In a warped twist of fate, this offshoot of Exotic Industries thrusts you into a dystopian Space Age—where an expansive array of intricately engineered, unconventional raw material chains systematically recalibrates the trajectory of industrial advancement.. On the far side of the sun, Gaia appears as a serene paradise—a mesmerizing vista of untouched beauty and tranquility. Yet beneath its radiant allure lie ominous shadows; its pristine landscapes conceal the shattered remnants of an ancient alien crystalline empire. Gaia, in its deceptive splendor, harbors the ultimate peril—a serene veneer that belies a hidden crucible of decay and danger. The cosmos is no longer your playground; it's an arena of decay, wonder, and bleak ambition.",
     "dependencies": [
         "base >= 2.0.0",
         "informatron",
