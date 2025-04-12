@@ -6,13 +6,13 @@ local ei_lib = require("lib/lib")
 local gate_glow = {
     type = "sprite",
     name = "gate_glow",
-    filename = "__exotic-space-industries__/graphics/glow/big_pngs/glow_3.png",
+    filename = ei_graphics_glow_path.."big_pngs/glow_3.png",
     priority = "high",
     width = 820,
     height = 826,
     scale = 1,
     frame_count = 3,
-    animation_speed = 1,
+    animation_speed = 0.3,
 }
 
 data:extend({
