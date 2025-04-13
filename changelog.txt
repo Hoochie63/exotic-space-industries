@@ -1,4 +1,9 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.5.0
+Date: 4-13-25
+  Changes:
+    - EI Storage tanks adjusted to provide iron:storage capacity ratios superior to the stock tank. Health was also increased and resistances to physical, impact, and fire added. The ratios are: stock tank-555:1, tank1-600:1, tank2:666:1, tank3:750:1.
+---------------------------------------------------------------------------------------------------
 Version: 1.4.9
 Date: 4-11-25
   Changes:

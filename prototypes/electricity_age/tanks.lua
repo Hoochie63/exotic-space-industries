@@ -124,8 +124,8 @@ data:extend({
         ingredients =
         {
             {type="item", name="concrete", amount=25},
-            {type="item", name="steel-plate", amount=40},
-            {type="item", name="storage-tank", amount=4},
+            {type="item", name="steel-plate", amount=16}, --storage:iron ratio 600:1
+            {type="item", name="storage-tank", amount=1}, --45iron, storage:iron ratio 555:1
         },
         results = {{type="item", name="ei-tank-1", amount=1}},
         enabled = false,
@@ -139,9 +139,9 @@ data:extend({
         energy_required = 2,
         ingredients =
         {
-            {type="item", name="concrete", amount=200},
-            {type="item", name="steel-plate", amount=200},
-            {type="item", name="storage-tank", amount=10},
+            {type="item", name="concrete", amount=50},
+            {type="item", name="steel-plate", amount=20},--storage:iron ratio 666:1
+            {type="item", name="ei-tank-1", amount=1},
         },
         results = {{type="item", name="ei-tank-2", amount=1}},
         enabled = false,
@@ -155,9 +155,9 @@ data:extend({
         energy_required = 2,
         ingredients =
         {
-            {type="item", name="iron-plate", amount=25},
-            {type="item", name="steel-plate", amount=40},
-            {type="item", name="storage-tank", amount=2},
+            {type="item", name="concrete", amount=100},
+            {type="item", name="steel-plate", amount=35}, --storage:iron ratio 750:1
+            {type="item", name="ei-tank-2", amount=1},
         },
         results = {{type="item", name="ei-tank-3", amount=1}},
         enabled = false,
@@ -228,7 +228,12 @@ data:extend({
         icon_size = 64,
         flags = {"placeable-neutral", "player-creation"},
         minable = {mining_time = 0.5, result = "ei-tank-1"},
-        max_health = 500,
+        max_health = 1000,
+        resistances = {
+          { type = "physical", percent = 30 },
+          { type = "fire",     percent = 60 },
+          { type = "impact",   percent = 60 },
+        },
         corpse = "big-remnants",
         collision_box = {{-2.4, -2.4}, {2.4, 2.4}},
         selection_box = {{-2.5, -2.5}, {2.5, 2.5}},
@@ -295,7 +300,12 @@ data:extend({
         icon_size = 64,
         flags = {"placeable-neutral", "player-creation"},
         minable = {mining_time = 0.5, result = "ei-tank-2"},
-        max_health = 500,
+        max_health = 1500,
+        resistances = {
+          { type = "physical", percent = 40 },
+          { type = "fire",     percent = 70 },
+          { type = "impact",   percent = 70 },
+        },
         corpse = "big-remnants",
         collision_box = {{-3.4, -3.4}, {3.4, 3.4}},
         selection_box = {{-3.5, -3.5}, {3.5, 3.5}},
@@ -369,7 +379,12 @@ data:extend({
         icon_size = 64,
         flags = {"placeable-neutral", "player-creation"},
         minable = {mining_time = 0.5, result = "ei-tank-3"},
-        max_health = 500,
+        max_health = 2000,
+        resistances = {
+          { type = "physical", percent = 60 },
+          { type = "fire",     percent = 80 },
+          { type = "impact",   percent = 80 },
+        },
         corpse = "big-remnants",
         collision_box = {{-2.4, -2.4}, {2.4, 2.4}},
         selection_box = {{-2.5, -2.5}, {2.5, 2.5}},
