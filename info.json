@@ -1,6 +1,6 @@
 {
     "name": "exotic-space-industries",
-    "version": "1.4.9",
+    "version": "1.5.0",
     "title": "Exotic Space Industries",
     "author": "Eliont",
     "factorio_version": "2.0",
@@ -9,7 +9,7 @@
         "base >= 2.0.0",
         "informatron",
         "space-age",
-
+        "? more-quality-scaling",
         "? ChangeInserterDropLane",
         "? visible-planets",
         "? Better_Starmap_Background",
