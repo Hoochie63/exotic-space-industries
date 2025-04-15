@@ -212,6 +212,7 @@ ei_lib.add_unlock_recipe("ei-electricity-power","kr-wind-turbine")
 ei_lib.add_unlock_recipe("atomic-bomb","nuclear-artillery-shell")
 ei_lib.add_unlock_recipe("rocket-silo","ei-orbital-combinator")
 ei_lib.add_unlock_recipe("ei-electronic-parts","electronic-components") --add k2 electronic components to EI equivalent
+ei_lib.add_unlock_recipe("lithium-processing","lithium-chloride")
 
 --====================================================================================================
 -- SPECIAL CASES
