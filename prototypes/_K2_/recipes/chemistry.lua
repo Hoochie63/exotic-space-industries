@@ -229,6 +229,33 @@ data:extend({
       quaternary = { r = 1.000, g = 1.000, b = 1.000, a = 0.300 },
     },
   },
+
+  {
+    type = "recipe",
+    name = "lithium-chloride",
+    subgroup = "raw-material",
+    order = "h1[lithium-chloride]",
+    enabled = false,
+    category = "chemistry",
+    energy_required = 5,
+    ingredients = {
+      { type = "fluid", name = "lithium-brine", amount = 50 },
+      { type = "fluid", name = "hydrogen-chloride", amount = 10 },
+    },
+    results = {
+      { type = "item", name = "lithium-chloride", amount = 5 },
+    },
+    allow_productivity = true,
+    always_show_made_in = true,
+    always_show_products = true,
+    crafting_machine_tint = {
+      primary = { r = 0.662, g = 0.807, b = 0.839, a = 0.000 },
+      secondary = { r = 0.541, g = 0.647, b = 0.670, a = 0.250 },
+      tertiary = { r = 0.454, g = 0.517, b = 0.529, a = 0.500 },
+      quaternary = { r = 0.662, g = 0.807, b = 0.839, a = 0.900 },
+    },
+  },
+
   {
     type = "recipe",
     name = "lithium-sulfur-battery",
