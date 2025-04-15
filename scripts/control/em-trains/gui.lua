@@ -10,7 +10,7 @@ local model = {}
 
 function model.make_mod_button(player)
 
-  em_trains_charger.check_global()
+  em_trains.check_global()
 
     -- if button already exists, return
     if mod_gui.get_button_flow(player)["ei_emt_button"] then
@@ -287,7 +287,7 @@ end
 
 function model.mark_dirty()
 
-  em_trains_charger.check_global()
+  em_trains.check_global()
 
     storage.ei_emt.gui.dirty = true
 
@@ -315,7 +315,7 @@ function model.on_gui_click(event)
     end
 
     if event.element.tags.action == "toggle_range_highlight" then
-      em_trains_charger.toggle_range_highlight(game.get_player(event.player_index))
+      em_trains.toggle_range_highlight(game.get_player(event.player_index))
         return
     end
 end

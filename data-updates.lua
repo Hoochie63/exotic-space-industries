@@ -5,7 +5,7 @@
 -- info
 
 ei_mod.stage = "data-updates"
-
+ei_lib = require("lib/lib")
 
 --====================================================================================================
 --CONTENT UPDATES
@@ -29,8 +29,11 @@ require("scripts/data-updates/icon_updates")
 -- apply locale patches
 require("scripts/data-updates/locale_updates")
 
+if ei_lib.config("loader-complexity") then
+    require("scripts/data-updates/loader_patches")
+end
+
 -- apply mod patches
-require("scripts/data-updates/loader_patches")
 require("scripts/data-updates/nanobot_patches")
 require("scripts/data-updates/fmf_patches")
 require("scripts/data-updates/sp_patches")

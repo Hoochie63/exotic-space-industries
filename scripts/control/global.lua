@@ -21,7 +21,8 @@ function ei_global.init()
     storage.ei["orbital_combinators"] = {}
     storage.ei.spaced_updates = 0
     storage.ei.alien = {}
-    
+    storage.ei.em_train_que = 1 --0 is off, 1 is beam, 2 is ring, updated in on_configuration_changed
+    game.print("Exotic Industries globals initialized")
 end
 
 function ei_global.check_init()

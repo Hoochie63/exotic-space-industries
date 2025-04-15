@@ -11,6 +11,10 @@ function ei_lib.startswith(text, prefix) return text:find(prefix, 1, true) == 1 
 function ei_lib.contains(s, word) return tostring(s):find(word, 1, true) ~= nil end
 function ei_lib.sb(s) error(serpent.block(s)) end
 
+function ei_lib.is_valid_number(x)
+    return type(x) == "number" and x == x and x ~= math.huge and x ~= -math.huge
+end
+
 function ei_lib.clean_nils(t)
   local ans = {}
   for _,v in pairs(t) do
@@ -53,12 +57,22 @@ end
 
 -- quick access to startup settings
 function ei_lib.config(name)
-    return settings.startup["ei-"..name].value
+    local setting = settings.startup["ei-" .. name]
+    if not setting then return false end
+
+    local val = setting.value
+
+    if type(val) == "boolean" or type(val) == "number" or type(val) == "string" then
+        return val
+    else
+        return false -- Unknown or unsupported type
+    end
 end
 
 
 -- count how many keys are in a table
 function ei_lib.getn(table_in)
+    if not table_in then return 0 end
     local count = 0
     for _,_ in pairs(table_in) do
         count = count + 1
@@ -170,6 +184,58 @@ function ei_lib.fix_recipe(recipe)
         end
     end
 
+end
+
+
+-- add new ingredient with variability to recipe output (made for ash, slag, trace mineral chunks)
+--[[]
+args = {["recipe"],["type"],["ingredient"],["amountmin"],
+["amountmax"],["probability"],["fluid"],["allowproductivity"]}
+]]
+function ei_lib.recipe_output_add(args)
+    if not args then log("no args") return end
+    local recipe = args.recipe
+    -- test if recipe exists in data.raw.recipe
+    if not data.raw.recipe[recipe] then
+        log("recipe "..recipe.." does not exist in data.raw.recipe")
+        return
+    end
+    local type = args.type
+
+    local ingredient = args.ingredient
+    if not ingredient then log("recipe "..recipe.." lacks ingredient") return end
+    local amountmin = args.amountmin or 1
+    local amountmax = args.amountmax
+    local probability = args.probability or 1
+    local fluid = args.fluid
+    local allowproductivity = args.allowproductivity or false
+    -- amount is optional if not give default to 1
+    local amount = amountmin or 1
+    local amountmax = amountmax or 1
+    local _probability = probability or false --boolean by default, 0 -> 1 otherwise
+    local allow_productivity = allow_productivity or false
+    fluid = fluid or false
+    local typus = type
+    if not type then
+        log("recipe "..recipe.." lacks type, setting to item")
+        typus = "item"
+        end
+
+    -- add ingredient to recipe
+
+    if fluid then typus = "fluid" end
+    if amount and not amountmax and not probability and not allowproductivity then  --guaranteed each time
+        table.insert(data.raw.recipe[recipe].results, {type = typus, name = ingredient, amount = amount})
+    elseif amountmin and amountmax and probability > 0 and probability < 1 and not allowproductivity then --min_max between
+        table.insert(data.raw.recipe[recipe].results, {type = typus, name = ingredient, amount_min = amountmin, amount_max = amountmax})
+    elseif amountmin and amountmax and probability > 0 and probability < 1 and not allowproductivity then --min_max between, probability
+        table.insert(data.raw.recipe[recipe].results, {type = typus, name = ingredient, amount_min = amountmin, amount_max = amountmax, probability = _probability})
+    elseif amountmin and amountmax and probability > 0 and probability < 1 and allowproductivity then--min_max between, probability, affected by productivity
+        table.insert(data.raw.recipe[recipe].results, {type = typus, name = ingredient, amount_min = amountmin, amount_max = amountmax, probability = _probability, allow_productivity = allowproductivity})
+    else
+        log("recipe "..recipe.." ingredient "..ingredient.." probability cannot be 0")
+        return
+    end
 end
 
 -- add new ingredient in recipe
@@ -329,6 +395,25 @@ function ei_lib.remove_prerequisite(tech, prerequisite)
     end
 end
 
+function ei_lib.remove_tech_ingredient(tech, ingredient)
+    if not data.raw.technology[tech] then
+        log("ei_lib.remove_tech_ingredient: "..tech.." not found in data.raw.technology")
+        return
+    end
+    if not data.raw.technology[tech].unit.ingredients then
+        log("ei_lib.remove_tech_ingredient: "..tech.." doesn't have ingredients to remove "..ingredient.." from")
+        return
+    end
+
+    for cur in pairs(data.raw.technology[tech].unit.ingredients) do
+        if cur then
+            if data.raw.technology[tech].unit.ingredients[cur] == ingredient then
+                table.remove(data.raw.technology[tech].unit.ingredients,cur)
+            end
+        end
+    end
+end
+
 -- remove a unlock recipe effect from tech
 function ei_lib.remove_unlock_recipe(tech, recipe)
     -- check if tech exists in data.raw.technology
@@ -354,16 +439,16 @@ end
 
 function ei_lib.add_unlock_recipe(tech, recipe)
     if not data.raw.technology[tech] then
-        log("tech "..tech.." does not exist in data.raw.technology")
+        error("ei_lib.add_unlock_recipe: tech '"..tech.."' does not exist in data.raw.technology")
         return
     end
 
     if not data.raw.recipe[recipe] then
-        log("recipe "..recipe.." does not exist in data.raw.recipe")
+        log("ei_lib.add_unlock_recipe: "..recipe.." does not exist in data.raw.recipe")
         return
     end
 
-    if not data.raw.technology[tech].effects then
+    if type(data.raw.technology[tech].effects) ~= "table" then
         data.raw.technology[tech].effects = {}
     end
 
@@ -373,11 +458,13 @@ function ei_lib.add_unlock_recipe(tech, recipe)
     for _,effect in pairs(data.raw.technology[tech].effects) do
       if effect.type == "unlock-recipe" and effect.recipe == recipe then 
         unlock_already_exists = true
+        goto unlock
       end 
     end 
-    
+    ::unlock::
     if not unlock_already_exists then
       table.insert(data.raw.technology[tech].effects, {type = "unlock-recipe", recipe = recipe})
+      log("ei_lib.add_unlock_recipe: "..recipe.." successfully added to "..tech.."")
     end
 end
 

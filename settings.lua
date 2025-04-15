@@ -1,5 +1,8 @@
 -- settings for Exotic Industries
-
+ei_lib = require("lib/lib")
+ --At least 1 tick per entity updater type
+local localMinimumFullUpdateTicks =  9 --default is 60
+local localMaximumFullUpdateTicks =  6003 --divides evenly
 data:extend({
   {
       name = "ei-tech-scaling-maxCost",
@@ -92,6 +95,14 @@ data:extend({
       order  = "b1",
   },
   {
+      name = "ei-em_updater_que",
+      type = "string-setting",
+      setting_type = "startup",
+      default_value = "Beam",
+      allowed_values = {"Off", "Beam", "Ring"},
+      order  = "b2",
+  },
+  {
       name = "ei-max_updates_per_tick",
       type = "int-setting",
       setting_type = "startup",
@@ -105,8 +116,8 @@ data:extend({
       type = "int-setting",
       setting_type = "startup",
       default_value = 60,
-      minimum_value = 8, --At least 1 tick per entity updater type
-      maximum_value = 6000,
+      minimum_value = localMinimumFullUpdateTicks,
+      maximum_value = localMaximumFullUpdateTicks,
       order  = "b6",
   },
   {

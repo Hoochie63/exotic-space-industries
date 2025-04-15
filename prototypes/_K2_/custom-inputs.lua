@@ -1,3 +1,4 @@
+--[[]
 data:extend({
   {
     type = "custom-input",
@@ -9,6 +10,8 @@ data:extend({
     name = "kr-change-roboport-state",
     key_sequence = "SHIFT + M",
   },
+ ]]
+data:extend({
   {
     type = "custom-input",
     name = "kr-linked-focus-search",

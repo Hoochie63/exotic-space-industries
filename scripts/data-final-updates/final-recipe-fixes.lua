@@ -160,7 +160,7 @@ ei_lib.add_unlock_recipe("ei-morphium-usage","ei-concentrated-morphium-lubricant
 ei_lib.enable_from_start("iron-stick")
 ei_lib.enable_from_start("iron-gear-wheel")
 
-ei_lib.add_unlock_recipe("inhibitor-lamp","inhibitor-lamp")
+ei_lib.add_unlock_recipe("inhibitor-lamp","inhibitor-lamp") --?
 ei_lib.add_unlock_recipe("uranium-mining","centrifuge")
 ei_lib.add_unlock_recipe("uranium-mining","uranium-processing")
 ei_lib.add_unlock_recipe("ei-crusher","recycler")
@@ -193,11 +193,10 @@ ei_lib.add_unlock_recipe("logistic-system","ei-1x1-container-pink")
 ei_lib.add_unlock_recipe("logistic-system","ei-2x2-container-pink")
 ei_lib.add_unlock_recipe("logistic-system","ei-6x6-container-pink")
 
-ei_lib.remove_unlock_recipe("space-platform","aai-signal-sender")
-ei_lib.add_unlock_recipe("aai-signal-transmission","aai-signal-sender")
-
-ei_lib.remove_unlock_recipe("space-platform","aai-signal-sender")
-
+if mods and mods["aai-signal-transmission"] then
+    ei_lib.add_unlock_recipe("aai-signal-transmission","aai-signal-sender")
+    ei_lib.remove_unlock_recipe("space-platform","aai-signal-sender")
+end
 ei_lib.add_unlock_recipe("electronics","stone-tablet")
 ei_lib.add_unlock_recipe("ei-steam-power","boiler")
 ei_lib.add_unlock_recipe("ei-glass","glass")
@@ -243,17 +242,19 @@ local function overwrite_barrel_capacity(recipeItem, capacity)
 end
 
 for _, recipe in pairs(data.raw.recipe) do
+--[[
   recipe.always_show_made_in = false
   recipe.always_show_products = false
   recipe.hide_from_signal_gui = false
   recipe.result_is_always_fresh = true
   recipe.unlock_results = true
-
+]]
   if ei_lib.contains(recipe.name,"recycler") then recipe.surface_conditions = nil end
   if ei_lib.contains(recipe.name,"crusher") then recipe.surface_conditions = nil end
 
-  if ei_lib.endswith(recipe.name,"-asteroid-crushing") then 
-    ei_lib.add_unlock_recipe("crusher",recipe.name)
+--This was failing silently, added sanity checks, but seems unnecessary at this time? 4-14-25
+  if ei_lib.endswith(recipe.name,"-asteroid-crushing") and data.raw.technology and data.raw.technology[recipe.name] then
+    ei_lib.add_unlock_recipe(recipe.name,"crusher")
   end
 
   if recipe.subgroup == "fill-barrel" and recipe.ingredients then

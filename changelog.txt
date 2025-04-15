@@ -1,3 +1,25 @@
+
+---------------------------------------------------------------------------------------------------
+Version: 1.5.1
+Date: 4-15-25
+  Additions:
+    - Imported ru, zh locales from previous repository, applied pull from @astorin, now committed.. likely requires updates which will require native speaker
+    - Visual indicators added for EM train charger -> train energy transfer process. Style can be set in startup settings to either Beam, Ring, or off.
+    - Colorful glow effects have been added to the EM charger & trains.
+    - ei_lib.recipe_output_add() added to support Ash & Slag implementation.
+    - Lithium chloride recipe consisting of x50 Lithium brine & x10 Hydrogen Chloride
+  Changes:
+    - EM trains will now reinitialize on configuration change, this mitigates certain somewhat intangible issues.
+    - EM trains updater no longer loops buffs each tick. Now they are checked on configuration change and finishing research.
+    - Diurnal Dynamics, Distant Misfires, Fire Lights, Visible Pollution, Light Overhaul, Pro Flashlight, and Overloaded Trains added to optional dependencies. Diurnal Dynamics provides for darker, 50% longer nights and space platforms which darken with distance from the sun. Distant Misfires transforms projectiles into physically simulated entities capable of missing. Fire lights adds lights and/or glow effects to all projectiles, fires, etc. Visible Pollution adds a visible smog cloud which affects gameplay by obscuring solar panels and reducing their output, incentivizing solar builds away from your main pollution clouds. Light Overhaul provides an improved flashlight, increases nighttime contrast, and reduces the desaturation of nightvision. Pro Flashlight causes you to aim your flashlight at highlighted entities when standing still. Overloaded Trains will cause the weight of cargo to affect train acceleration, top speed and deceleration. These can impact UPS and are removable at any time.
+  Fixes:
+    - Lithium chloride recipe restored and added to Lithium technology
+    - EM train charger properly counts nearby tiles-Overlaps will double charge.
+    - EM train charger no longer provides infinite energy if you power it up and then remove the electric network connection.
+    - EM trains/chargers no longer draw power assuming a 60 tick update cycle, now adjusts to the updaters tick settings.
+    - ei_lib.add_unlock_recipe reworked with sanity checks and improved debug output.
+    - Lignumis no longer adds unbuildable steam-science-pack to Gaia & some others
+
 ---------------------------------------------------------------------------------------------------
 Version: 1.5.0
 Date: 4-13-25
