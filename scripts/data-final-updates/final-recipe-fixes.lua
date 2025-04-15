@@ -160,7 +160,7 @@ ei_lib.add_unlock_recipe("ei-morphium-usage","ei-concentrated-morphium-lubricant
 ei_lib.enable_from_start("iron-stick")
 ei_lib.enable_from_start("iron-gear-wheel")
 
-ei_lib.add_unlock_recipe("inhibitor-lamp","inhibitor-lamp") --?
+--ei_lib.add_unlock_recipe("inhibitor-lamp","inhibitor-lamp") --?
 ei_lib.add_unlock_recipe("uranium-mining","centrifuge")
 ei_lib.add_unlock_recipe("uranium-mining","uranium-processing")
 ei_lib.add_unlock_recipe("ei-crusher","recycler")
