@@ -2,7 +2,11 @@
 ---------------------------------------------------------------------------------------------------
 Version: 1.5.2
 Date: 4-15-25
-  Fixes: Commented out a naughty line related to inhibitor lamp
+  Fixes:
+   -Commented out a naughty line related to inhibitor lamp
+   -Removed errant deregister call from update charger.
+   -Removed register charger debug output.
+
 ---------------------------------------------------------------------------------------------------
 Version: 1.5.1
 Date: 4-15-25

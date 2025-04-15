@@ -807,9 +807,7 @@ function model.update_charger(charger)
     visual = visual or false -- should highlight counted rails?
 
     -- charger stil exists/vaild?
-    if not model.entity_check(charger) then
-        model.unregister_charger(charger) return false
-    end
+    if not model.entity_check(charger) then return false end
 
     local charger_id = charger.unit_number
     storage.ei_emt.chargers[charger_id].rail_count = model.get_rail_count(charger)
@@ -921,10 +919,9 @@ function model.unregister_charger(entity)
     if entity and entity.unit_number then
         local charger_id = entity.unit_number
         storage.ei_emt.chargers[charger_id] = nil
-    elseif not entity then
+    else
         log("unregister_charger passed nil entity")
     end
-
 end
 
 
