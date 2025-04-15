@@ -905,7 +905,7 @@ function model.register_charger(entity)
 
     -- adjust its power usage
     entity.power_usage = (storage.ei_emt.chargers[charger_id].rail_count *250*1000 + 10*1000*1000) * (1-storage.ei_emt.buffs.charger_efficiency) /  60  -- 250W per rail + 10MW idle
-    game.print("register_charger power usage "..entity.power_usage)
+    --game.print("register_charger power usage "..entity.power_usage)
     -- set energy to max so that it does not need the full charge
     -- no free lunch
     --entity.energy = entity.prototype.electric_energy_source_prototype.buffer_capacity
