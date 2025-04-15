@@ -223,6 +223,8 @@ ei_data.science_dict_obsolete = {
     ["ei-dark-age-tech"] = true,
     ["ei-steam-age-tech"] = true,
     ["ei-electricity-age-tech"] = true,
+    ["wood-science-pack"] = true,
+    ["steam-science-pack"] = true,
 }
 
 --====================================================================================================
