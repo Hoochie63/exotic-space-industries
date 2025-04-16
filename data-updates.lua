@@ -30,6 +30,7 @@ require("scripts/data-updates/icon_updates")
 require("scripts/data-updates/locale_updates")
 
 if ei_lib.config("loader-complexity") then
+if ei_lib.config("loader-prototype-complexity") then
     require("scripts/data-updates/loader_patches")
 end
 
