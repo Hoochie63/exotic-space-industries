@@ -40,7 +40,7 @@ end
 function data_util.add_effect(technology_name, new_effect)
   local technology = data.raw.technology[technology_name]
   if not technology then
-    error("Technology " .. technology_name .. " does not exist.")
+    log("Technology " .. technology_name .. " does not exist.")
   end
   local effects = technology.effects
   if not effects or not next(effects) then
@@ -102,11 +102,11 @@ end
 function data_util.add_recipe_unlock(technology_name, recipe_name)
   local technology = data.raw.technology[technology_name]
   if not technology then
-    error("Technology " .. technology_name .. " does not exist.")
+    log("Technology " .. technology_name .. " does not exist.")
   end
   for _, effect in pairs(technology.effects) do
     if effect.type == "unlock-recipe" and effect.recipe == recipe_name then
-      error("Technology " .. technology_name .. " already unlocks recipe " .. recipe_name .. ".")
+      log("Technology " .. technology_name .. " already unlocks recipe " .. recipe_name .. ".")
     end
   end
   table.insert(technology.effects, { type = "unlock-recipe", recipe = recipe_name })
@@ -118,7 +118,7 @@ end
 function data_util.remove_recipe_unlock(technology_name, recipe_name)
   local technology = data.raw.technology[technology_name]
   if not technology then
-    error("Technology " .. technology_name .. " does not exist.")
+    log("Technology " .. technology_name .. " does not exist.")
   end
   for i, effect in pairs(technology.effects) do
     if effect.type == "unlock-recipe" and effect.recipe == recipe_name then
@@ -126,7 +126,7 @@ function data_util.remove_recipe_unlock(technology_name, recipe_name)
       return
     end
   end
-  error("Technology " .. technology_name .. " does not unlock recipe " .. recipe_name .. ".")
+  log("Technology " .. technology_name .. " does not unlock recipe " .. recipe_name .. ".")
 end
 
 --- Adds the given prerequisite to the technology.
@@ -135,18 +135,18 @@ end
 function data_util.add_prerequisite(technology_id, prerequisite_id)
   local technology = data.raw.technology[technology_id]
   if not technology then
-    error("Technology " .. technology_id .. " does not exist.")
+    log("Technology " .. technology_id .. " does not exist.")
   end
   local prerequisite = data.raw.technology[prerequisite_id]
   if not prerequisite then
-    error("Technology prerequisite " .. prerequisite_id .. " does not exist.")
+    log("Technology prerequisite " .. prerequisite_id .. " does not exist.")
   end
   if not technology.prerequisites then
     technology.prerequisites = { prerequisite_id }
     return
   end
   if flib_table.find(technology.prerequisites, prerequisite_id) then
-    error("Technology " .. technology_id .. " already has prerequisite " .. prerequisite_id)
+    log("Technology " .. technology_id .. " already has prerequisite " .. prerequisite_id)
   end
   table.insert(technology.prerequisites, prerequisite_id)
 end
@@ -157,15 +157,15 @@ end
 function data_util.remove_prerequisite(technology_id, prerequisite_id)
   local technology = data.raw.technology[technology_id]
   if not technology then
-    error("Technology " .. technology_id .. " does not exist.")
+    log("Technology " .. technology_id .. " does not exist.")
   end
   local prerequisite = data.raw.technology[prerequisite_id]
   if not prerequisite then
-    error("Technology prerequisite " .. prerequisite_id .. " does not exist.")
+    log("Technology prerequisite " .. prerequisite_id .. " does not exist.")
   end
   local i = flib_table.find(technology.prerequisites or {}, prerequisite_id)
   if not i then
-    error("Technology " .. technology_id .. " does not have prerequisite " .. prerequisite_id)
+    log("Technology " .. technology_id .. " does not have prerequisite " .. prerequisite_id)
   end
   table.remove(technology.prerequisites, i)
 end
@@ -177,10 +177,10 @@ end
 function data_util.convert_research_unit_ingredient(technology_id, from_id, to_id)
   local technology = data.raw.technology[technology_id]
   if not technology then
-    error("Technology " .. technology_id .. " does not exist.")
+    log("Technology " .. technology_id .. " does not exist.")
   end
   if not technology.unit or not technology.unit.ingredients then
-    error("Technology " .. technology_id .. " has no research unit ingredients.")
+    log("Technology " .. technology_id .. " has no research unit ingredients.")
   end
   local converted = false
   for _, ingredient in pairs(technology.unit.ingredients) do
@@ -188,11 +188,11 @@ function data_util.convert_research_unit_ingredient(technology_id, from_id, to_i
       converted = true
       ingredient[1] = to_id
     elseif ingredient[1] == to_id then
-      error("Technology " .. technology_id .. " already has research unit ingredient " .. to_id)
+      log("Technology " .. technology_id .. " already has research unit ingredient " .. to_id)
     end
   end
   if not converted then
-    error("Technology " .. technology_id .. " does not have research unit ingredient " .. from_id)
+    log("Technology " .. technology_id .. " does not have research unit ingredient " .. from_id)
   end
   -- XXX: Hardcoding the science pack name like this feels bad, but it's what the old code did...
   local from_index = flib_table.find(technology.prerequisites, from_id)
@@ -222,18 +222,18 @@ function data_util.add_research_unit_ingredient(technology_id, ingredient_id, in
   ingredient_count = ingredient_count or 1
   local technology = data.raw.technology[technology_id]
   if not technology then
-    error("Technology " .. technology_id .. " does not exist.")
+    log("Technology " .. technology_id .. " does not exist.")
   end
   if technology.research_trigger then
-    error("Technology " .. technology_id .. " has a research trigger, so cannot have ingredients.")
+    log("Technology " .. technology_id .. " has a research trigger, so cannot have ingredients.")
   end
   local unit = technology.unit
   if not unit then
-    error("Technology " .. technology_id .. " has no research unit.")
+    log("Technology " .. technology_id .. " has no research unit.")
   end
   for _, ingredient in pairs(technology.unit.ingredients) do
     if ingredient[1] == ingredient_id then
-      error("Technology " .. technology_id .. " already has research unit ingredient" .. ingredient_id)
+      log("Technology " .. technology_id .. " already has research unit ingredient" .. ingredient_id)
     end
   end
   table.insert(technology.unit.ingredients, { ingredient_id, ingredient_count })
@@ -245,10 +245,10 @@ end
 function data_util.remove_research_unit_ingredient(technology_id, ingredient_id)
   local technology = data.raw.technology[technology_id]
   if not technology then
-    error("Technology " .. technology_id .. " does not exist.")
+    log("Technology " .. technology_id .. " does not exist.")
   end
   if not technology.unit then
-    error("Technology " .. technology_id .. " has no research units.")
+    log("Technology " .. technology_id .. " has no research units.")
   end
   for i, ingredient in pairs(technology.unit.ingredients) do
     if ingredient[1] == ingredient_id then
@@ -256,7 +256,7 @@ function data_util.remove_research_unit_ingredient(technology_id, ingredient_id)
       return
     end
   end
-  error("Technology " .. technology_id .. " does not have research unit ingredient " .. ingredient_id .. ".")
+  log("Technology " .. technology_id .. " does not have research unit ingredient " .. ingredient_id .. ".")
 end
 
 --- Returns a technology that unlocks the given recipe. The technology returned will be the one that was added earliest.
@@ -278,7 +278,7 @@ end
 function data_util.furnace_to_assembler(furnace_name)
   local furnace = data.raw.furnace[furnace_name]
   if not furnace then
-    error("Furnace " .. furnace_name .. " does not exist.")
+    log("Furnace " .. furnace_name .. " does not exist.")
   end
 
   local assembler = table.deepcopy(furnace) --[[@as data.AssemblingMachinePrototype]]
@@ -303,7 +303,7 @@ function data_util.get_icons(prototype)
 end
 
 --- Converts the given prototype's icons to the standard format and returns a reference to them.
---- The game will throw an error if you provide an empty icons array, so if using the function, care must be taken to
+--- The game will throw an log if you provide an empty icons array, so if using the function, care must be taken to
 --- ensure that at least one icon layer exists at tne end of loading.
 --- @param prototype k2.PrototypeWithIcons
 --- @return data.IconData[]
@@ -370,7 +370,7 @@ end
 function data_util.add_or_replace_ingredient(recipe_name, old_ingredient_name, new_ingredient)
   local recipe = data.raw.recipe[recipe_name]
   if not recipe then
-    error("Recipe " .. recipe_name .. " does not exist.")
+    log("Recipe " .. recipe_name .. " does not exist.")
   end
   if not recipe.ingredients then
     recipe.ingredients = { new_ingredient }
@@ -392,10 +392,10 @@ end
 function data_util.convert_ingredient(recipe_name, old_ingredient_name, new_ingredient_name)
   local recipe = data.raw.recipe[recipe_name]
   if not recipe then
-    error("Recipe " .. recipe_name .. " does not exist.")
+    log("Recipe " .. recipe_name .. " does not exist.")
   end
   if not recipe.ingredients then
-    error("Recipe " .. recipe_name .. " has no ingredients.")
+    log("Recipe " .. recipe_name .. " has no ingredients.")
     return
   end
   for i, ingredient in pairs(recipe.ingredients) do
@@ -412,10 +412,10 @@ end
 function data_util.remove_ingredient(recipe_name, ingredient_name)
   local recipe = data.raw.recipe[recipe_name]
   if not recipe then
-    error("Recipe " .. recipe_name .. " does not exist.")
+    log("Recipe " .. recipe_name .. " does not exist.")
   end
   if not recipe.ingredients then
-    error("Recipe " .. recipe_name .. " has no ingredients.")
+    log("Recipe " .. recipe_name .. " has no ingredients.")
     return
   end
   for i, ingredient in pairs(recipe.ingredients) do
@@ -424,7 +424,7 @@ function data_util.remove_ingredient(recipe_name, ingredient_name)
       return
     end
   end
-  error("Recipe " .. recipe_name .. " does not have ingredient " .. ingredient_name .. ".")
+  log("Recipe " .. recipe_name .. " does not have ingredient " .. ingredient_name .. ".")
 end
 
 --- Adds or replaces the recipe's product matching the given name.
@@ -434,7 +434,7 @@ end
 function data_util.add_or_replace_product(recipe_name, old_product_name, new_product)
   local recipe = data.raw.recipe[recipe_name]
   if not recipe then
-    error("Recipe " .. recipe_name .. " does not exist.")
+    log("Recipe " .. recipe_name .. " does not exist.")
   end
   if not recipe.results then
     recipe.results = { new_product }
@@ -462,14 +462,14 @@ function data_util.remove_lab_input(lab_name, input_name)
       return
     end
   end
-  error("Lab " .. lab_name .. " does not contain input " .. input_name .. ".")
+  log("Lab " .. lab_name .. " does not contain input " .. input_name .. ".")
 end
 
 --- @param energy_source data.EnergySource
 --- @param category_name data.FuelCategoryID
 function data_util.add_fuel_category(energy_source, category_name)
   if energy_source.type ~= "burner" then
-    error("Energy source must be a burner to add a fuel category.")
+    log("Energy source must be a burner to add a fuel category.")
   end
   if not energy_source.fuel_categories then
     energy_source.fuel_categories = {}

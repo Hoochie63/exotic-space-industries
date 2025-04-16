@@ -22,7 +22,7 @@ function matter_lib.make_conversion_recipe(def)
   --- @cast material data.Ingredientitem_prototype
   local recipe_name = material.name .. "-to-matter"
   if data.raw.recipe[recipe_name] then
-    error("Recipe '" .. recipe_name .. "' already exists.'")
+    log("Recipe '" .. recipe_name .. "' already exists.'")
   end
   local item_prototype = flib_prototypes.get(material.type, material.name) --[[@as data.Fluiditem_prototype|data.Itemitem_prototype]]
   data:extend({
@@ -63,10 +63,10 @@ function matter_lib.make_deconversion_recipe(def)
   --- @cast material data.Productitem_prototype
   local recipe_name = "matter-to-" .. material.name
   if data.raw.recipe[recipe_name] then
-    error("Recipe '" .. recipe_name .. "' already exists.'")
+    log("Recipe '" .. recipe_name .. "' already exists.'")
   end
   if material.type == "research-progress" then
-    error("research-progress is not supported in matter recipes.")
+    log("research-progress is not supported in matter recipes.")
   end
   local item_prototype = flib_prototypes.get(def.material.type --[[@as string]], def.material.name) --[[@as data.Fluiditem_prototype|data.Itemitem_prototype]]
   data:extend({
