@@ -34,7 +34,7 @@ ei_loaders_lib = require("lib/ei_loaders_lib")
 ei_fueler = require("scripts/control/fueler/fueler")
 ei_fueler_informatron = require("scripts/control/fueler/informatron")
 
-em_trains_charger = require("scripts/control/em-trains/charger")
+em_trains = require("scripts/control/em-trains/charger")
 em_trains_gui = require("scripts/control/em-trains/gui")
 em_trains_informatron = require("scripts/control/em-trains/informatron")
 
@@ -58,7 +58,7 @@ script.on_init(function()
 
     -- disable vanilla victory condition by rocket launch
     ei_victory.init()
-
+    em_trains.check_global()
     em_trains_gui.mark_dirty()
     ei_compat.check_init()
     orbital_combinator.check_init()
@@ -147,7 +147,7 @@ script.on_event(defines.events.on_research_finished, function(e)
     -- notify player for informatron changes
     ei_informatron_messager.on_research_finished(e)
 
-    em_trains_charger.on_research_finished(e)
+    em_trains.on_research_finished(e)
 
 end)
 
@@ -274,8 +274,26 @@ end)
 script.on_configuration_changed(function(e)
     ei_tech_scaling.init()
     ei_victory.init()  -- Required for Better Victory Screen
-    em_trains_gui.mark_dirty()
+    ei_global.check_init()
     orbital_combinator.check_init()
+    --Clear storage.ei_emt.trains[train_id]
+
+    local que = ei_lib.config("em_updater_que") or "Beam"
+    if que == "Beam" then
+        storage.ei.em_train_que = 1
+    elseif que == "Ring" then
+        storage.ei.em_train_que = 2 --faster to compare a number
+    else
+        storage.ei.em_train_que = 0
+    end
+    game.print("EM charger que set to "..que.." ["..storage.ei.em_train_que.."]")
+    em_trains.check_global() --no nil tables
+    em_trains.check_buffs() --updates global buff vals
+    em_trains.reinitialize_chargers() --applies updated buffs
+    em_trains.reinitialize_trains()
+    em_trains.update_rail_counts()
+    em_trains_gui.mark_dirty()
+
     game.print("Exotic Industries config change complete")
 end)
 
@@ -291,13 +309,14 @@ ei_update_functions = {
     function() orbital_combinator.update() end, --5
     function() ei_fueler.updater() end, --6
     function() ei_gate.update() end, --7
-    function() em_trains_charger.updater() end,--8
+    function() em_trains.train_updater() end,--8
+    function() em_trains.charger_updater() end,--9
 }
---60/14=x4 executions/handler/second (default, customizable update length 8-6000 ticks)
+--60/9=x6.66 (rounded up to 7) executions/handler/second, ie 7 rounds of 10 updates per 60ticks (default, customizable update length 9-6000 ticks)
 ei_ticksPerFullUpdate = settings.startup["ei_ticks_per_full_update"].value -- How many ticks to spread updates over
-local divisor = ei_ticksPerFullUpdate / #ei_update_functions -- How many times each entity updater is called per cycle
+local divisor = ei_ticksPerFullUpdate /  ei_lib.getn(ei_update_functions) -- How many times each entity updater is called per cycle
 ei_maxEntityUpdates = settings.startup["ei-max_updates_per_tick"].value -- Ceiling on entity updates per tick
-
+ei_update_functions_length = ei_lib.getn(ei_update_functions)
 function updater()
     local updates_needed = 1
    -- Hardcoded checks against ei_update_step are quick
@@ -334,12 +353,12 @@ function updater()
            end
 
        elseif ei_update_step == 3 then
-           if storage.ei and storage.ei["neutron_sources"] and #storage.ei["neutron_sources"] then
-               updates_needed = math.max(1,math.min(math.ceil(#storage.ei["neutron_sources"] / divisor), ei_maxEntityUpdates))
+           if storage.ei and storage.ei["neutron_sources"] and  ei_lib.getn(storage.ei["neutron_sources"]) then
+               updates_needed = math.max(1,math.min(math.ceil( ei_lib.getn(storage.ei["neutron_sources"]) / divisor), ei_maxEntityUpdates))
                end
            for i = 1, updates_needed do
                if storage.ei and storage.ei["neutron_sources"] and
-               math.max(1,math.min(math.ceil(#storage.ei["neutron_sources"] / divisor), ei_maxEntityUpdates)) ~= updates_needed then
+               math.max(1,math.min(math.ceil( ei_lib.getn(storage.ei["neutron_sources"]) / divisor), ei_maxEntityUpdates)) ~= updates_needed then
                    goto skip
                    end
                ei_neutron_collector.update()
@@ -347,11 +366,11 @@ function updater()
 
        elseif ei_update_step == 4 then
            if storage.ei and storage.ei.matter_machines and #storage.ei.matter_machines then
-               updates_needed = math.max(1,math.min(math.ceil(#storage.ei.matter_machines / divisor), ei_maxEntityUpdates))
+               updates_needed = math.max(1,math.min(math.ceil( ei_lib.getn(storage.ei.matter_machines) / divisor), ei_maxEntityUpdates))
                end
            for i = 1, updates_needed do
                if storage.ei and storage.ei.matter_machines and
-               math.max(1,math.min(math.ceil(#storage.ei.matter_machines / divisor), ei_maxEntityUpdates)) ~= updates_needed then
+               math.max(1,math.min(math.ceil( ei_lib.getn(storage.ei.matter_machines) / divisor), ei_maxEntityUpdates)) ~= updates_needed then
                    goto skip
                    end
                ei_matter_stabilizer.update()
@@ -361,12 +380,12 @@ function updater()
    else -- Otherwise, ei_update_step is >= 5
 
        if ei_update_step == 5 then
-           if storage.ei and storage.ei.orbital_combinators and #storage.ei.orbital_combinators then
-                updates_needed = math.max(1,math.min(math.ceil(#storage.ei.orbital_combinators / divisor), ei_maxEntityUpdates))
+           if storage.ei and storage.ei.orbital_combinators and  ei_lib.getn(storage.ei.orbital_combinators) then
+                updates_needed = math.max(1,math.min(math.ceil( ei_lib.getn(storage.ei.orbital_combinators) / divisor), ei_maxEntityUpdates))
                 end
            for i = 1, updates_needed do
                if storage.ei and storage.ei.orbital_combinators and
-               math.max(1,math.min(math.ceil(#storage.ei.orbital_combinators / divisor), ei_maxEntityUpdates)) ~= updates_needed then
+               math.max(1,math.min(math.ceil(ei_lib.getn(storage.ei.orbital_combinators) / divisor), ei_maxEntityUpdates)) ~= updates_needed then
                    goto skip
                    end
                orbital_combinator.update()
@@ -374,43 +393,61 @@ function updater()
 
        elseif ei_update_step == 6 then
            if storage.ei and storage.ei.fueler_queue and #storage.ei.fueler_queue then
-               updates_needed = math.max(1,math.min(math.ceil(#storage.ei.fueler_queue / divisor), ei_maxEntityUpdates))
+               updates_needed = math.max(1,math.min(math.ceil( ei_lib.getn(storage.ei.fueler_queue) / divisor), ei_maxEntityUpdates))
                end
            for i = 1, updates_needed do
                if storage.ei and storage.ei.fueler_queue and
-               math.max(1,math.min(math.ceil(#storage.ei.fueler_queue / divisor), ei_maxEntityUpdates)) ~= updates_needed then
+               math.max(1,math.min(math.ceil( ei_lib.getn(storage.ei.fueler_queue) / divisor), ei_maxEntityUpdates)) ~= updates_needed then
                    goto skip
                    end
                ei_fueler.updater()
            end
 
        elseif ei_update_step == 7 then
-           if storage.ei and storage.ei.gate and storage.ei.gate.gate and #storage.ei.gate.gate then
-                updates_needed = math.max(1,math.min(math.ceil(#storage.ei.gate.gate / divisor), ei_maxEntityUpdates))
+           if storage.ei and storage.ei.gate and storage.ei.gate.gate and  ei_lib.getn(storage.ei.gate.gate) then
+                updates_needed = math.max(1,math.min(math.ceil( ei_lib.getn(storage.ei.gate.gate) / divisor), ei_maxEntityUpdates))
                 end
            for i = 1, updates_needed do
                if storage.ei and storage.ei.gate and storage.ei.gate.gate and
-               math.max(1,math.min(math.ceil(#storage.ei.gate.gate / divisor), ei_maxEntityUpdates)) ~= updates_needed then
+               math.max(1,math.min(math.ceil( ei_lib.getn(storage.ei.gate.gate) / divisor), ei_maxEntityUpdates)) ~= updates_needed then
                    goto skip
                    end
                ei_gate.update()
            end
 
        elseif ei_update_step == 8 then
-           if storage.ei_emt and storage.ei_emt.trains_register and #storage.ei_emt.trains_register then
-                updates_needed = math.max(1,math.min(math.ceil(#storage.ei_emt.trains_register / divisor), ei_maxEntityUpdates))
+           em_trains.check_global()
+
+           if storage.ei_emt and storage.ei_emt.trains and ei_lib.getn(storage.ei_emt.trains) then
+                updates_needed = math.max(1,math.min(math.ceil(ei_lib.getn(storage.ei_emt.trains) / divisor), ei_maxEntityUpdates))
                 end
            for i = 1, updates_needed do
-               if storage.ei_emt and storage.ei_emt.trains_register and
-               math.max(1,math.min(math.ceil(#storage.ei_emt.trains_register / divisor), ei_maxEntityUpdates)) ~= updates_needed then
+               if storage.ei_emt and storage.ei_emt.trains and
+               math.max(1,math.min(math.ceil( ei_lib.getn(storage.ei_emt.trains) / divisor), ei_maxEntityUpdates)) ~= updates_needed then
                    goto skip
                    end
-               em_trains_charger.updater()
+               if not em_trains.train_updater() then -- only try once if nil
+                   goto skip
+                   end
            end
-           em_trains_gui.updater()
+       elseif ei_update_step == 9 then
+           em_trains.check_global()
+           if storage.ei_emt and storage.ei_emt.chargers and  ei_lib.getn(storage.ei_emt.chargers) then
+                updates_needed = math.max(1,math.min(math.ceil( ei_lib.getn(storage.ei_emt.chargers) / divisor), ei_maxEntityUpdates))
+                end
+           for i = 1, updates_needed do
+               if storage.ei_emt and storage.ei_emt.chargers and
+               math.max(1,math.min(math.ceil(ei_lib.getn(storage.ei_emt.chargers) / divisor), ei_maxEntityUpdates)) ~= updates_needed then
+                   goto skip
+                   end
+               if not em_trains.charger_updater() then -- only try once if nil
+                   goto skip
+                   end
+           end
        end
    end
     ::skip::
+    em_trains_gui.updater()
    -- Increment ei_update_step and loop back to 1 if needed
    ei_update_step = ei_update_step + 1
    if ei_update_step > #ei_update_functions then
@@ -466,6 +503,7 @@ function on_built_entity(e)
         ei_register.link_slave("copper_beacon", master_unit, slave_entity, "slave_assembler")
         ei_register.init_beacon("copper_beacon", master_unit)
         ei_register.add_spaced_update()
+        ei_beacon_overload.on_built_entity(e["entity"])
     end
 
     if e["entity"].name == "ei-iron-beacon" then
@@ -474,9 +512,10 @@ function on_built_entity(e)
         ei_register.link_slave("copper_beacon", master_unit, slave_entity, "slave_assembler")
         ei_register.init_beacon("copper_beacon", master_unit)
         ei_register.add_spaced_update()
+        ei_beacon_overload.on_built_entity(e["entity"])
     end
 
-    ei_beacon_overload.on_built_entity(e["entity"])
+--    ei_beacon_overload.on_built_entity(e["entity"])
     ei_neutron_collector.on_built_entity(e["entity"])
     ei_fusion_reactor.on_built_entity(e["entity"])
     ei_matter_stabilizer.on_built_entity(e["entity"])
@@ -487,7 +526,7 @@ function on_built_entity(e)
     ei_gaia.on_built_entity(e["entity"])
     ei_loaders_lib.on_built_entity(e["entity"])
     ei_fueler.on_built_entity(e["entity"])
-    em_trains_charger.on_built_entity(e["entity"])
+    em_trains.on_built_entity(e["entity"])
     orbital_combinator.add(e["entity"])
 end
 
@@ -550,7 +589,7 @@ function on_destroyed_entity(e)
     ei_black_hole.on_destroyed_entity(e["entity"], transfer)
     ei_gate.on_destroyed_entity(e["entity"], transfer)
     ei_fueler.on_destroyed_entity(e["entity"], transfer)
-    em_trains_charger.on_destroyed_entity(e["entity"])
+    em_trains.on_destroyed_entity(e["entity"])
     orbital_combinator.rem(e["entity"])
 end
 

@@ -1,3 +1,5 @@
+local ei_lib = require("lib/lib")
+
 -- stores commonly used paths esp. for graphics
 
 --====================================================================================================
@@ -59,7 +61,7 @@ ei_robots_entity_path = ei_graphics_entity_2_path
 ei_fueler_graphics_path = ei_graphics_3_path.."graphics/fueler/"
 
 ei_trains_path = ei_graphics_3_path
-
+ei_trains_sounds_path = ei_path.."sounds/em_trains/"
 ei_trains_entity_path = ei_trains_path.."graphics/em-trains/entities/"
 ei_trains_item_path = ei_trains_path.."graphics/em-trains/items/"
 ei_trains_tech_path = ei_trains_path.."graphics/em-trains/techs/"

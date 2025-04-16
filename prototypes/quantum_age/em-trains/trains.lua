@@ -256,6 +256,10 @@ make_multiple_techs(speed)
 local weight = 500
 local max_speed = 2
 local max_speed_wagon = 10
+local max_speed_sound_leveloff = 1.5 --pitch stops increasing
+local max_speed_sound_levelon = 0.1 --starts
+local em_sound_minimum_speed = 0.09
+local em_sound_maximum_speed = 2
 local max_power = "1MW"
 local braking_force = 35
 local braking_force_wagon = 10
@@ -452,21 +456,50 @@ data:extend({
 				}
 			},
 		},
-		drive_over_tie_trigger = drive_over_tie(),
+		drive_over_tie_trigger = nil, --we floating over them ties
 		tie_distance = 50,
 		vehicle_impact_sound =  { filename = "__base__/sound/car-metal-impact.ogg", volume = 0.65 },
 		working_sound =
 		{
-			sound =
-			{
-				filename = "__base__/sound/steam-engine-90bpm.ogg",
-				volume = 0.8
-			},
-			match_speed_to_activity = true,
+        sound =
+        {
+            filename = ei_trains_sounds_path.."em_train_engine_idle.ogg",
+            volume = 0.9
+        },
+        match_speed_to_activity = true,
+        min_speed = max_speed_sound_levelon,
+        max_speed = max_speed_sound_leveloff
 		},
+        start_sound =
+        {
+            {
+                filename = ei_trains_sounds_path.."em_train_engine_start.ogg",
+                volume = 0.95
+            }
+        },
+
+        stop_sound =
+        {
+            {
+                filename = ei_trains_sounds_path.."em_train_engine_stop.ogg",
+                volume = 0.95
+            }
+        },
+        drive_sound =
+        {
+            sound =
+            {
+                filename = ei_trains_sounds_path.."em_train_engine.ogg",
+                volume = 0.95
+            },
+            match_speed_to_activity = true,
+            min_speed = max_speed_sound_levelon,
+            max_speed = max_speed_sound_leveloff
+        },
 		open_sound = { filename = "__base__/sound/car-door-open.ogg", volume=0.7 },
 		close_sound = { filename = "__base__/sound/car-door-close.ogg", volume = 0.7 },
-		sound_minimum_speed = 0.2;
+		sound_minimum_speed = em_sound_minimum_speed,
+        sound_maximum_speed = em_sound_maximum_speed
 	},
 	{
 		type = "fluid-wagon",
@@ -623,21 +656,24 @@ data:extend({
 
 		wheels = standard_train_wheels,
 		rail_category = "regular",
-		drive_over_tie_trigger = drive_over_tie(),
+		drive_over_tie_trigger = nil, --drive_over_tie()
 		tie_distance = 50,
 		working_sound =
 		{
 			sound =
 			{
-				filename = "__base__/sound/train-wheels.ogg",
-				volume = 0.5
+				filename = ei_trains_sounds_path.."em_train_engine.ogg",
+				volume = 0.8
 			},
-			match_volume_to_activity = true,
+            match_speed_to_activity = true,
+            min_speed = max_speed_sound_levelon,
+            max_speed = max_speed_sound_leveloff
 		},
 		crash_trigger = crash_trigger(),
 		open_sound = { filename = "__base__/sound/machine-open.ogg", volume = 0.85 },
 		close_sound = { filename = "__base__/sound/machine-close.ogg", volume = 0.75 },
-		sound_minimum_speed = 0.5;
+		sound_minimum_speed = em_sound_minimum_speed,
+        sound_maximum_speed = em_sound_maximum_speed,
 		vehicle_impact_sound =  { filename = "__base__/sound/car-wood-impact.ogg", volume = 1.0 },
 	},
 	{
@@ -744,21 +780,24 @@ data:extend({
 
 		wheels = standard_train_wheels,
 		rail_category = "regular",
-		drive_over_tie_trigger = drive_over_tie(),
+		drive_over_tie_trigger = nil, --drive_over_tie()
 		tie_distance = 50,
 		working_sound =
 		{
 			sound =
 			{
-				filename = "__base__/sound/train-wheels.ogg",
-				volume = 0.5
+				filename = ei_trains_sounds_path.."em_train_engine.ogg",
+				volume = 0.8
 			},
-			match_volume_to_activity = true,
+            match_speed_to_activity = true,
+            min_speed = max_speed_sound_levelon,
+            max_speed = max_speed_sound_leveloff
 		},
 		crash_trigger = crash_trigger(),
 		open_sound = { filename = "__base__/sound/machine-open.ogg", volume = 0.85 },
 		close_sound = { filename = "__base__/sound/machine-close.ogg", volume = 0.75 },
-		sound_minimum_speed = 0.5;
+		sound_minimum_speed = em_sound_minimum_speed,
+        sound_maximum_speed = em_sound_maximum_speed,
 		vehicle_impact_sound =  { filename = "__base__/sound/car-wood-impact.ogg", volume = 1.0 },
 	},
 })
