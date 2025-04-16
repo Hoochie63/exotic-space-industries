@@ -402,7 +402,61 @@ function model.cast_beam(charger, train)
             force = charger.force,
         })
     end
+end
 
+function ei_draw_train_glow(train, params)
+    if not train or not train.valid then return end
+    --if not train.burner or not train.burner.remaining_burning_fuel then return end
+
+    -- fallback defaults
+    local glow_params = {
+        sprite = "emt_train_glow",
+        scale_range = {1, 4},
+        intensity_range = {0.15, 0.65},
+        color_pool = {
+            {r = 0, g = 0.4, b = 1.0},
+            {r = 0.4, g = 0.2, b = 1.0},
+            {r = 0.2, g = 0.2, b = 1.0},
+            {r = 0.4, g = 0.1, b = 0.8},
+        },
+        blend_mode = "multiplicative",
+        apply_runtime_tint = true,
+        draw_as_glow = true,
+        time_to_live = math.ceil(ei_ticksPerFullUpdate+(ei_ticksPerFullUpdate/10)), --blur into one another
+        count = 1 -- number of lights to spawn
+    }
+    if params then
+        if not params.draw_as_glow then --randomizee if not specified
+            local pick1 = math.random(1,2)
+            if pick1 == 1 then
+                glow_params.draw_as_glow = false
+            end
+        end
+    end
+    -- override defaults with user params if provided
+    for k, v in pairs(params or {}) do
+        glow_params[k] = v
+    end
+
+    for _ = 1, glow_params.count do
+        local color = glow_params.color_pool[math.random(#glow_params.color_pool)]
+        local scale = math.random() * (glow_params.scale_range[2] - glow_params.scale_range[1]) + glow_params.scale_range[1]
+        local intensity = math.random() * (glow_params.intensity_range[2] - glow_params.intensity_range[1]) + glow_params.intensity_range[1]
+
+        rendering.draw_light {
+            sprite = glow_params.sprite,
+            scale = scale,
+            intensity = intensity,
+            color = color,
+            target = train,
+            surface = train.surface,
+            time_to_live = glow_params.time_to_live,
+            players = game.connected_players,
+            blend_mode = glow_params.blend_mode,
+            apply_runtime_tint = glow_params.apply_runtime_tint,
+            draw_as_glow = glow_params.draw_as_glow,
+        }
+    end
 end
 
 function model.set_burner(train, state)
@@ -421,6 +475,8 @@ function model.set_burner(train, state)
     -- turn this into double, as its may be smthing like 0.534343 -> 0.5
     train.burner.remaining_burning_fuel = train.burner.currently_burning.name.fuel_value*state
     if not train.burner.remaining_burning_fuel then return end
+    ei_draw_train_glow(train)
+    --[[
     local bright = rendering.draw_light {
         sprite = "emt_train_glow",
         scale = 1,
@@ -550,8 +606,86 @@ function model.set_burner(train, state)
             draw_as_glow = true,
         }
     end
+    ]]
 end
 
+function ei_draw_charger_glow(charger, params)
+     if not (charger and charger.valid) then return end
+ 
+     local params = {
+         sprite = "emt_charger_glow",
+         time_to_live = math.ceil(ei_ticksPerFullUpdate+(ei_ticksPerFullUpdate/10)),
+         surface = charger.surface,
+         players = game.connected_players,
+         blend_mode = "multiplicative",
+         apply_runtime_tint = true,
+         draw_as_glow = true,
+ 
+         glow_sets = {
+             {
+                 scale = 2,
+                 intensity = 0.25,
+                 colors = {
+                     {r = 0, g = 0.4, b = 1.0},
+                     {r = 0.4, g = 0.2, b = 1.0},
+                     {r = 0.2, g = 0.2, b = 1.0},
+                     {r = 0.4, g = 0.1, b = 0.8},
+                 }
+             },
+             {
+                 scale = 14,
+                 intensity = 0.15,
+                 colors = {
+                     {r = 0, g = 0.4, b = 1.0},
+                     {r = 0.4, g = 0.2, b = 1.0},
+                     {r = 0.2, g = 0.2, b = 1.0},
+                     {r = 0.4, g = 0.1, b = 0.8},
+                 }
+             }
+         }
+     }
+ 
+     -- override any top-level params if needed
+     for k, v in pairs(overrides or {}) do
+         params[k] = v
+     end
+ 
+     -- always-on light (optional)
+     rendering.draw_light {
+         sprite = params.sprite,
+         scale = 2,
+         intensity = 0.65,
+         color = {r = 0, g = 0.4, b = 1.0},
+         target = charger,
+         surface = params.surface,
+         time_to_live = params.time_to_live,
+         players = params.players,
+         blend_mode = params.blend_mode,
+         apply_runtime_tint = params.apply_runtime_tint,
+         draw_as_glow = params.draw_as_glow,
+     }
+ 
+     -- randomize additional glow effects from each glow set
+     for _, glow_set in pairs(params.glow_sets) do
+         local color = glow_set.colors[math.random(#glow_set.colors)]
+         local intensity = glow_set.intensity or 0.5
+         local scale = glow_set.scale or 1
+ 
+         rendering.draw_light {
+             sprite = params.sprite,
+             scale = scale,
+             intensity = intensity,
+             color = color,
+             target = charger,
+             surface = params.surface,
+             time_to_live = params.time_to_live,
+             players = params.players,
+             blend_mode = params.blend_mode,
+             apply_runtime_tint = params.apply_runtime_tint,
+             draw_as_glow = params.draw_as_glow,
+         }
+     end
+ end
 
 function model.has_enough_energy(charger, train)
 
@@ -573,6 +707,8 @@ function model.has_enough_energy(charger, train)
 
     if energy >= total_needed then
         charger.energy = charger.energy - total_needed
+        ei_draw_charger_glow(charger)
+        --[[
         local bright = rendering.draw_light {
             sprite = "emt_charger_glow",
             scale = 2,
@@ -701,7 +837,7 @@ function model.has_enough_energy(charger, train)
                 apply_runtime_tint = true,
                 draw_as_glow = true,
             }
-        end
+        end]]
         --game.print("dec")
         return 1
     end
