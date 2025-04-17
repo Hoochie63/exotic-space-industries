@@ -752,7 +752,6 @@ function model.update_charger(charger)
     local has_power_usage = charger.power_usage ~= nil
     local has_rails = rail_count > 1
     local has_energy = charger.energy and charger.energy > 100000 -- 1MJ buffer sanity check
-    local success = false
     if not has_power_usage and not has_energy then
         status = "error"
         radius = 10
@@ -762,7 +761,6 @@ function model.update_charger(charger)
     elseif has_rails and has_energy then
         status = "working"
         radius = 8
-        success = true
     else
         status = "default"
         radius = 6
@@ -770,7 +768,7 @@ function model.update_charger(charger)
 
     model.render_status_rings(charger, status, radius, 12)
 
-    return success
+    return true
 end
 
 
