@@ -9,24 +9,132 @@ local drive_over_tie = function()
 	  sound = sound_variations(ei_path.."sounds/em_trains/em_train_tie", 6, 0.3, { volume_multiplier("main-menu", 3.25), volume_multiplier("driving", 1.9) } )
 	}
   end
-
-function rolling_stock_standby_light()
-    return
+function train_front_light()
+    local train_front_light =
     {
         {
-            type = "basic",
+            type = "oriented",
+            minimum_darkness = 0.3,
             picture =
             {
-                filename = ei_path.."graphics/em_train_under_glow_512x512",
+                filename = ei_path.."graphics/em_trains/em_train_light_cone_280x700.png",
                 priority = "medium",
                 scale = 1,
-                width = 512,
-                height = 512
+                width = 280,
+                height = 700,
+                draw_as_light = true,
+                blend_mode = "multiplicative-with-alpha"
             },
+            shift = {-0.85, -10.5},
             size = 1,
-            intensity = 0.36
+            intensity = 0.98
+        },
+        {
+            type = "oriented",
+            minimum_darkness = 0.3,
+            picture =
+            {
+                filename = ei_path.."graphics/em_trains/em_train_light_cone_280x700.png",
+                priority = "medium",
+                scale = 1,
+                width = 280,
+                height = 700,
+                draw_as_light = true,
+                blend_mode = "multiplicative-with-alpha"
+            },
+            shift = {0.85, -10.5},
+            size = 1,
+            intensity = 0.98
         }
     }
+return train_front_light
+end
+function rolling_stock_standby_light()
+    local standby_light =
+    {
+        {
+            type = "oriented",
+            picture =
+            {
+                filename = ei_path.."graphics/em_trains/em_train_under_glow_512x512.png",
+                priority = "medium",
+                scale = 1,
+                width = 171,
+                height = 171,
+                draw_as_glow = true,
+                blend_mode = "multiplicative"
+            },
+            size = 3,
+            intensity = 0.75,
+            frame_count = 60,
+            line_length = 9,
+            animation_speed = 1
+        }
+    }
+    return standby_light
+end
+
+function rolling_stock_back_light()
+--[[
+    local back_light =
+    {
+        {
+            type = "oriented",
+            minimum_darkness = 0.3,
+            picture =
+            {
+                filename = ei_path.."graphics/em_trains/em_train_rear_light_170x170.png",
+                priority = "medium",
+                scale = 1,
+                width = 170,
+                height = 170,
+                draw_as_glow = true,
+                blend_mode = "additive-soft"
+            },
+            shift = {0, 3.6},
+            size = 1,
+            intensity = 0.75
+        }
+    }
+]]
+local back_light =
+		{
+			{
+				type = "oriented",
+				minimum_darkness = 0.3,
+				picture =
+				{
+					filename = ei_path.."graphics/em_trains/em_train_light_cone_280x700.png",
+					priority = "medium",
+					scale = 1,
+					width = 280,
+					height = 700,
+					draw_as_light = true,
+                    blend_mode = "multiplicative-with-alpha"
+				},
+				shift = {-0.3, 7.0},
+				size = 0.5,
+				intensity = 0.98
+			},
+			{
+				type = "oriented",
+				minimum_darkness = 0.3,
+				picture =
+				{
+					filename = ei_path.."graphics/em_trains/em_train_light_cone_280x700.png",
+					priority = "medium",
+					scale = 1,
+					width = 280,
+					height = 700,
+					draw_as_light = true,
+					blend_mode = "multiplicative-with-alpha"
+				},
+				shift = {0.3, 7.0},
+				size = 0.5,
+				intensity = 0.98
+			}
+		}
+    return back_light
 end
 data:extend({
     {
@@ -331,40 +439,8 @@ data:extend({
 			effectivity = 1,
 			fuel_inventory_size = 1,
 		},		
-		front_light =
-		{
-			{
-				type = "oriented",
-				minimum_darkness = 0.3,
-				picture =
-				{
-					filename = ei_path.."graphics/em_train_light_cone_280x700.png",
-					priority = "medium",
-					scale = 1,
-					width = 280,
-					height = 700
-				},
-				shift = {-0.85, -11.5},
-				size = 1,
-				intensity = 0.98
-			},
-			{
-				type = "oriented",
-				minimum_darkness = 0.3,
-				picture =
-				{
-					filename = ei_path.."graphics/em_train_light_cone_280x700.png",
-					priority = "medium",
-					scale = 1,
-					width = 280,
-					height = 700
-				},
-				shift = {0.85, -11.5},
-				size = 1,
-				intensity = 0.98
-			}
-		},
-		--back_light = rolling_stock_back_light(),
+		front_light = train_front_light(),
+		back_light = rolling_stock_back_light(),
 		stand_by_light = rolling_stock_standby_light(),
 		pictures =
 		{
@@ -602,7 +678,7 @@ data:extend({
 			height = 32,
 			flags = {"icon"}
 		},
-		--back_light = rolling_stock_back_light(),
+		back_light = rolling_stock_back_light(),
 		stand_by_light = rolling_stock_standby_light(),
 		pictures =
 		{
@@ -728,7 +804,7 @@ data:extend({
 			{type = "acid",decrease = 10,percent = 20}
 		},
 		vertical_selection_shift = -0.8,
-		--back_light = rolling_stock_back_light(),
+		back_light = rolling_stock_back_light(),
 		stand_by_light = rolling_stock_standby_light(),
 		pictures =
 		{
