@@ -28,17 +28,17 @@ require("prototypes/metalworks")
 require("scripts/data-updates/icon_updates")
 -- apply locale patches
 require("scripts/data-updates/locale_updates")
--- shoop
---[[
+
 if ei_lib.config("slag") then
-    require("scripts/data-updates/slag")
+  require("scripts/data-updates/slag")
 end
+
 if ei_lib.config("ash") then
-    require("scripts/data-updates/ash")
+  require("scripts/data-updates/ash")
 end
-]]
+
 if ei_lib.config("loader-prototype-complexity") then
-    require("scripts/data-updates/loader_patches")
+  require("scripts/data-updates/loader_patches")
 end
 
 -- apply mod patches
@@ -51,14 +51,13 @@ require("scripts/data-updates/solar_patches")
 require("scripts/data-updates/text_plates_patches")
 require("scripts/data-updates/extra_storage_tanks_patches")
 
-
 -- =======================================================================================
 
-if ei_lib.config("rocket-lift-capacity-buff") == 0 then
-    return
+if settings.startup["ei-rocket-lift-capacity-buff"].value == 0 then
+  return
 end
 
-local size_multiplier = ei_lib.config("rocket-lift-capacity-buff") or 1
+local size_multiplier = settings.startup["ei-rocket-lift-capacity-buff"].value
 data.raw["utility-constants"]["default"].rocket_lift_weight = data.raw["utility-constants"]["default"].rocket_lift_weight * size_multiplier
 data.raw["space-platform-starter-pack"]["space-platform-starter-pack"].weight = data.raw["utility-constants"]["default"].rocket_lift_weight
 data.raw["rocket-silo"]["rocket-silo"].weight = data.raw["utility-constants"]["default"].rocket_lift_weight * size_multiplier * 10
