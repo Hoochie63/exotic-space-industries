@@ -299,7 +299,7 @@ script.on_configuration_changed(function(e)
     local chargerGlowToggle = ei_lib.config("em_charger_glow_toggle") or true
     storage.ei.em_charger_glow = true
     local chargerGlowTimeToLive = ei_lib.config("em_charger_glow_timetolive") or 60
-    storage.ei.em_charger_glow_timeToLive = 60
+    storage.ei.em_charger_glow_timeToLive = chargerGlowTimeToLive
     local modes = {
         [0] = "✦ NULL-STATE :: INERTIA LOCKED",
         [1] = "✴ AXIS-FIRE :: DIRECTED CONVERGENCE BEAM",
