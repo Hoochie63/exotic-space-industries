@@ -1,7 +1,13 @@
 --====================================================================================================
 --ITEMS
 --====================================================================================================
-
+local impact_sounds = function()
+    return
+    {
+        type = "play-sound",
+        sound = sound_variations(ei_path.."sounds/em_trains/em_train_collide", 6, 0.3, { volume_multiplier("main-menu", 3.25), volume_multiplier("driving", 1.9) } )
+    }
+end
 local drive_over_tie = function()
 	return
 	{
@@ -550,8 +556,8 @@ data:extend({
 			},
 		},
 		drive_over_tie_trigger = drive_over_tie(), --we floating over them ties
-		tie_distance = 50,
-		vehicle_impact_sound =  { filename = "__base__/sound/car-metal-impact.ogg", volume = 0.65 },
+		tie_distance = 90,
+		vehicle_impact_sound =  impact_sounds(),
 		working_sound =
 		{
         sound =
@@ -750,7 +756,7 @@ data:extend({
 		wheels = standard_train_wheels,
 		rail_category = "regular",
 		drive_over_tie_trigger = drive_over_tie(), --drive_over_tie()
-		tie_distance = 50,
+		tie_distance = 90,
 		working_sound =
 		{
 			sound =
@@ -767,7 +773,7 @@ data:extend({
 		close_sound = { filename = "__base__/sound/machine-close.ogg", volume = 0.75 },
 		sound_minimum_speed = em_sound_minimum_speed,
         sound_maximum_speed = em_sound_maximum_speed,
-		vehicle_impact_sound =  { filename = "__base__/sound/car-wood-impact.ogg", volume = 1.0 },
+		vehicle_impact_sound =  impact_sounds(),
 	},
 	{
 		type = "cargo-wagon",
@@ -874,7 +880,7 @@ data:extend({
 		wheels = standard_train_wheels,
 		rail_category = "regular",
 		drive_over_tie_trigger = drive_over_tie(), --drive_over_tie()
-		tie_distance = 50,
+		tie_distance = 90,
 		working_sound =
 		{
 			sound =
@@ -891,7 +897,7 @@ data:extend({
 		close_sound = { filename = "__base__/sound/machine-close.ogg", volume = 0.75 },
 		sound_minimum_speed = em_sound_minimum_speed,
         sound_maximum_speed = em_sound_maximum_speed,
-		vehicle_impact_sound =  { filename = "__base__/sound/car-wood-impact.ogg", volume = 1.0 },
+		vehicle_impact_sound =  impact_sounds(),
 	},
 })
 
