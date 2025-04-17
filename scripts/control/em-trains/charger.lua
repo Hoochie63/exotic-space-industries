@@ -457,8 +457,9 @@ function model.cast_beam(charger, train)
     end
 end
 
+
 function ei_draw_train_glow(train, params)
-    if not train or not train.valid then return end
+    if not (train and train.valid) or not storage.ei_train_glow_toggle then return end
     --if not train.burner or not train.burner.remaining_burning_fuel then return end
 
     -- fallback defaults
@@ -475,7 +476,7 @@ function ei_draw_train_glow(train, params)
         blend_mode = "multiplicative",
         apply_runtime_tint = true,
         draw_as_glow = true,
-        time_to_live = math.ceil(ei_ticksPerFullUpdate+(ei_ticksPerFullUpdate/10)), --blur into one another
+        time_to_live = storage.ei.em_train_glow_timeToLive, --blur into one another
         count = 1 -- number of lights to spawn
     }
     if params then
@@ -503,7 +504,7 @@ function ei_draw_train_glow(train, params)
             color = color,
             target = train,
             surface = train.surface,
-            time_to_live = glow_params.time_to_live,
+            time_to_live = storage.ei.em_train_glow_timeToLive,
             players = game.connected_players,
             blend_mode = glow_params.blend_mode,
             apply_runtime_tint = glow_params.apply_runtime_tint,
@@ -533,7 +534,7 @@ function model.set_burner(train, state)
 end
 
 function ei_draw_charger_glow(charger, params)
-     if not (charger and charger.valid) then return end
+     if not (charger and charger.valid) or not storage.ei.em_charger_glow then return end
  
      local params = {
          sprite = "emt_charger_glow",
@@ -581,7 +582,7 @@ function ei_draw_charger_glow(charger, params)
          color = {r = 0, g = 0.4, b = 1.0},
          target = charger,
          surface = params.surface,
-         time_to_live = params.time_to_live,
+         time_to_live = storage.ei.em_charger_glow_timeToLive,
          players = params.players,
          blend_mode = params.blend_mode,
          apply_runtime_tint = params.apply_runtime_tint,
@@ -601,7 +602,7 @@ function ei_draw_charger_glow(charger, params)
              color = color,
              target = charger,
              surface = params.surface,
-             time_to_live = params.time_to_live,
+             time_to_live = storage.ei.em_charger_glow_timeToLive,
              players = params.players,
              blend_mode = params.blend_mode,
              apply_runtime_tint = params.apply_runtime_tint,
