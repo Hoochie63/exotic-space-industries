@@ -2,6 +2,8 @@
 Version: 1.5.5
 Date: 4-17-25
   Additions:
+    -Warp in effect on login ;)
+    -Train diagnostic readout on researching any buff or startup configuration change
     -EM Charger Glow, EM Train Glow added to startup settings as startup toggles.
     -EM Charger glow fade duration and EM train glow fade duration added as startup numeric values.
     -EM Updater Ring que width added as startup numeric value.
