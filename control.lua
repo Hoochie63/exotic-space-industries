@@ -321,12 +321,6 @@ script.on_configuration_changed(function(e)
     game.print("[color=#8B008B][font=default-bold]『CONFIGURATION CHANGED – BY WHOM, WE DARE NOT NAME』[/font][/color]")
 
 end)
-script.on_event(defines.events.on_player_joined_game, function(event)
-    local player = game.get_player(event.player_index)
-    if player and player.valid then
-        youHaveArrived(player.character)
-    end
-end)
 
 local function youHaveArrived(player)
     local surface = player.surface
@@ -397,6 +391,12 @@ local function youHaveArrived(player)
 game.print("[color=#4B0082]Fragments of GAIA's lament ripple across space-time...[/color]")
 game.print("[font=default-bold][color=#FF0000]⚠️ YOU HAVE BEEN SEEN ⚠️[/color][/font]")
 end
+script.on_event(defines.events.on_player_joined_game, function(event)
+    local player = game.get_player(event.player_index)
+    if player and player.valid then
+        youHaveArrived(player.character)
+    end
+end)
 
 --====================================================================================================
 --HANDLERS
