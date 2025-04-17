@@ -29,9 +29,16 @@ require("scripts/data-updates/icon_updates")
 -- apply locale patches
 require("scripts/data-updates/locale_updates")
 
-if ei_lib.config("loader-complexity") then
+if ei_lib.config("slag") then
+  require("scripts/data-updates/slag")
+end
+
+if ei_lib.config("ash") then
+  require("scripts/data-updates/ash")
+end
+
 if ei_lib.config("loader-prototype-complexity") then
-    require("scripts/data-updates/loader_patches")
+  require("scripts/data-updates/loader_patches")
 end
 
 -- apply mod patches
@@ -44,11 +51,10 @@ require("scripts/data-updates/solar_patches")
 require("scripts/data-updates/text_plates_patches")
 require("scripts/data-updates/extra_storage_tanks_patches")
 
-
 -- =======================================================================================
 
 if settings.startup["ei-rocket-lift-capacity-buff"].value == 0 then
-    return
+  return
 end
 
 local size_multiplier = settings.startup["ei-rocket-lift-capacity-buff"].value
