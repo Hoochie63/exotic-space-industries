@@ -403,7 +403,7 @@ end
 
 function model.render_status_rings(entity, status, width, timeUntilFade, override)
     if not (entity and entity.valid) then return end
-    if not override or not storage.ei.em_train_que == 2 then return end
+    if not override and not storage.ei.em_train_que == 2 then return end
 
     local surface = entity.surface
     local pos = entity
