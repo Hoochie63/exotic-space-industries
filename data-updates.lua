@@ -29,13 +29,15 @@ require("scripts/data-updates/icon_updates")
 -- apply locale patches
 require("scripts/data-updates/locale_updates")
 
+-- shoop
+--[[
 if ei_lib.config("slag") then
-  require("scripts/data-updates/slag")
+    require("scripts/data-updates/slag")
 end
-
 if ei_lib.config("ash") then
-  require("scripts/data-updates/ash")
+    require("scripts/data-updates/ash")
 end
+]]
 
 if ei_lib.config("loader-prototype-complexity") then
   require("scripts/data-updates/loader_patches")
