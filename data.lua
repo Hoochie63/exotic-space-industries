@@ -42,8 +42,15 @@ require("prototypes/alien_structures/alien_structures")
 require("prototypes/exotic_age/exotic_age")
 require("prototypes/dark_age/loaders")
 require("prototypes/electricity_age/robots")
-
-
+--These use overrides, keep them after
+--[[
+if ei_lib.config("slag") then
+    require("prototypes/slag")
+end
+if ei_lib.config("ei-ash") then
+    require("prototypes/ash")
+end
+]]
 --====================================================================================================
 --COMPATIBILITY CODE
 --====================================================================================================

@@ -28,8 +28,15 @@ require("prototypes/metalworks")
 require("scripts/data-updates/icon_updates")
 -- apply locale patches
 require("scripts/data-updates/locale_updates")
-
-if ei_lib.config("loader-complexity") then
+-- shoop
+--[[
+if ei_lib.config("slag") then
+    require("scripts/data-updates/slag")
+end
+if ei_lib.config("ash") then
+    require("scripts/data-updates/ash")
+end
+]]
 if ei_lib.config("loader-prototype-complexity") then
     require("scripts/data-updates/loader_patches")
 end
@@ -47,11 +54,11 @@ require("scripts/data-updates/extra_storage_tanks_patches")
 
 -- =======================================================================================
 
-if settings.startup["ei-rocket-lift-capacity-buff"].value == 0 then
+if ei_lib.config("rocket-lift-capacity-buff") == 0 then
     return
 end
 
-local size_multiplier = settings.startup["ei-rocket-lift-capacity-buff"].value
+local size_multiplier = ei_lib.config("rocket-lift-capacity-buff") or 1
 data.raw["utility-constants"]["default"].rocket_lift_weight = data.raw["utility-constants"]["default"].rocket_lift_weight * size_multiplier
 data.raw["space-platform-starter-pack"]["space-platform-starter-pack"].weight = data.raw["utility-constants"]["default"].rocket_lift_weight
 data.raw["rocket-silo"]["rocket-silo"].weight = data.raw["utility-constants"]["default"].rocket_lift_weight * size_multiplier * 10
