@@ -64,8 +64,8 @@ function rolling_stock_standby_light()
                 draw_as_glow = true,
                 blend_mode = "multiplicative"
             },
-            size = 3,
-            intensity = 0.75,
+            size = 3.5,
+            intensity = 0.88,
             frame_count = 60,
             line_length = 9,
             animation_speed = 1

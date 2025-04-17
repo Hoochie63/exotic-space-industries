@@ -2,8 +2,8 @@
 Version: 1.5.5
 Date: 4-17-25
   Additions:
-    -Custom HID headlights for EM trains
-    -Custom underglow for EM trains
+    -Custom HID headlights for EM trains. Also projects behind at reduced power.
+    -Custom underglow for EM trains while loading/unloading
     -6 Custom whooshing noises for EM trains moving down tracks sound
     -Warp in effect on login ;)
     -Train diagnostic readout on researching any buff or startup configuration change
