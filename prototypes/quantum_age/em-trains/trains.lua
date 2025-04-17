@@ -256,10 +256,10 @@ make_multiple_techs(speed)
 local weight = 500
 local max_speed = 2
 local max_speed_wagon = 10
-local max_speed_sound_leveloff = 1.5 --pitch stops increasing
+local max_speed_sound_leveloff = 4 --pitch stops increasing
 local max_speed_sound_levelon = 0.1 --starts
 local em_sound_minimum_speed = 0.09
-local em_sound_maximum_speed = 2
+local em_sound_maximum_speed = 4
 local max_power = "1MW"
 local braking_force = 35
 local braking_force_wagon = 10

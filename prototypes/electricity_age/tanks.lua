@@ -139,9 +139,9 @@ data:extend({
         energy_required = 2,
         ingredients =
         {
-            {type="item", name="concrete", amount=50},
-            {type="item", name="steel-plate", amount=20},--storage:iron ratio 666:1
-            {type="item", name="ei-tank-1", amount=1},
+            {type="item", name="concrete", amount=100},
+            {type="item", name="steel-plate", amount=35},--storage:iron ratio 666:1
+            {type="item", name="ei-tank-3", amount=1},
         },
         results = {{type="item", name="ei-tank-2", amount=1}},
         enabled = false,
@@ -155,9 +155,9 @@ data:extend({
         energy_required = 2,
         ingredients =
         {
-            {type="item", name="concrete", amount=100},
-            {type="item", name="steel-plate", amount=35}, --storage:iron ratio 750:1
-            {type="item", name="ei-tank-2", amount=1},
+            {type="item", name="concrete", amount=50},
+            {type="item", name="steel-plate", amount=20}, --storage:iron ratio 750:1
+            {type="item", name="ei-tank-1", amount=1},
         },
         results = {{type="item", name="ei-tank-3", amount=1}},
         enabled = false,

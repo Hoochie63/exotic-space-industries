@@ -22,13 +22,31 @@ function ei_global.init()
     storage.ei.spaced_updates = 0
     storage.ei.alien = {}
     storage.ei.em_train_que = 1 --0 is off, 1 is beam, 2 is ring, updated in on_configuration_changed
-    game.print("Exotic Industries globals initialized")
+    storage.ei.que_width = 6    -- radius
+    storage.ei.que_transparency = 0.88 -- alpha is 0->1
+    storage.ei.que_timetolive = 20 --ticks
+    storage.ei.em_train_glow_toggle = true
+    storage.ei.em_train_glow_timeToLive = 60
+    storage.ei.em_charger_glow = true
+    storage.ei.em_charger_glow_timeToLive = 60
+
+    game.print("[color=#6A0DAD][font=default-bold]»» INITIALIZING SYSTEM CORE: [color=#00FFFF]ＥＸＯＴＩＣ ＳＰΛＣΣ ＩＮＤＵＳＴＲＩＥＳ[/color] ««[/font][/color]")
+    game.print("[color=#808080][font=default-semibold]>> Integrating chronometric lattices... Binding entropy to mass... Stand by.[/font][/color]")
 end
 
 function ei_global.check_init()
     -- TODO: dont hardcode this
     if not storage.ei then
         storage.ei = {}
+        storage.ei.em_train_que = 1
+        storage.ei.que_width = 6
+        storage.ei.que_transparency = 0.8
+        storage.ei.que_timetolive = 60
+        storage.ei.em_train_glow_toggle = true
+        storage.ei.em_train_glow_timeToLive = 60
+        storage.ei.em_charger_glow = true
+        storage.ei.em_charger_glow_timeToLive = 60
+
     end
 
     if not storage.ei["tech_scaling"] then

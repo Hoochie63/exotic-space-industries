@@ -286,16 +286,117 @@ script.on_configuration_changed(function(e)
     else
         storage.ei.em_train_que = 0
     end
-    game.print("EM charger que set to "..que.." ["..storage.ei.em_train_que.."]")
+    local que_width = ei_lib.config("em_updater_que_width") or 6
+    storage.ei.que_width = que_width
+    local que_transparency = ei_lib.config("em_updater_que_transparency") or 0.8
+    storage.ei.que_transparency = que_transparency
+    local que_timetolive = ei_lib.config("em_updater_que_timetolive") or 60
+    storage.ei.que_timetolive = que_timetolive
+    local trainGlowToggle = ei_lib.config("em_train_glow_toggle") or true
+    storage.ei.em_train_glow_toggle = trainGlowToggle
+    local trainGlowTimeToLive = ei_lib.config("em_train_glow_timetolive") or 60
+    storage.ei.em_train_glow_timeToLive = trainGlowTimeToLive
+    local chargerGlowToggle = ei_lib.config("em_charger_glow_toggle") or true
+    storage.ei.em_charger_glow = true
+    local chargerGlowTimeToLive = ei_lib.config("em_charger_glow_timetolive") or 60
+    storage.ei.em_charger_glow_timeToLive = 60
+    local modes = {
+        [0] = "✦ NULL-STATE :: INERTIA LOCKED",
+        [1] = "✴ AXIS-FIRE :: DIRECTED CONVERGENCE BEAM",
+        [2] = "⟁ OMNI-RESONANCE :: PHASE RING ARRAY"
+    }
+    game.print("[color=#DC143C][font=default-bold]『EM CHARGER QUE MODE HAS SHIFTED』[/font][/color] → "..modes[storage.ei.em_train_que].." [color=#808080]("..storage.ei.em_train_que..")[/color]")
+
     em_trains.check_global() --no nil tables
     em_trains.check_buffs() --updates global buff vals
+    em_trains.printBuffStatus()
     em_trains.reinitialize_chargers() --applies updated buffs
     em_trains.reinitialize_trains()
     em_trains.update_rail_counts()
     em_trains_gui.mark_dirty()
 
-    game.print("Exotic Industries config change complete")
+    game.print("[font=default-bold][color=#FF00FF]⟦✦ TRANSCENSION RECOGNIZED ✦⟧[/color][/font]")
+    game.print("[color=#FF69B4]⫷ Sub-layer Recalibration Initiated ⫸[/color]")
+    game.print("[color=#9400D3]⫷ Core Heuristics Have Shifted ⫸[/color]")
+    game.print("[color=#8B008B][font=default-bold]『CONFIGURATION CHANGED – BY WHOM, WE DARE NOT NAME』[/font][/color]")
+
 end)
+script.on_event(defines.events.on_player_joined_game, function(event)
+    local player = game.get_player(event.player_index)
+    if player and player.valid then
+        youHaveArrived(player.entity)
+    end
+end)
+
+local function youHaveArrived(player)
+    local surface = player.surface
+    local pos = player.position
+    local force = player.force or 1
+    if not surface or not pos or not player or not force then
+        log("youHaveArrived received null surface or pos or force for player ")
+        return
+    else
+        -- Draw multiple electric beams in a ring around the player
+        for i = 1, 12 do
+            local angle = (math.pi * 2 / 12) * i
+            local offset = {
+                x = pos.x + math.cos(angle) * 5,
+                y = pos.y + math.sin(angle) * 5
+            }
+            surface.create_entity{
+                name = "electric-beam",
+                source = offset,
+                target = pos,
+                duration = 120,
+                force = force
+            }
+        end
+
+        -- Summon a "portal"—use smoke or other suitable entity
+        for i = 1, 5 do
+            surface.create_entity{
+                name = "big-artillery-explosion", -- visually dramatic
+                position = {
+                    x = pos.x + math.random() * 2 - 1,
+                    y = pos.y + math.random() * 2 - 1
+                },
+                target = pos,
+                force = force
+            }
+        end
+
+        surface.create_entity{
+            name = "electric-smoke",
+            position = pos,
+            force = force
+        }
+
+        rendering.draw_light{
+            sprite = "utility/light_medium",
+            target = pos,
+            surface = surface,
+            color = {r = 0.6, g = 0.1, b = 1.0},
+            intensity = 1.5,
+            scale = 4.0,
+            time_to_live = 180,
+            players = game.players
+        }
+
+        rendering.draw_text{
+            text = "⟬ THE SYSTEM STIRS ⟭",
+            surface = surface,
+            target = pos,
+            color = {r = 1.0, g = 0.0, b = 0.8},
+            alignment = "center",
+            scale = 2.5,
+            font = "default-large-bold",
+            time_to_live = 300,
+            players = game.players
+        }
+    end
+game.print("[color=#4B0082]Fragments of GAIA's lament ripple across space-time...[/color]")
+game.print("[font=default-bold][color=#FF0000]⚠️ YOU HAVE BEEN SEEN ⚠️[/color][/font]")
+end
 
 --====================================================================================================
 --HANDLERS

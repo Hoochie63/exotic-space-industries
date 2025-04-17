@@ -91,6 +91,63 @@ function model.check_global()
     -- from ~eff*(acc_level + max_speed_level)
 
 end
+--formula is 1 - below gets multiplied by power_usage
+model.effBuffMultipliers = {
+    [1] = 0.25,
+    [2] = 0.4,
+    [3] = 0.55,
+    [4] = 0.7,
+    [5] = 0.9
+    }
+
+function model.printBuffStatus()
+    -- ❂ Exotic Industries: Epiphany of the Crystalline Engine ❂
+    -- Whispered by the Obsidian Choir of the 11th Harmonic Core
+    -- Forbidden frequencies interpreted through thought-velum transduction
+
+    local weight = em_trains.weight or 500
+    local max_speed = em_trains.max_speed or 2
+    local max_speed_wagon = em_trains.max_speed_wagon or 10
+    local max_speed_sound_leveloff = em_trains.max_speed_sound_leveloff or 1.5
+    local max_speed_sound_levelon = em_trains.max_speed_sound_levelon or 0.1
+    local em_sound_minimum_speed = em_trains.em_sound_minimum_speed or 0.09
+    local em_sound_maximum_speed = em_trains.em_sound_maximum_speed or 2
+    local max_power = em_trains.max_power or "1MW"
+    local braking_force = em_trains.braking_force or 35
+    local braking_force_wagon = em_trains.braking_force_wagon or 10
+    local friction_force = em_trains.friction_force or 0.01
+    local air_resistance = em_trains.air_resistance or 0.0001
+
+    local eff_level = storage.ei_emt.buffs.charger_efficiency or 1
+    local speed_level = storage.ei_emt.buffs.speed_level or 0
+    local acc_level = storage.ei_emt.buffs.acc_level or 0
+
+    local acceleration_multiplier = 1 + (0.1 * acc_level)
+    local top_speed_multiplier = 1 + (0.1 * speed_level)
+    local power_consumption_modifier = 1 - (model.effBuffMultipliers[eff_level] or 0.25)
+
+    -- ⟁ Liturgical Echo of the Luminous Spine ⟁
+    local incantation = {
+        "[font=default-bold][color=purple]☲ EM-Train Diagnostic Invocation Initialized ☲[/color][/font]",
+        "[color=#8e44ad]Weight of the Outer Shell:[/color] "..weight.." quartzian masses",
+        "[color=#8e44ad]Base Kinesis Velocity (Prime Engine):[/color] "..max_speed.." ∇tiles/s",
+        "[color=#8e44ad]Secondary Pod Velocity Threshold:[/color] "..max_speed_wagon.." ∇tiles/s",
+        "[color=#9370DB]➣ Speed Amplifier Resonance:[/color] ×"..top_speed_multiplier.." (λ"..speed_level..")",
+        "[color=#9370DB]➣ Acceleration Spiral Gain:[/color] ×"..acceleration_multiplier.." (φ"..acc_level..")",
+        "[color=#EE82EE]➣ Energy Bleed Correction (Null-Waste):[/color] ×"..power_consumption_modifier,
+        "[color=#E6E6FA]Divine Conduction Limit:[/color] "..max_power.." / ∂t",
+        "[color=gray]Tether Brakes – Loco:[/color] "..braking_force.." force fragments",
+        "[color=gray]Tether Brakes – Cart:[/color] "..braking_force_wagon.." force fragments",
+        "[color=#6699CC]Slip-Field Intensity:[/color] "..friction_force.." ψN",
+        "[color=#6699CC]Ambient Etheric Drag (Ω drift):[/color] "..air_resistance.." μR",
+        "[color=cyan]Auditory Phasegate - Entry:[/color] "..em_sound_minimum_speed.." Δν",
+        "[color=cyan]Auditory Phasegate - Severance:[/color] "..em_sound_maximum_speed.." Δν"
+    }
+
+    for _, line in ipairs(incantation) do
+        game.print(line)
+    end
+end
 
 --Get buffs
 function model.check_buffs()
@@ -111,28 +168,18 @@ function model.check_buffs()
     for tier=20,1, -1 do --reverse so we stop checking that buff when we find its highest value
         if not got1 and game.players[1].force.technologies["ei_acc_"..tier] and game.players[1].force.technologies["ei_acc_"..tier].researched then
             local accBuff = tonumber(tier)
-            game.print("Got accBuff "..accBuff)
             storage.ei_emt.buffs.acc_level = math.max(storage.ei_emt.buffs.acc_level,accBuff)
             got1 = true
         end
         if not got2 and game.players[1].force.technologies["ei_spd_"..tier] and game.players[1].force.technologies["ei_spd_"..tier].researched then
             local spdBuff = tonumber(tier)
-            game.print("Got spdBuff "..spdBuff)
             storage.ei_emt.buffs.speed_level = math.max(storage.ei_emt.buffs.speed_level,spdBuff)
             got2 = true
         end
         if not got3 and game.players[1].force.technologies["ei_eff_"..tier] and game.players[1].force.technologies["ei_eff_"..tier].researched then
             local effBuff = tonumber(tier)
-            local effBuffMultipliers = {
-            [1] = 0.25,
-            [2] = 0.4,
-            [3] = 0.55,
-            [4] = 0.7,
-            [5] = 0.9
-            }
-            local actual = effBuffMultipliers[effBuff] or 0
-            local display = tostring(actual*100)
-            game.print("Got effBuff "..effBuff.." giving %"..display.." charger energy usage reduction")
+
+            local actual = model.effBuffMultipliers[effBuff] or 0
             storage.ei_emt.buffs.charger_efficiency = actual
             got3 = true
         end
@@ -150,32 +197,55 @@ function model.apply_buffs(buff, level, single, entity)
     loop = single or false --all or just entity
     target = entity or nil
     -- level = 15 -- debug
+    local status = "buff"
+    local override = true --works while beam is enabled
+    local radius = storage.ei_emt.buffs.charger_range or 10
+    local time = 10
     if single then
         if buff == "eff" then
-            local effBuff = 0.1 + 0.17 * level
-            model.make_rings(target, storage.ei_emt.buffs.charger_range, 0.5)
+            local effBuff = effBuffMultipliers[level] or 0
+            model.render_status_rings(target,status,radius,ei_ticksPerFullUpdate,override)
+            --model.make_rings(target, storage.ei_emt.buffs.charger_range, 0.5)
             model.update_charger(target)
         end
         if buff == "acc" then
-            model.make_rings(target, 1+level, 0.75)
+            radius = 8
+            model.render_status_rings(target,status,radius+level,ei_ticksPerFullUpdate,override)
+            --model.make_rings(target, 1+level, 0.75)
         end
         if buff == "spd" then
-            model.make_rings(v.entity, 1+level, 0.75)
+            radius = 8
+            model.render_status_rings(target,status,radius+level,ei_ticksPerFullUpdate,override)
+            --model.make_rings(v.entity, 1+level, 0.75)
         end
     elseif not single then
        if buff == "eff" then
             local effBuff = 0.1 + 0.17 * level
             for i,v in pairs(storage.ei_emt.chargers) do
-                model.make_rings(v.entity, storage.ei_emt.buffs.charger_range, 0.5)
-                model.update_charger(v.entity)
+
+            --model.make_rings(v.entity, storage.ei_emt.buffs.charger_range, 0.5)
+            if(v.entity) then
+                target = entity
+                model.update_charger(target)
+            elseif(storage.ei_emt.chargers and v.unit_number and storage.ei_emt.chargers[v.unit_number]) then
+                target = storage.ei_emt.chargers[v.unit_number].entity --yee SHALL NOT AVOID PAYMENT
+                model.update_charger(target)
+            end
+            model.render_status_rings(target,status,radius,ei_ticksPerFullUpdate,override)
             end
         elseif buff == "acc" then
             for i,v in pairs(storage.ei_emt.trains) do
-                model.make_rings(v.entity, 1+level, 0.75)
+                radius = 8
+                target = v.entity
+                model.render_status_rings(target,status,radius+level,ei_ticksPerFullUpdate,override)
+                --model.make_rings(v.entity, 1+level, 0.75)
             end
         elseif buff == "spd" then
             for i,v in pairs(storage.ei_emt.trains) do
-                model.make_rings(v.entity, 1+level, 0.75)
+                --model.make_rings(v.entity, 1+level, 0.75)
+                radius = 8
+                target = v.entity
+                model.render_status_rings(target,status,radius+level,ei_ticksPerFullUpdate,override)
             end
         end
     end
@@ -327,65 +397,48 @@ function model.update_train(train)
     if not model.entity_check(train) then
         return
     end
-
-    if storage.ei.em_train_que == 2 and train and train.surface then --0off,1beam,2ring
-        rendering.draw_circle{
-            color = {r = 0.1, g = 0.83, b = 0.87},
-            radius = 1,
-            width = 8,
-            filled = false,
-            target = train,
-            surface = train.surface,
-            players = game.connected_players,
-            time_to_live = ei_ticksPerFullUpdate/ei_update_functions_length, --prevent overlap
-        }
-    end
-
-    model.set_burner(train, model.find_charger(train))
-
+    local status = model.set_burner(train, model.find_charger(train))
+    model.render_status_rings(train,status,8,10)
 end
 
-
-function model.make_rings(entity, width, animation_time_per_segment)
+function model.render_status_rings(entity, status, width, timeUntilFade, override)
     if not (entity and entity.valid) then return end
+    if not override and not storage.ei.em_train_que == 2 then return end
+
     local surface = entity.surface
-    local pos = entity.position
+    local pos = entity
+    width = math.min(storage.ei.que_width,width) or 1
+    timeUntilFade = storage.ei.que_timetolive or timeUntilFade
+    status = status or "default"
+    local alpha = storage.ei.que_transparency
+    -- Define colors per status
+    local status_colors = {
+        idle =    {r = 0.3, g = 0.3, b = 0.3, a = alpha},
+        working = {r = 0.0, g = 0.8, b = 0.4, a = alpha},
+        error =   {r = 1.0, g = 0.1, b = 0.1, a = alpha},
+        warning = {r = 1.0, g = 0.5, b = 0.0, a = alpha},
+        offline = {r = 0.9, g = 0.2, b = 0.2, a = alpha},
+        default = {r = 0.3, g = 0.5, b = 0.9, a = alpha},
+        buff =    {r = 0.6, g = 0.1, b = 0.9, a = alpha}, -- royal purple glory
+    }
 
-    segments = segments or 8
-    width = width or 1.5
-    animation_time_per_segment = animation_time_per_segment or ei_ticksPerFullUpdate/ei_lib.getn(ei_update_functions)
+    local ring_color = status_colors[status] or status_colors["default"]
 
-    if not storage.ei.em_entities_prev_locs then storage.ei.em_entities_prev_locs = {} end
-    
-    -- Save position per train ID
-    storage.ei.em_entities_prev_locs[entity.unit_number] = storage.ei.em_entities_prev_locs[entity.unit_number] or {}
-    if not ei_lib.table_contains_value(storage.ei.em_entities_prev_locs[entity.unit_number], entity.position) then
-        table.insert(storage.ei.em_entities_prev_locs[entity.unit_number], 1, entity.position)
-        -- Keep only last N positions
-        if ei_lib.getn(storage.ei.em_entities_prev_locs[entity.unit_number]) > 2 then
-            table.remove(storage.ei.em_entities_prev_locs[entity.unit_number])
-        end
-    end
-    
-    -- Then render circles at each historical point
-    for i, pos in ipairs(storage.ei.em_entities_prev_locs[entity.unit_number]) do
-        local radius = i * width / 2
-        local ttl = 1+(math.min(
-            math.ceil(1 + animation_time_per_segment * i),
-            ei_ticksPerFullUpdate / (ei_update_functions_length))
-        )
-        rendering.draw_circle{
-            color = {r=0.3, g=0.5, b=0.9, a=0.05},
-            radius = 0.8 + (i * 0.3),
-            width = 1.0,
-            filled = false,
-            target = pos,
-            surface = entity.surface,
-            time_to_live = ttl,
-            draw_on_ground = true,
-            players = game.connected_players,
-        }
-    end
+    local ttl = math.ceil(timeUntilFade * 2)
+
+
+    -- 🔥 Render the status ring — a singular expression of machine-truth
+    rendering.draw_circle {
+        color = ring_color,
+        radius = width,
+        width = 1.5,
+        filled = false,
+        target = pos,
+        surface = surface,
+        time_to_live = ttl,
+        draw_on_ground = false,
+        players = game.connected_players,
+    }
 end
 
 function model.cast_beam(charger, train)
@@ -460,13 +513,13 @@ function ei_draw_train_glow(train, params)
 end
 
 function model.set_burner(train, state)
-    if not train or not train.burner then return end
-    if state == 0 or state == inf then train.burner.remaining_burning_fuel = 0 return end
+    if not train or not train.burner then return "error" end
+    if state == 0 or state == inf then train.burner.remaining_burning_fuel = 0 return "offline" end
 
     local acc = storage.ei_emt.buffs.acc_level or 0
     local speed = storage.ei_emt.buffs.speed_level or 0
     if not train.burner then
-        return
+        return "offline"
         end
     train.burner.currently_burning = prototypes.item["ei_emt-fuel_"..tostring(acc).."_"..tostring(speed)]
     -- error(serpent.block(train.burner.currently_burning.name.fuel_value))
@@ -474,139 +527,9 @@ function model.set_burner(train, state)
     train.burner.remaining_burning_fuel = train.burner.currently_burning.name.fuel_value*state
     -- turn this into double, as its may be smthing like 0.534343 -> 0.5
     train.burner.remaining_burning_fuel = train.burner.currently_burning.name.fuel_value*state
-    if not train.burner.remaining_burning_fuel then return end
+    if not train.burner.remaining_burning_fuel then return "warning" end
     ei_draw_train_glow(train)
-    --[[
-    local bright = rendering.draw_light {
-        sprite = "emt_train_glow",
-        scale = 1,
-        intensity = 0.65,
-        color = {r = 0, g = 0.4, b = 1.0},
-        target = train,
-        surface = train.surface,
-        time_to_live = ei_ticksPerFullUpdate*2,
-        players = game.connected_players,
-        blend_mode = "multiplicative",
-        apply_runtime_tint = true,
-        draw_as_glow = true,
-    }
-    local pick = math.random(1,4)
-    if pick == 1 then
-        local light = rendering.draw_light {
-            sprite = "emt_train_glow",
-            scale = 1,
-            intensity = 0.25,
-            color = {r = 0, g = 0.4, b = 1.0},
-            target = train,
-            surface = train.surface,
-            time_to_live = ei_ticksPerFullUpdate*2,
-            players = game.connected_players,
-            blend_mode = "multiplicative",
-            apply_runtime_tint = true,
-            draw_as_glow = true,
-        }
-    elseif pick == 2 then
-        local light = rendering.draw_light {
-            sprite = "emt_train_glow",
-            scale = 1,
-            intensity = 0.65,
-            color = {r = 0.4, g = 0.2, b = 1.0},
-            target = train,
-            surface = train.surface,
-            time_to_live = ei_ticksPerFullUpdate*2,
-            players = game.connected_players,
-            blend_mode = "multiplicative",
-            apply_runtime_tint = true,
-            draw_as_glow = true,
-        }
-    elseif pick == 3 then
-        local light = rendering.draw_light {
-            sprite = "emt_train_glow",
-            scale = 1,
-            intensity = 0.25,
-            color = {r = 0.2, g = 0.2, b = 1.0},
-            target = train,
-            surface = train.surface,
-            time_to_live = ei_ticksPerFullUpdate*2,
-            players = game.connected_players,
-            blend_mode = "multiplicative",
-            apply_runtime_tint = true,
-            draw_as_glow = true,
-        }
-    elseif pick == 4 then
-        local light = rendering.draw_light {
-            sprite = "emt_train_glow",
-            scale = 1,
-            intensity = 0.65,
-            color = {r = 0.4, g = 0.1, b = 0.8},
-            target = train,
-            surface = train.surface,
-            time_to_live = ei_ticksPerFullUpdate*2,
-            players = game.connected_players,
-            blend_mode = "multiplicative",
-            apply_runtime_tint = true,
-            draw_as_glow = true,
-        }
-    end
-    pick = math.random(1,4)
-    if pick == 1 then
-        local light = rendering.draw_light {
-            sprite = "emt_train_glow",
-            scale = 4,
-            intensity = 0.15,
-            color = {r = 0, g = 0.4, b = 1.0},
-            target = train,
-            surface = train.surface,
-            time_to_live = ei_ticksPerFullUpdate*2,
-            players = game.connected_players,
-            blend_mode = "multiplicative",
-            apply_runtime_tint = true,
-            draw_as_glow = true,
-        }
-    elseif pick == 2 then
-        local light = rendering.draw_light {
-            sprite = "emt_train_glow",
-            scale = 4,
-            intensity = 0.4,
-            color = {r = 0.4, g = 0.2, b = 1.0},
-            target = train,
-            surface = train.surface,
-            time_to_live = ei_ticksPerFullUpdate*2,
-            players = game.connected_players,
-            blend_mode = "multiplicative",
-            apply_runtime_tint = true,
-            draw_as_glow = true,
-        }
-    elseif pick == 3 then
-        local light = rendering.draw_light {
-            sprite = "emt_train_glow",
-            scale = 4,
-            intensity = 0.15,
-            color = {r = 0.2, g = 0.2, b = 1.0},
-            target = train,
-            surface = train.surface,
-            time_to_live = ei_ticksPerFullUpdate*2,
-            players = game.connected_players,
-            blend_mode = "multiplicative",
-            apply_runtime_tint = true,
-            draw_as_glow = true,
-        }
-    elseif pick == 4 then
-        local light = rendering.draw_light {
-            sprite = "emt_train_glow",
-            scale = 4,
-            intensity = 0.4,
-            color = {r = 0.4, g = 0.1, b = 0.8},
-            target = train,
-            surface = train.surface,
-            time_to_live = ei_ticksPerFullUpdate*2,
-            players = game.connected_players,
-            blend_mode = "multiplicative",
-            apply_runtime_tint = true,
-            draw_as_glow = true,
-        }
-    end
-    ]]
+    return "working"
 end
 
 function ei_draw_charger_glow(charger, params)
@@ -708,136 +631,6 @@ function model.has_enough_energy(charger, train)
     if energy >= total_needed then
         charger.energy = charger.energy - total_needed
         ei_draw_charger_glow(charger)
-        --[[
-        local bright = rendering.draw_light {
-            sprite = "emt_charger_glow",
-            scale = 2,
-            intensity = 0.65,
-            color = {r = 0, g = 0.4, b = 1.0},
-            target = charger,
-            surface = charger.surface,
-            time_to_live = ei_ticksPerFullUpdate*2,
-            players = game.connected_players,
-            blend_mode = "multiplicative",
-            apply_runtime_tint = true,
-            draw_as_glow = true,
-        }
-     local pick = math.random(1,4)
-        if pick == 1 then
-            local light = rendering.draw_light {
-                sprite = "emt_charger_glow",
-                scale = 2,
-                intensity = 0.25,
-                color = {r = 0, g = 0.4, b = 1.0},
-                target = charger,
-                surface = charger.surface,
-                time_to_live = ei_ticksPerFullUpdate*2,
-                players = game.connected_players,
-                blend_mode = "multiplicative",
-                apply_runtime_tint = true,
-                draw_as_glow = true,
-            }
-        elseif pick == 2 then
-            local light = rendering.draw_light {
-                sprite = "emt_charger_glow",
-                scale = 2,
-                intensity = 0.65,
-                color = {r = 0.4, g = 0.2, b = 1.0},
-                target = charger,
-                surface = charger.surface,
-                time_to_live = ei_ticksPerFullUpdate*2,
-                players = game.connected_players,
-                blend_mode = "multiplicative",
-                apply_runtime_tint = true,
-                draw_as_glow = true,
-            }
-        elseif pick == 3 then
-            local light = rendering.draw_light {
-                sprite = "emt_charger_glow",
-                scale = 2,
-                intensity = 0.25,
-                color = {r = 0.2, g = 0.2, b = 1.0},
-                target = charger,
-                surface = charger.surface,
-                time_to_live = ei_ticksPerFullUpdate*2,
-                players = game.connected_players,
-                blend_mode = "multiplicative",
-                apply_runtime_tint = true,
-                draw_as_glow = true,
-            }
-        elseif pick == 4 then
-            local light = rendering.draw_light {
-                sprite = "emt_charger_glow",
-                scale = 2,
-                intensity = 0.65,
-                color = {r = 0.4, g = 0.1, b = 0.8},
-                target = charger,
-                surface = charger.surface,
-                time_to_live = ei_ticksPerFullUpdate*2,
-                players = game.connected_players,
-                blend_mode = "multiplicative",
-                apply_runtime_tint = true,
-                draw_as_glow = true,
-            }
-        end
-      pick = math.random(1,4)
-        if pick == 1 then
-            local light = rendering.draw_light {
-                sprite = "emt_charger_glow",
-                scale = 14,
-                intensity = 0.15,
-                color = {r = 0, g = 0.4, b = 1.0},
-                target = charger,
-                surface = charger.surface,
-                time_to_live = ei_ticksPerFullUpdate*2,
-                players = game.connected_players,
-                blend_mode = "multiplicative",
-                apply_runtime_tint = true,
-                draw_as_glow = true,
-            }
-        elseif pick == 2 then
-            local light = rendering.draw_light {
-                sprite = "emt_charger_glow",
-                scale = 14,
-                intensity = 0.4,
-                color = {r = 0.4, g = 0.2, b = 1.0},
-                target = charger,
-                surface = charger.surface,
-                time_to_live = ei_ticksPerFullUpdate*2,
-                players = game.connected_players,
-                blend_mode = "multiplicative",
-                apply_runtime_tint = true,
-                draw_as_glow = true,
-            }
-        elseif pick == 3 then
-            local light = rendering.draw_light {
-                sprite = "emt_charger_glow",
-                scale = 14,
-                intensity = 0.15,
-                color = {r = 0.2, g = 0.2, b = 1.0},
-                target = charger,
-                surface = charger.surface,
-                time_to_live = ei_ticksPerFullUpdate*2,
-                players = game.connected_players,
-                blend_mode = "multiplicative",
-                apply_runtime_tint = true,
-                draw_as_glow = true,
-            }
-        elseif pick == 4 then
-            local light = rendering.draw_light {
-                sprite = "emt_charger_glow",
-                scale = 14,
-                intensity = 0.4,
-                color = {r = 0.4, g = 0.1, b = 0.8},
-                target = charger,
-                surface = charger.surface,
-                time_to_live = ei_ticksPerFullUpdate*2,
-                players = game.connected_players,
-                blend_mode = "multiplicative",
-                apply_runtime_tint = true,
-                draw_as_glow = true,
-            }
-        end]]
         --game.print("dec")
         return 1
     end
@@ -867,8 +660,10 @@ function model.find_charger(train)
                     
                     parts = parts + model.has_enough_energy(v.entity, train)
                     if parts >= 1 then
+                        local status = "working"
                         if(train) then
                             model.cast_beam(v.entity, train)
+                            model.render_status_rings(v.entity,status,8,10)
                             end
                         if math.random(40) == 1 then
                             local offset_x = (math.random()) * 50  -- random between -50 and +50
@@ -949,25 +744,32 @@ function model.update_charger(charger)
     storage.ei_emt.chargers[charger_id].rail_count = model.get_rail_count(charger)
     local rail_count = storage.ei_emt.chargers[charger_id].rail_count or 1
 
-    local radius = 8
+    local radius = 6
     charger.power_usage = (storage.ei_emt.chargers[charger_id].rail_count *250*1000 + 10*1000*1000) * (1-storage.ei_emt.buffs.charger_efficiency) /  60  -- 250W per rail + 10MW idle
 
-    --game.print(storage.ei_emt.chargers[charger_id].power_usage)
-    if storage.ei.em_train_que == 2 then --0off,1beam,2ring
-        rendering.draw_circle{
-            color = {r = 0.1, g = 0.83, b = 0.87},
-            radius = radius,
-            width = 8,
-            filled = false,
-            target = charger,
-            surface = charger.surface,
-            draw_on_ground = true,
-            players = game.connected_players,
-            time_to_live = ei_ticksPerFullUpdate/(ei_lib.getn(ei_update_functions)),
-        }
+    local status = "default"
+    local has_power_usage = charger.power_usage ~= nil
+    local has_rails = rail_count > 1
+    local has_energy = charger.energy and charger.energy > 100000 -- 1MJ buffer sanity check
+    local success = false
+    if not has_power_usage and not has_energy then
+        status = "error"
+        radius = 10
+    elseif has_rails and not has_energy then
+        status = "offline"
+        radius = 12
+    elseif has_rails and has_energy then
+        status = "working"
+        radius = 8
+        success = true
+    else
+        status = "default"
+        radius = 6
     end
-    model.make_rings(charger, radius, ei_ticksPerFullUpdate)
-    return true
+
+    model.render_status_rings(charger, status, radius, 12)
+
+    return success
 end
 
 
@@ -981,29 +783,8 @@ function model.animate_range(charger, fade, player)
     end
 
     local radius = storage.ei_emt.buffs.charger_range
-    if storage.ei.em_train_que == 2 then --0off,1beam,2ring
-        rendering.draw_circle{
-            color = {r = 0.1, g = 0.83, b = 0.87},
-            radius = radius,
-            width = 8,
-            filled = false,
-            target = charger,
-            surface = charger.surface,
-            draw_on_ground = true,
-            players = game.connected_players,
-            time_to_live = ei_ticksPerFullUpdate/(ei_lib.getn(ei_update_functions)),
-        }
-        rendering.draw_circle{
-            color = {r = 0.1, g = 0.83, b = 0.87},
-            radius = radius+1,
-            width = 8,
-            filled = false,
-            target = charger,
-            surface = charger.surface,
-            players = game.connected_players,
-            time_to_live = ei_ticksPerFullUpdate/(ei_lib.getn(ei_update_functions)),
-        }
-    end
+    local status = "default"
+    model.render_status_rings(charger,status,radius,10)
     rendering.draw_sprite{
         sprite = "ei_emt-radius_big",
         x_scale = radius / 16,
@@ -1012,14 +793,14 @@ function model.animate_range(charger, fade, player)
         surface = charger.surface,
         draw_on_ground = true,
         players = game.connected_players,
-        time_to_live = ei_ticksPerFullUpdate/(ei_lib.getn(ei_update_functions)),
+        time_to_live = ei_ticksPerFullUpdate,
     }
 
     -- 1 tile == 32 pixels
     -- make circles with 8 pixel width, and color fade
     -- {r = 0.1, g = 0.83, b = 0.87} -> r = 0.7
 
-    model.make_rings(charger, radius, 0.5)
+    --model.make_rings(charger, radius, 0.5)
 
 end
 
@@ -1167,6 +948,7 @@ function model.on_research_finished(event)
     if model.techs[short_name] then
       -- game.print(short_name .. " - " .. tier)
       model.apply_buffs(model.techs[short_name], tonumber(tier))
+      model.printBuffStatus()
     end
 
 end

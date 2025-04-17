@@ -1,4 +1,26 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.5.5
+Date: 4-17-25
+  Additions:
+    -EM Charger Glow, EM Train Glow added to startup settings as startup toggles.
+    -EM Charger glow fade duration and EM train glow fade duration added as startup numeric values.
+    -EM Updater Ring que width added as startup numeric value.
+    -EM Updater Ring que transparency added as startup numeric value.
+    -EM Updater Ring que fade duration added as startup numeric value.
+  Changes:
+    -EM Updater Ring que customization added, indicated color will now reflect working/offline/error/etc status.
+  Fixes:
+    -EI tanks requirements for previous tier fixed, previously Spherical tank required Silo tank. Reported by @crysiszocker1
+    -Loader prototype complexity setting toggle works again
+---------------------------------------------------------------------------------------------------
+Version: 1.5.4
+Date: 4-16-25
+  Changes:
+   -K2 import related errors will log errors instead of preventing game from loading at all
+  Fixes:
+   -Duplicate map gen preset name removed from RU locale
+
+---------------------------------------------------------------------------------------------------
 Version: 1.5.3
 Date: 4-15-25
   Additions:
