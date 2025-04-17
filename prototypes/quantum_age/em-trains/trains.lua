@@ -550,7 +550,7 @@ data:extend({
 				{
 					{
 						filename = ei_trains_sounds_path.."em_train_brakes.ogg",
-						volume = 0.3
+						volume = 0.21
 					},
 				}
 			},
