@@ -243,13 +243,13 @@ local function overwrite_barrel_capacity(recipeItem, capacity)
 end
 
 for _, recipe in pairs(data.raw.recipe) do
---[[
+
   recipe.always_show_made_in = false
   recipe.always_show_products = false
   recipe.hide_from_signal_gui = false
   recipe.result_is_always_fresh = true
   recipe.unlock_results = true
-]]
+
   if ei_lib.contains(recipe.name,"recycler") then recipe.surface_conditions = nil end
   if ei_lib.contains(recipe.name,"crusher") then recipe.surface_conditions = nil end
 
