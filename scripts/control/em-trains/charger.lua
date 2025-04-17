@@ -538,7 +538,7 @@ function ei_draw_charger_glow(charger, params)
  
      local params = {
          sprite = "emt_charger_glow",
-         time_to_live = math.ceil(ei_ticksPerFullUpdate+(ei_ticksPerFullUpdate/10)),
+         time_to_live = storage.ei.em_charger_glow_timeToLive,
          surface = charger.surface,
          players = game.connected_players,
          blend_mode = "multiplicative",
