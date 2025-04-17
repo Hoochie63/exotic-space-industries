@@ -678,7 +678,7 @@ data:extend({
 			height = 32,
 			flags = {"icon"}
 		},
-		back_light = rolling_stock_back_light(),
+		--back_light = rolling_stock_back_light(),
 		stand_by_light = rolling_stock_standby_light(),
 		pictures =
 		{
@@ -804,7 +804,7 @@ data:extend({
 			{type = "acid",decrease = 10,percent = 20}
 		},
 		vertical_selection_shift = -0.8,
-		back_light = rolling_stock_back_light(),
+		--back_light = rolling_stock_back_light(),
 		stand_by_light = rolling_stock_standby_light(),
 		pictures =
 		{
