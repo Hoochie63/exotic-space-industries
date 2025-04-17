@@ -459,7 +459,7 @@ end
 
 
 function ei_draw_train_glow(train, params)
-    if not (train and train.valid) or not storage.ei_train_glow_toggle then return end
+    if not (train and train.valid) or not storage.ei.em_train_glow_toggle then return end
     --if not train.burner or not train.burner.remaining_burning_fuel then return end
 
     -- fallback defaults

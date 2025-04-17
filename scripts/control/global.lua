@@ -21,14 +21,28 @@ function ei_global.init()
     storage.ei["orbital_combinators"] = {}
     storage.ei.spaced_updates = 0
     storage.ei.alien = {}
-    storage.ei.em_train_que = 1 --0 is off, 1 is beam, 2 is ring, updated in on_configuration_changed
-    storage.ei.que_width = 6    -- radius
-    storage.ei.que_transparency = 0.88 -- alpha is 0->1
-    storage.ei.que_timetolive = 20 --ticks
-    storage.ei.em_train_glow_toggle = true
-    storage.ei.em_train_glow_timeToLive = 60
+    local que = ei_lib.config("em_updater_que") or "Beam"
+    if que == "Beam" then
+        storage.ei.em_train_que = 1
+    elseif que == "Ring" then
+        storage.ei.em_train_que = 2 --faster to compare a number
+    else
+        storage.ei.em_train_que = 0
+    end
+    local que_width = ei_lib.config("em_updater_que_width") or 6
+    storage.ei.que_width = que_width
+    local que_transparency = ei_lib.config("em_updater_que_transparency") or 0.8
+    storage.ei.que_transparency = que_transparency
+    local que_timetolive = ei_lib.config("em_updater_que_timetolive") or 60
+    storage.ei.que_timetolive = que_timetolive
+    local trainGlowToggle = ei_lib.config("em_train_glow_toggle") or true
+    storage.ei.em_train_glow_toggle = trainGlowToggle
+    local trainGlowTimeToLive = ei_lib.config("em_train_glow_timetolive") or 60
+    storage.ei.em_train_glow_timeToLive = trainGlowTimeToLive
+    local chargerGlowToggle = ei_lib.config("em_charger_glow_toggle") or true
     storage.ei.em_charger_glow = true
-    storage.ei.em_charger_glow_timeToLive = 60
+    local chargerGlowTimeToLive = ei_lib.config("em_charger_glow_timetolive") or 60
+    storage.ei.em_charger_glow_timeToLive = chargerGlowTimeToLive
 
     game.print("[color=#6A0DAD][font=default-bold]»» INITIALIZING SYSTEM CORE: [color=#00FFFF]ＥＸＯＴＩＣ ＳＰΛＣΣ ＩＮＤＵＳＴＲＩＥＳ[/color] ««[/font][/color]")
     game.print("[color=#808080][font=default-semibold]>> Integrating chronometric lattices... Binding entropy to mass... Stand by.[/font][/color]")
@@ -38,15 +52,28 @@ function ei_global.check_init()
     -- TODO: dont hardcode this
     if not storage.ei then
         storage.ei = {}
-        storage.ei.em_train_que = 1
-        storage.ei.que_width = 6
-        storage.ei.que_transparency = 0.8
-        storage.ei.que_timetolive = 60
-        storage.ei.em_train_glow_toggle = true
-        storage.ei.em_train_glow_timeToLive = 60
+        local que = ei_lib.config("em_updater_que") or "Beam"
+        if que == "Beam" then
+            storage.ei.em_train_que = 1
+        elseif que == "Ring" then
+            storage.ei.em_train_que = 2 --faster to compare a number
+        else
+            storage.ei.em_train_que = 0
+        end
+        local que_width = ei_lib.config("em_updater_que_width") or 6
+        storage.ei.que_width = que_width
+        local que_transparency = ei_lib.config("em_updater_que_transparency") or 0.8
+        storage.ei.que_transparency = que_transparency
+        local que_timetolive = ei_lib.config("em_updater_que_timetolive") or 60
+        storage.ei.que_timetolive = que_timetolive
+        local trainGlowToggle = ei_lib.config("em_train_glow_toggle") or true
+        storage.ei.em_train_glow_toggle = trainGlowToggle
+        local trainGlowTimeToLive = ei_lib.config("em_train_glow_timetolive") or 60
+        storage.ei.em_train_glow_timeToLive = trainGlowTimeToLive
+        local chargerGlowToggle = ei_lib.config("em_charger_glow_toggle") or true
         storage.ei.em_charger_glow = true
-        storage.ei.em_charger_glow_timeToLive = 60
-
+        local chargerGlowTimeToLive = ei_lib.config("em_charger_glow_timetolive") or 60
+        storage.ei.em_charger_glow_timeToLive = chargerGlowTimeToLive
     end
 
     if not storage.ei["tech_scaling"] then
