@@ -323,10 +323,14 @@ script.on_configuration_changed(function(e)
 end)
 
 local function youHaveArrived(player)
+    if not player then
+        log("youHaveArrived received null player")
+        return
+    end
     local surface = player.surface
     local pos = player.position
     local force = player.force or 1
-    if not surface or not pos or not player or not force then
+    if not surface or not pos or not force then
         log("youHaveArrived received null surface or pos or force for player ")
         return
     else
@@ -340,7 +344,8 @@ local function youHaveArrived(player)
             surface.create_entity{
                 name = "electric-beam",
                 source = offset,
-                target = pos,
+                position = pos,
+                target = player,
                 duration = 120,
                 force = force
             }
@@ -354,17 +359,20 @@ local function youHaveArrived(player)
                     x = pos.x + math.random() * 2 - 1,
                     y = pos.y + math.random() * 2 - 1
                 },
-                target = pos,
+                position = pos,
                 force = force
             }
         end
 
-        surface.create_entity{
+        surface.create_trivial_smoke{
             name = "electric-smoke",
-            position = pos,
-            force = force
+            position = pos
         }
-
+        local player_indices = {}
+        for _, player in pairs(game.connected_players) do
+          table.insert(player_indices, player.index)
+        end
+        if not ei_lib.getn(player_indices) then return end
         rendering.draw_light{
             sprite = "utility/light_medium",
             target = pos,
@@ -373,7 +381,7 @@ local function youHaveArrived(player)
             intensity = 1.5,
             scale = 4.0,
             time_to_live = 180,
-            players = game.players
+            players = player_indices
         }
 
         rendering.draw_text{
@@ -385,18 +393,28 @@ local function youHaveArrived(player)
             scale = 2.5,
             font = "default-large-bold",
             time_to_live = 300,
-            players = game.players
+            players = player_indices
         }
     end
 game.print("[color=#4B0082]Fragments of GAIA's lament ripple across space-time...[/color]")
 game.print("[font=default-bold][color=#FF0000]⚠️ YOU HAVE BEEN SEEN ⚠️[/color][/font]")
 end
-script.on_event(defines.events.on_player_joined_game, function(event)
+script.on_event(
+  {
+    defines.events.on_player_joined_game,
+    defines.events.on_cutscene_cancelled,
+    defines.events.on_cutscene_finished
+  },
+  function(event)
     local player = game.get_player(event.player_index)
-    if player and player.valid then
+    if player and player.valid and player.character then
         youHaveArrived(player.character)
+        if player.name then
+            log(">> Arrival event triggered for player: " .. player.name)
+        end
     end
-end)
+  end
+)
 
 --====================================================================================================
 --HANDLERS

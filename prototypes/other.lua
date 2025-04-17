@@ -1,6 +1,31 @@
 -- other prototype definitions
 
 data:extend({
+  {
+    type = "trivial-smoke",
+    name = "electric-smoke",
+    flags = {"not-on-map"},
+    show_when_smoke_off = true,
+    animation = {
+      filename = "__base__/graphics/entity/smoke/smoke.png",
+      priority = "high",
+      width = 152,
+      height = 120,
+      frame_count = 60,
+      line_length = 5,
+      animation_speed = 1.75,
+      scale = 1
+    },
+    duration = 60,
+    fade_away_duration = 30,
+    spread_duration = 10,
+    start_scale = 0.2,
+    end_scale = 1.0,
+    color = { r = 0.6, g = 0.2, b = 0.8, a = 0.8 },
+    cyclic = true,
+    affected_by_wind = false,
+    movement_slow_down_factor = 0.95
+  },
     {
         name = "ei-refining",
         type = "item-group",
