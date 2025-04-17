@@ -31,8 +31,8 @@ function ei_global.init()
     end
     local que_width = ei_lib.config("em_updater_que_width") or 6
     storage.ei.que_width = que_width
-    local que_transparency = ei_lib.config("em_updater_que_transparency") or 0.8
-    storage.ei.que_transparency = que_transparency
+    local que_transparency = ei_lib.config("em_updater_que_transparency") or 80
+    storage.ei.que_transparency = que_transparency/100
     local que_timetolive = ei_lib.config("em_updater_que_timetolive") or 60
     storage.ei.que_timetolive = que_timetolive
     local trainGlowToggle = ei_lib.config("em_train_glow_toggle") or true
@@ -62,8 +62,8 @@ function ei_global.check_init()
         end
         local que_width = ei_lib.config("em_updater_que_width") or 6
         storage.ei.que_width = que_width
-        local que_transparency = ei_lib.config("em_updater_que_transparency") or 0.8
-        storage.ei.que_transparency = que_transparency
+        local que_transparency = ei_lib.config("em_updater_que_transparency") or 80
+        storage.ei.que_transparency = que_transparency/100
         local que_timetolive = ei_lib.config("em_updater_que_timetolive") or 60
         storage.ei.que_timetolive = que_timetolive
         local trainGlowToggle = ei_lib.config("em_train_glow_toggle") or true
