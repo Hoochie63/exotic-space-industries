@@ -145,7 +145,7 @@ data:extend({
   },
   {
       name = "ei-em_updater_que_transparency",
-      type = "int-setting",
+      type = "float-setting",
       setting_type = "startup",
       default_value = 0.88,
       minimum_value = 0.01,
