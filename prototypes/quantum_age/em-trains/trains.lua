@@ -320,30 +320,30 @@ data:extend({
 				minimum_darkness = 0.3,
 				picture =
 				{
-					filename = "__core__/graphics/light-cone.png",
+					filename = ei_path.."graphics/em_train_light_cone_280x700.png",
 					priority = "medium",
-					scale = 2,
-					width = 200,
-					height = 200
+					scale = 1,
+					width = 280,
+					height = 700
 				},
-				shift = {-0.6, -16},
-				size = 2,
-				intensity = 0.6
+				shift = {-0.85, -11.5},
+				size = 1,
+				intensity = 0.98
 			},
 			{
 				type = "oriented",
 				minimum_darkness = 0.3,
 				picture =
 				{
-					filename = "__core__/graphics/light-cone.png",
+					filename = ei_path.."graphics/em_train_light_cone_280x700.png",
 					priority = "medium",
-					scale = 2,
-					width = 200,
-					height = 200
+					scale = 1,
+					width = 280,
+					height = 700
 				},
-				shift = {0.6, -16},
-				size = 2,
-				intensity = 0.6
+				shift = {0.85, -11.5},
+				size = 1,
+				intensity = 0.98
 			}
 		},
 		--back_light = rolling_stock_back_light(),
