@@ -9,9 +9,10 @@ Date: 4-17-25
     -EM Updater Ring que fade duration added as startup numeric value.
   Changes:
     -EM Updater Ring que customization added, indicated color will now reflect working/offline/error/etc status.
+    -AAI burner lab disabled due to overlap with EI burner lab. Reported by @L??M??3674
   Fixes:
     -EI tanks requirements for previous tier fixed, previously Spherical tank required Silo tank. Reported by @crysiszocker1
-    -Loader prototype complexity setting toggle works again
+    -Loader prototype complexity setting toggle works again.
 ---------------------------------------------------------------------------------------------------
 Version: 1.5.4
 Date: 4-16-25
