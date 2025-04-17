@@ -6,10 +6,28 @@ local drive_over_tie = function()
 	return
 	{
 	  type = "play-sound",
-	  sound = sound_variations("__base__/sound/train-tie", 6, 0.4, { volume_multiplier("main-menu", 2.4), volume_multiplier("driving", 1.3) } )
+	  sound = sound_variations(ei_path.."sounds/em_trains/em_train_tie", 6, 0.3, { volume_multiplier("main-menu", 3.25), volume_multiplier("driving", 1.9) } )
 	}
   end
 
+function rolling_stock_standby_light()
+    return
+    {
+        {
+            type = "basic",
+            picture =
+            {
+                filename = ei_path.."graphics/em_train_under_glow_512x512",
+                priority = "medium",
+                scale = 1,
+                width = 512,
+                height = 512
+            },
+            size = 1,
+            intensity = 0.36
+        }
+    }
+end
 data:extend({
     {
         name = "ei_em-locomotive",
@@ -347,8 +365,7 @@ data:extend({
 			}
 		},
 		--back_light = rolling_stock_back_light(),
-		--stand_by_light = rolling_stock_stand_by_light(),
-		
+		stand_by_light = rolling_stock_standby_light(),
 		pictures =
 		{
       rotated = {
@@ -456,7 +473,7 @@ data:extend({
 				}
 			},
 		},
-		drive_over_tie_trigger = nil, --we floating over them ties
+		drive_over_tie_trigger = drive_over_tie(), --we floating over them ties
 		tie_distance = 50,
 		vehicle_impact_sound =  { filename = "__base__/sound/car-metal-impact.ogg", volume = 0.65 },
 		working_sound =
@@ -586,7 +603,7 @@ data:extend({
 			flags = {"icon"}
 		},
 		--back_light = rolling_stock_back_light(),
-		--stand_by_light = rolling_stock_stand_by_light(),
+		stand_by_light = rolling_stock_standby_light(),
 		pictures =
 		{
       rotated = {
@@ -656,7 +673,7 @@ data:extend({
 
 		wheels = standard_train_wheels,
 		rail_category = "regular",
-		drive_over_tie_trigger = nil, --drive_over_tie()
+		drive_over_tie_trigger = drive_over_tie(), --drive_over_tie()
 		tie_distance = 50,
 		working_sound =
 		{
@@ -712,7 +729,7 @@ data:extend({
 		},
 		vertical_selection_shift = -0.8,
 		--back_light = rolling_stock_back_light(),
-		--stand_by_light = rolling_stock_stand_by_light(),
+		stand_by_light = rolling_stock_standby_light(),
 		pictures =
 		{
 			rotated = {
@@ -780,7 +797,7 @@ data:extend({
 
 		wheels = standard_train_wheels,
 		rail_category = "regular",
-		drive_over_tie_trigger = nil, --drive_over_tie()
+		drive_over_tie_trigger = drive_over_tie(), --drive_over_tie()
 		tie_distance = 50,
 		working_sound =
 		{
