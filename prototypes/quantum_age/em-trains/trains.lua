@@ -549,8 +549,8 @@ data:extend({
 				sound =
 				{
 					{
-						filename = "__base__/sound/train-breaks.ogg",
-						volume = 0.6
+						filename = ei_trains_sounds_path.."em_train_brakes.ogg",
+						volume = 0.3
 					},
 				}
 			},
