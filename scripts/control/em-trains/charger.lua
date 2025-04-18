@@ -128,24 +128,28 @@ function model.printBuffStatus()
 
     -- ⟁ Liturgical Echo of the Luminous Spine ⟁
     local incantation = {
-        "[font=default-bold][color=purple]☲ EM-Train Diagnostic Invocation Initialized ☲[/color][/font]",
-        "[color=#8e44ad]Weight of the Outer Shell:[/color] "..weight.." quartzian masses",
-        "[color=#8e44ad]Base Kinesis Velocity (Prime Engine):[/color] "..max_speed.." ∇tiles/s",
-        "[color=#8e44ad]Secondary Pod Velocity Threshold:[/color] "..max_speed_wagon.." ∇tiles/s",
-        "[color=#9370DB]➣ Speed Amplifier Resonance:[/color] ×"..top_speed_multiplier.." (λ"..speed_level..")",
-        "[color=#9370DB]➣ Acceleration Spiral Gain:[/color] ×"..acceleration_multiplier.." (φ"..acc_level..")",
-        "[color=#EE82EE]➣ Energy Bleed Correction (Null-Waste):[/color] ×"..power_consumption_modifier,
-        "[color=#E6E6FA]Divine Conduction Limit:[/color] "..max_power.." / ∂t",
-        "[color=gray]Tether Brakes – Loco:[/color] "..braking_force.." force fragments",
-        "[color=gray]Tether Brakes – Cart:[/color] "..braking_force_wagon.." force fragments",
-        "[color=#6699CC]Slip-Field Intensity:[/color] "..friction_force.." ψN",
-        "[color=#6699CC]Ambient Etheric Drag (Ω drift):[/color] "..air_resistance.." μR",
-        "[color=cyan]Auditory Phasegate - Entry:[/color] "..em_sound_minimum_speed.." Δν",
-        "[color=cyan]Auditory Phasegate - Severance:[/color] "..em_sound_maximum_speed.." Δν"
+        "☲ EM-Train Diagnostic Invocation Initialized ☲",
+        "Weight of the Outer Shell: "..weight.." quartzian masses",
+        "Base Kinesis Velocity (Prime Engine): "..max_speed.." ∇tiles/s",
+        "Secondary Pod Velocity Threshold: "..max_speed_wagon.." ∇tiles/s",
+        "➣ Speed Amplifier Resonance: ×"..top_speed_multiplier.." (λ"..speed_level..")",
+        "➣ Acceleration Spiral Gain: ×"..acceleration_multiplier.." (φ"..acc_level..")",
+        "➣ Energy Bleed Correction (Null-Waste): ×"..power_consumption_modifier,
+        "Divine Conduction Limit: "..max_power.." / ∂t",
+        "Tether Brakes – Loco: "..braking_force.." force fragments",
+        "Tether Brakes – Cart: "..braking_force_wagon.." force fragments",
+        "Slip-Field Intensity: "..friction_force.." ψN",
+        "Ambient Etheric Drag (Ω drift): "..air_resistance.." μR",
+        "Auditory Phasegate - Entry: "..em_sound_minimum_speed.." Δν",
+        "Auditory Phasegate - Severance: "..em_sound_maximum_speed.." Δν"
     }
 
     for _, line in ipairs(incantation) do
-        game.print(line)
+        if line == 1 then
+            ei_lib.crystal_echo(line,"default-bold")
+        else
+            ei_lib.crystal_echo(line)
+        end
     end
 end
 
