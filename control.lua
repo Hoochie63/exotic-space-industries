@@ -302,13 +302,7 @@ function reforge_gaia_surface()
     return
   end
 
-  -- Evacuate all carbon units
-  for _, player in pairs(game.connected_players) do
-    if player.surface.name == "gaia" then
-      ei_lib.crystal_echo("⚠ [Bioform Displacement Protocol] — The Womb of Gaia trembles. You are being rewritten...")
-      player.teleport({0, 0}, "nauvis")
-    end
-  end
+
 
   -- Search the ley lines for resonance
   local has_any, res_name, count = surface_contains_any_resources(surface)
@@ -316,6 +310,14 @@ function reforge_gaia_surface()
   if has_any then
     ei_lib.crystal_echo("✔ [Echo Retained] — " .. res_name .. " detected (" .. count .. " crystalline signatures). Gaia remains sovereign.")
     return
+  end
+
+  -- Evacuate all carbon units
+  for _, player in pairs(game.connected_players) do
+    if player.surface.name == "gaia" then
+      ei_lib.crystal_echo("⚠ [Bioform Displacement Protocol] — The Womb of Gaia trembles. You are being rewritten...")
+      player.teleport({0, 0}, "nauvis")
+    end
   end
 
   -- Begin the ritual collapse
@@ -331,6 +333,13 @@ function reforge_gaia_surface()
   else
     ei_lib.crystal_echo("☠ [Aether Refused] — Gaia's essence resisted the invocation. Consult the Crystal Chorus.")
   end
+  count = surface_contains_any_resources(new_surface)
+  if not count then --try again.. could be infinitely recursive.. probably not tho
+      ei_lib.crystal_echo("✖ [Gaian Echo Lost] — No soulstone signature recovered. The garden lies fallow. Restarting terraformation incantation...","default-bold")
+      reforge_gaia_surface()
+ else
+     ei_lib.crystal_echo("⛧ [Core Integrity Verified] — Autogenic substrate lattice normalized. Biome reformation phase stabilized.")
+ end
 end
 
 
