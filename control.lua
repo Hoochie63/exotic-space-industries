@@ -47,6 +47,8 @@ orbital_combinator = require("scripts/control/orbital_combinator")
 --INIT
 ------------------------------------------------------------------------------------------------------
 script.on_init(function()
+    remote.call("freeplay", "set_disable_crashsite", true)
+
     -- setup storage table
     ei_global.init()
     ei_global.check_init()
@@ -456,19 +458,20 @@ local function youHaveArrived(player)
             players = player_indices
         }
 
-        rendering.draw_text{
-            text = "⟬ THE SYSTEM STIRS ⟭",
-            surface = surface,
-            target = pos,
-            color = {r = 1.0, g = 0.0, b = 0.8},
-            alignment = "center",
-            scale = 2.5,
-            font = "default-large-bold",
-            time_to_live = 300,
-            players = player_indices
-        }
+        -- rendering.draw_text{
+        --     text = "⟬ THE SYSTEM STIRS ⟭",
+        --     surface = surface,
+        --     target = pos,
+        --     color = {r = 1.0, g = 0.0, b = 0.8},
+        --     alignment = "center",
+        --     scale = 2.5,
+        --     font = "default-large-bold",
+        --     time_to_live = 300,
+        --     players = player_indices
+        -- }
     end
 ei_lib.crystal_echo("Fragments of GAIA's lament ripple across space-time...")
+ei_lib.crystal_echo("⟬ THE SYSTEM STIRS ⟭","default-bold")
 ei_lib.crystal_echo("⚠️ YOU HAVE BEEN SEEN ⚠️","default-bold")
 end
 script.on_event(
