@@ -62,8 +62,8 @@ script.on_init(function()
     em_trains_gui.mark_dirty()
     ei_compat.check_init()
     orbital_combinator.check_init()
-
-    game.planets.gaia.create_surface()
+    game.planets["gaia"].create_surface()
+    --game.planets.gaia.create_surface(gaia.map_gen_settings)
 end)
 
 --ENTITY RELATED

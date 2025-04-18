@@ -18,6 +18,7 @@ Date: 4-17-25
     -EM Updater Ring que customization added, indicated color will now reflect working/offline/error/etc status.
     -AAI burner lab disabled due to overlap with EI burner lab. Reported by @L??M??3674
   Fixes:
+    -Gaia correctly receives autoplacement instructions IE the 5 Exotic Industries specific resources will now consistently spawn
     -EI tanks requirements for previous tier fixed, previously Spherical tank required Silo tank. Reported by @crysiszocker1
     -Loader prototype complexity setting toggle works again.
 ---------------------------------------------------------------------------------------------------
