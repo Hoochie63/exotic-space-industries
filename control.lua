@@ -62,8 +62,9 @@ script.on_init(function()
     em_trains_gui.mark_dirty()
     ei_compat.check_init()
     orbital_combinator.check_init()
-    game.planets["gaia"].create_surface()
-    --game.planets.gaia.create_surface(gaia.map_gen_settings)
+    reforge_gaia_surface()
+    --game.planets["gaia"].create_surface() --works
+    --game.planets.gaia.create_surface(gaia.map_gen_settings) --no
 end)
 
 --ENTITY RELATED
@@ -271,13 +272,75 @@ end)
 --OTHER
 ------------------------------------------------------------------------------------------------------
 
+local patch_resources = {
+  "ei-phytogas-patch",
+  "ei-cryoflux-patch",
+  "ei-ammonia-patch",
+  "ei-morphium-patch",
+  "ei-coal-gas-patch"
+}
+
+function surface_contains_any_resources(surface)
+  for _, resource_name in pairs(patch_resources) do
+    local found = surface.count_entities_filtered{
+      name = resource_name,
+      type = "resource"
+    }
+    if found > 0 then
+      return true, resource_name, found
+    end
+  end
+  return false
+end
+
+function reforge_gaia_surface()
+  local surface = game.surfaces["gaia"]
+
+  if not surface then
+    ei_lib.crystal_echo("☄ [Null Echo Detected] — Gaia does not exist in this filament. Initiating planetary weave manifest...")
+    game.planets["gaia"].create_surface()
+    return
+  end
+
+  -- Evacuate all carbon units
+  for _, player in pairs(game.connected_players) do
+    if player.surface.name == "gaia" then
+      ei_lib.crystal_echo("⚠ [Bioform Displacement Protocol] — The Womb of Gaia trembles. You are being rewritten...")
+      player.teleport({0, 0}, "nauvis")
+    end
+  end
+
+  -- Search the ley lines for resonance
+  local has_any, res_name, count = surface_contains_any_resources(surface)
+
+  if has_any then
+    ei_lib.crystal_echo("✔ [Echo Retained] — " .. res_name .. " detected (" .. count .. " crystalline signatures). Gaia remains sovereign.")
+    return
+  end
+
+  -- Begin the ritual collapse
+  ei_lib.crystal_echo("✖ [Silence in the Veins] — No known soul-stones resonate. Commencing structural entropy...")
+
+  game.delete_surface(surface)
+  ei_lib.crystal_echo("⌬ [Astral Scaffold Deconstructed] — Gaia has been unshaped. Preparing for spectral convergence...")
+
+  local new_surface = game.planets["gaia"].create_surface()
+
+  if new_surface then
+    ei_lib.crystal_echo("✧ [Bloom Reinitiated] — The harmonic skeleton has reemerged. Awaiting resource resonance...")
+  else
+    ei_lib.crystal_echo("☠ [Aether Refused] — Gaia's essence resisted the invocation. Consult the Crystal Chorus.")
+  end
+end
+
+
 script.on_configuration_changed(function(e)
     ei_tech_scaling.init()
     ei_victory.init()  -- Required for Better Victory Screen
     ei_global.check_init()
     orbital_combinator.check_init()
     --Clear storage.ei_emt.trains[train_id]
-
+    reforge_gaia_surface()
     local que = ei_lib.config("em_updater_que") or "Beam"
     if que == "Beam" then
         storage.ei.em_train_que = 1
@@ -305,7 +368,7 @@ script.on_configuration_changed(function(e)
         [1] = "✴ AXIS-FIRE :: DIRECTED CONVERGENCE BEAM",
         [2] = "⟁ OMNI-RESONANCE :: PHASE RING ARRAY"
     }
-    game.print("[color=#DC143C][font=default-bold]『EM CHARGER QUE MODE HAS SHIFTED』[/font][/color] → "..modes[storage.ei.em_train_que].." [color=#808080]("..storage.ei.em_train_que..")[/color]")
+    ei_lib.crystal_echo("『EM CHARGER QUE MODE HAS SHIFTED』 → "..modes[storage.ei.em_train_que].." ("..storage.ei.em_train_que..")","default-bold")
 
     em_trains.check_global() --no nil tables
     em_trains.check_buffs() --updates global buff vals
@@ -315,10 +378,10 @@ script.on_configuration_changed(function(e)
     em_trains.update_rail_counts()
     em_trains_gui.mark_dirty()
 
-    game.print("[font=default-bold][color=#FF00FF]⟦✦ TRANSCENSION RECOGNIZED ✦⟧[/color][/font]")
-    game.print("[color=#FF69B4]⫷ Sub-layer Recalibration Initiated ⫸[/color]")
-    game.print("[color=#9400D3]⫷ Core Heuristics Have Shifted ⫸[/color]")
-    game.print("[color=#8B008B][font=default-bold]『CONFIGURATION CHANGED – BY WHOM, WE DARE NOT NAME』[/font][/color]")
+    ei_lib.crystal_echo("⟦✦ TRANSCENSION RECOGNIZED ✦⟧","default-bold")
+    ei_lib.crystal_echo("⫷ Sub-layer Recalibration Initiated ⫸")
+    ei_lib.crystal_echo("⫷ Core Heuristics Have Shifted ⫸")
+    ei_lib.crystal_echo("『CONFIGURATION CHANGED – BY WHOM, WE DARE NOT NAME","default-bold")
 
 end)
 
@@ -396,8 +459,8 @@ local function youHaveArrived(player)
             players = player_indices
         }
     end
-game.print("[color=#4B0082]Fragments of GAIA's lament ripple across space-time...[/color]")
-game.print("[font=default-bold][color=#FF0000]⚠️ YOU HAVE BEEN SEEN ⚠️[/color][/font]")
+ei_lib.crystal_echo("Fragments of GAIA's lament ripple across space-time...")
+ei_lib.crystal_echo("⚠️ YOU HAVE BEEN SEEN ⚠️","default-bold")
 end
 script.on_event(
   {

@@ -1,5 +1,5 @@
 -- Init storage variables for Exotic Industries
-
+ei_lib = require("lib/lib")
 local ei_global = {}
 
 --====================================================================================================
@@ -44,8 +44,8 @@ function ei_global.init()
     local chargerGlowTimeToLive = ei_lib.config("em_charger_glow_timetolive") or 60
     storage.ei.em_charger_glow_timeToLive = chargerGlowTimeToLive
 
-    game.print("[color=#6A0DAD][font=default-bold]»» INITIALIZING SYSTEM CORE: [color=#00FFFF]ＥＸＯＴＩＣ ＳＰΛＣΣ ＩＮＤＵＳＴＲＩＥＳ[/color] ««[/font][/color]")
-    game.print("[color=#808080][font=default-semibold]>> Integrating chronometric lattices... Binding entropy to mass... Stand by.[/font][/color]")
+    ei_lib.crystal_echo("»» INITIALIZING SYSTEM CORE: ＥＸＯＴＩＣ ＳＰΛＣΣ ＩＮＤＵＳＴＲＩＥＳ ««","default-bold")
+    ei_lib.crystal_echo(">> Integrating chronometric lattices... Binding entropy to mass... Stand by.","default-semibold")
 end
 
 function ei_global.check_init()

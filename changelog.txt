@@ -2,6 +2,7 @@
 Version: 1.5.5
 Date: 4-17-25
   Additions:
+    -Crystal_echo ei_lib command to support colorful printed messages
     -Custom HID headlights for EM trains. Also projects behind at reduced power.
     -Custom underglow for EM trains while loading/unloading.
     -6 Custom whooshing noises for EM trains moving down tracks.
@@ -18,7 +19,7 @@ Date: 4-17-25
     -EM Updater Ring que customization added, indicated color will now reflect working/offline/error/etc status.
     -AAI burner lab disabled due to overlap with EI burner lab. Reported by @L??M??3674
   Fixes:
-    -Gaia correctly receives autoplacement instructions IE the 5 Exotic Industries specific resources will now consistently spawn
+    -Gaia correctly receives autoplacement instructions IE the 5 Exotic Industries specific resources will now consistently spawn.. WHEN YOU CONNECT ON CONFIGURATION CHANGE GAIA WILL BE SCANNED AND IF NONE OF THE CUSTOM RESOURCES ARE FOUND, DESTROYED AND REGENERATED ... PLAYERS WILL BE TELEPORTED TO NAUVIS.
     -EI tanks requirements for previous tier fixed, previously Spherical tank required Silo tank. Reported by @crysiszocker1
     -Loader prototype complexity setting toggle works again.
 ---------------------------------------------------------------------------------------------------
@@ -206,3 +207,6 @@ Date: 01-03-25
     - Muluna (planet-muluna) compatibility
     - Fixed recipes
     - Foxed localization
+[v1.5.5] - 2025-04-17
+
+[v1.5.5] - 2025-04-17

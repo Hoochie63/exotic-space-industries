@@ -1010,4 +1010,65 @@ function ei_lib.debug_crafting_categories()
     log(serpent.block(output))
 end
 
+-------------------------------Crystal Messages
+function ei_lib.lerp_color(c1, c2, t)
+    return {
+      math.floor(c1[1] + (c2[1] - c1[1]) * t + 0.5),
+      math.floor(c1[2] + (c2[2] - c1[2]) * t + 0.5),
+      math.floor(c1[3] + (c2[3] - c1[3]) * t + 0.5)
+    }
+  end
+
+function ei_lib.rgb_to_hex(rgb)
+    return string.format("%02x%02x%02x", rgb[1], rgb[2], rgb[3])
+  end
+
+  local colors = {
+    {112, 48, 160},  -- Royal purple
+    {0, 123, 167},   -- Cerulean
+    {186, 85, 211},  -- Orchid flare
+    {72, 209, 204},  -- Crystal teal
+    {255, 105, 180}, -- Etheric pink
+    {240, 230, 140}, -- Dream gold
+    {50, 205, 50},   -- Verdant flux
+    {255, 69, 0}     -- Solar flare
+  }
+
+function ei_lib.pick_gradient_stops()
+    local stops = {}
+    local num_stops = math.random(2, 4)
+    for i = 1, num_stops do
+      table.insert(stops, colors[math.random(8)]) --#colors
+    end
+    return stops
+  end
+
+function ei_lib.crystal_echo(msg, font)
+  local gradient = ei_lib.pick_gradient_stops()
+  local segments = ei_lib.getn(gradient) - 1
+  local total_chars = #msg
+  local result = {}
+
+  font = font or nil-- fallback
+
+  for i = 1, total_chars do
+    local t = (i - 1) / math.max(1, total_chars - 1)
+    local segment = math.floor(t * segments) + 1
+    local local_t = (t * segments) % 1
+    local c1 = gradient[segment]
+    local c2 = gradient[segment + 1] or c1
+    local interp = ei_lib.lerp_color(c1, c2, local_t)
+    local hex = ei_lib.rgb_to_hex(interp)
+    local letter = msg:sub(i, i)
+    if font then
+        table.insert(result, "[font=" .. font .. "][color=#" .. hex .. "]" .. letter .. "[/color][/font]")
+    else
+        table.insert(result, "[color=#" .. hex .. "]" .. letter .. "[/color]")
+    end
+  end
+
+  game.print(table.concat(result))
+end
+
+
 return ei_lib
