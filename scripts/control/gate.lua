@@ -1,5 +1,5 @@
 local model = {}
-
+ei_rng = require("scripts/control/ei_rng")
 --====================================================================================================
 --GATE
 --====================================================================================================
@@ -500,7 +500,7 @@ end
 function model.render_animation(gate)
 
     local gate_unit = gate.unit_number
-    local pick = math.random(1,4)
+    local pick = ei_rng.int("gateglow",1,4)
     if pick == 1 then
         local light = rendering.draw_light {
             sprite = "gate_glow",

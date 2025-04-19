@@ -39,13 +39,14 @@ end
 
 if charger_beam.body then
   for _, segment in pairs(charger_beam.body) do
-    segment.tint = purple_tint
+    charger_beam.segment.tint = purple_tint
   end
 end
 
 if charger_beam.light then
   charger_beam.light.tint = purple_tint
 end
+
 data:extend({
     emt_charger_glow,
     emt_train_glow,

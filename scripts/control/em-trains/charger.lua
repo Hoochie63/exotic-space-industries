@@ -1,5 +1,6 @@
 local model = {}
 ei_lib = require("lib/lib")
+ei_rng = require("scripts/control/ei_rng")
 -- DOC
 
 -- Charger gets registered when placed
@@ -407,7 +408,7 @@ end
 
 function model.render_status_rings(entity, status, width, timeUntilFade, override)
     if not (entity and entity.valid) then return end
-    if not override and not storage.ei.em_train_que == 2 then return end
+    if not override and not (storage.ei.em_train_que == 2) then return end
 
     local surface = entity.surface
     local pos = entity
@@ -485,7 +486,7 @@ function ei_draw_train_glow(train, params)
     }
     if params then
         if not params.draw_as_glow then --randomizee if not specified
-            local pick1 = math.random(1,2)
+            local pick1 = ei_rng.int("bang",1,2)
             if pick1 == 1 then
                 glow_params.draw_as_glow = false
             end
@@ -497,9 +498,9 @@ function ei_draw_train_glow(train, params)
     end
 
     for _ = 1, glow_params.count do
-        local color = glow_params.color_pool[math.random(#glow_params.color_pool)]
-        local scale = math.random() * (glow_params.scale_range[2] - glow_params.scale_range[1]) + glow_params.scale_range[1]
-        local intensity = math.random() * (glow_params.intensity_range[2] - glow_params.intensity_range[1]) + glow_params.intensity_range[1]
+        local color = glow_params.color_pool[ei_rng.int("trainglow",1,#glow_params.color_pool)]
+        local scale = ei_rng.float("trainglowscale") * (glow_params.scale_range[2] - glow_params.scale_range[1]) + glow_params.scale_range[1]
+        local intensity = ei_rng.float("trainglowintensity") * (glow_params.intensity_range[2] - glow_params.intensity_range[1]) + glow_params.intensity_range[1]
 
         rendering.draw_light {
             sprite = glow_params.sprite,
@@ -538,7 +539,7 @@ function model.set_burner(train, state)
 end
 
 function ei_draw_charger_glow(charger, params)
-     if not (charger and charger.valid) or not storage.ei.em_charger_glow then return end
+     if not (charger and charger.valid) or not storage.ei.em_charger_glow_toggle then return end
  
      local params = {
          sprite = "emt_charger_glow",
@@ -595,7 +596,7 @@ function ei_draw_charger_glow(charger, params)
  
      -- randomize additional glow effects from each glow set
      for _, glow_set in pairs(params.glow_sets) do
-         local color = glow_set.colors[math.random(#glow_set.colors)]
+         local color = glow_set.colors[ei_rng.int("trainglowscale",1,#glow_set.colors)]
          local intensity = glow_set.intensity or 0.5
          local scale = glow_set.scale or 1
  
@@ -670,9 +671,9 @@ function model.find_charger(train)
                             model.cast_beam(v.entity, train)
                             model.render_status_rings(v.entity,status,8,10)
                             end
-                        if math.random(40) == 1 then
-                            local offset_x = (math.random()) * 50  -- random between -50 and +50
-                            local offset_y = (math.random()) * 50
+                        if ei_rng.int("trainglowscale",1,40) == 1 then
+                            local offset_x = (ei_rng.float("chargerbeamx")) * 50  -- random between -50 and +50
+                            local offset_y = (er_rng.float("chargerbeamy")) * 50
                             local target_position = {
                                 x = v.entity.position.x + offset_x,
                                 y = v.entity.position.y + offset_y

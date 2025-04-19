@@ -511,6 +511,7 @@ ei_ticksPerFullUpdate = settings.startup["ei_ticks_per_full_update"].value -- Ho
 local divisor = ei_ticksPerFullUpdate /  ei_lib.getn(ei_update_functions) -- How many times each entity updater is called per cycle
 ei_maxEntityUpdates = settings.startup["ei-max_updates_per_tick"].value -- Ceiling on entity updates per tick
 ei_update_functions_length = ei_lib.getn(ei_update_functions)
+local divisor = ei_ticksPerFullUpdate /  ei_update_functions_length -- How many times each entity updater is called per cycle
 function updater()
     local updates_needed = 1
    -- Hardcoded checks against ei_update_step are quick
@@ -645,6 +646,7 @@ function updater()
    -- Increment ei_update_step and loop back to 1 if needed
    ei_update_step = ei_update_step + 1
    if ei_update_step > #ei_update_functions then
+   if ei_update_step > ei_update_functions_length then --lol faster
        ei_update_step = 1
    end
 
