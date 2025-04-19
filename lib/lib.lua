@@ -439,7 +439,7 @@ end
 
 function ei_lib.add_unlock_recipe(tech, recipe)
     if not data.raw.technology[tech] then
-        error("ei_lib.add_unlock_recipe: tech '"..tech.."' does not exist in data.raw.technology")
+        log("ei_lib.add_unlock_recipe: tech '"..tech.."' does not exist in data.raw.technology")
         return
     end
 
