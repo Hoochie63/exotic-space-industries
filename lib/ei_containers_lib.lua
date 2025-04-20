@@ -4,7 +4,7 @@ local ei_containers_lib = {}
 --BASE PROTOTYPES
 --====================================================================================================
 
-local entity_base = {
+local mod_entity_base = {
     name = "ei-1x1-container",
     type = "container",
     flags = {"placeable-neutral", "player-creation"},
@@ -44,6 +44,13 @@ local entity_base = {
     fast_replaceable_group = "container",
     max_health = 350,
 }
+
+local entity_base = table.deepcopy(data.raw["logistic-container"]["buffer-chest"])
+entity_base['picture'] = mod_entity_base['picture']
+entity_base['animation'] = mod_entity_base['picture']
+entity_base['name'] = mod_entity_base['name']
+entity_base['minable'] = mod_entity_base['minable']
+entity_base['inventory_size'] = mod_entity_base['inventory_size']
 
 local item_base = {
     name = "ei-1x1-container",
