@@ -702,4 +702,23 @@ data:extend({
     enabled = true,
     main_product = "ei-copper-mechanical-parts",
 },
+
+{
+  name = "ei-space-data",
+  type = "recipe",
+  category = "crafting",
+  energy_required = 10,
+  ingredients = {
+      {type = "item", name = "ei-space-data", amount = 1},
+  },
+  results = {
+      {type = "item", name = "space-science-pack", amount = 1},
+  },
+  always_show_made_in = false,
+  enabled = false,
+  main_product = "space-science-pack",
+},
+
 })
+
+ei_lib.add_unlock_recipe("space-science-pack","ei-space-data")
