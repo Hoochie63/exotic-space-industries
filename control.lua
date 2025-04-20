@@ -513,7 +513,7 @@ ei_maxEntityUpdates = settings.startup["ei-max_updates_per_tick"].value -- Ceili
 ei_update_functions_length = ei_lib.getn(ei_update_functions)
 local divisor = ei_ticksPerFullUpdate /  ei_update_functions_length -- How many times each entity updater is called per cycle
 function updater()
-    local updates_needed = 1
+  local updates_needed = 1
    -- Hardcoded checks against ei_update_step are quick
    -- Whichever is less: max_updates_per_tick OR total of entities divided by the number of execution cycles
    if ei_update_step < 5 then -- Reduces the average number of `if` checks
@@ -656,11 +656,14 @@ function updater()
    ei_induction_matrix.update()
    ei_black_hole.update()
    end
+end
+
 --Check global once per entity updater cycle
 local globalCheckTicks = ei_ticksPerFullUpdate
 script.on_nth_tick(globalCheckTicks, function(event)
     ei_global.check_init()
 end)
+
 --[[
 function spaced_updater()
     ei_global.check_init()
