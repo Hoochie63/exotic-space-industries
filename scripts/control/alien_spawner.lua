@@ -58,7 +58,7 @@ function model.count_flowers(entity)
     end
 
     if model.flower_counter_warnings[storage.ei.flower_counter] then
-        local rand = math.random(1, 10)
+        local rand = ei_rng.int("flower", 1, 10)
         if rand > 4 then
             -- spawn floating text
             rendering.draw_text{
