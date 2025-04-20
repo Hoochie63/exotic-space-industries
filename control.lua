@@ -430,8 +430,8 @@ local function youHaveArrived(player)
             surface.create_entity{
                 name = "big-artillery-explosion", -- visually dramatic
                 position = {
-                    x = pos.x + math.random() * 2 - 1,
-                    y = pos.y + math.random() * 2 - 1
+                    x = pos.x + ei_rng.float("portalboom") * 2 - 1,
+                    y = pos.y + ei_rng.float("portalboom") * 2 - 1
                 },
                 position = pos,
                 force = force
