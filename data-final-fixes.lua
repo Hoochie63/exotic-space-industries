@@ -139,3 +139,15 @@ for _, machine_type in pairs(base_machine_types) do
 end
 
 -- error(serpent.block(data.raw["furnace"]["recycler"]))
+
+-- =======================================================================================
+
+for _,tech in pairs(data.raw.technology) do
+  if tech.prerequisites then
+    for i,t in ipairs(tech.prerequisites) do 
+      if data.raw.technology[t].hidden then
+        table.remove(data.raw.technology[tech.name].prerequisites, i)
+      end
+    end
+  end
+end
