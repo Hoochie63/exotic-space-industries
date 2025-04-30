@@ -20,6 +20,7 @@ function ei_global.init()
     storage.ei["spawner_queue"] = {}
     storage.ei["orbital_combinators"] = {}
     storage.ei.spaced_updates = 0
+	storage.ei.rng_counter = 0
     storage.ei.alien = {}
     local que = ei_lib.config("em_updater_que") or "Beam"
     if que == "Beam" then
@@ -122,6 +123,10 @@ function ei_global.check_init()
     if not storage.ei.spaced_updates then
         storage.ei.spaced_updates = 0
     end
+
+	if not storage.ei.rng_counter then
+		storage.ei.rng_counter = 0
+	end
 
     if not storage.ei.alien then
         storage.ei.alien = {}

@@ -468,7 +468,7 @@ function ei_draw_train_glow(train, params)
 	local glow_params = {
 	sprite = "emt_train_glow",
 	scale_range = {1, 4},
-	intensity_range = {0.2, 0.65},
+	intensity_range = {0.4, 0.77},
 	color_pool = {
 	  {r = 0, g = 0.4, b = 1.0},
 	  {r = 0.4, g = 0.2, b = 1.0},
@@ -506,6 +506,26 @@ function ei_draw_train_glow(train, params)
 	  apply_runtime_tint = glow_params.apply_runtime_tint,
 	  draw_as_glow = glow_params.draw_as_glow,
 	}
+  -- Apply the glow to each attached train car (wagon)
+  if train.train.carriages then
+	  for _, car in pairs(train.train.carriages) do
+		if car and car.valid then
+		  rendering.draw_light {
+			sprite = glow_params.sprite,
+			scale = scale,
+			intensity = intensity,
+			color = color,
+			target = car,
+			surface = car.surface,
+			time_to_live = glow_params.time_to_live,
+			players = game.connected_players,
+			blend_mode = glow_params.blend_mode,
+			apply_runtime_tint = glow_params.apply_runtime_tint,
+			draw_as_glow = glow_params.draw_as_glow,
+		  }
+		end
+	  end
+    end
 end
 
 
@@ -529,8 +549,8 @@ function model.set_burner(train, state)
     return "working"
 end
 
-function ei_draw_charger_glow(charger, params)
-     if not (charger and charger.valid) or not storage.ei.em_charger_glow_toggle then return end
+function ei_draw_charger_glow(charger, overrides)
+     if not (charger and charger.valid) or not storage.ei.em_charger_glow then return end
  
      local params = {
          sprite = "emt_charger_glow",
@@ -564,12 +584,12 @@ function ei_draw_charger_glow(charger, params)
              }
          }
      }
- 
-     -- override any top-level params if needed
-     for k, v in pairs(overrides or {}) do
-         params[k] = v
-     end
- 
+	if overrides then
+		 -- override any top-level params if needed
+		 for k, v in pairs(overrides or {}) do
+			 params[k] = v
+		 end
+	end
      -- always-on light (optional)
      rendering.draw_light {
          sprite = params.sprite,
@@ -588,11 +608,11 @@ function ei_draw_charger_glow(charger, params)
      -- randomize additional glow effects from each glow set
      for _, glow_set in pairs(params.glow_sets) do
 		local seed = "charger_glow_" .. tostring(i) .. "::" .. tostring(game.tick)
-		local set = ei_rng.int(seed, 1, #glow_sets)
-		local color_index = ei_rng.int(seed, 1, #glow_sets[set].colors)
-		local color = glow_sets[set].colors[color_index]
-		local intensity = math.max(0.2, glow_sets[set].intensity or 0.5)
-		local scale = math.max(0.75, glow_sets[set].scale or 1)
+		local set = ei_rng.int(seed, 1, #params.glow_sets)
+		local color_index = ei_rng.int(seed, 1, #params.glow_sets[set].colors)
+		local color = params.glow_sets[set].colors[color_index]
+		local intensity = math.max(0.2, params.glow_sets[set].intensity or 0.5)
+		local scale = math.max(0.75, params.glow_sets[set].scale or 1)
  
          rendering.draw_light {
              sprite = params.sprite,
