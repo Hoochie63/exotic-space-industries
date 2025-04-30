@@ -1,6 +1,6 @@
 
 local model = {}
-
+ei_rng = require("scripts/control/ei_rng")
 local presets = require("lib/spawner_presets")
 
 --====================================================================================================
@@ -353,8 +353,8 @@ function model.get_spawn_position(area)
 
     -- add some randomness to the spawn position
     local random_point = {
-        ["x"] = middle_point.x + math.random(-32, 32),
-        ["y"] = middle_point.y + math.random(-32, 32)
+        ["x"] = middle_point.x + ei_rng.int("alienrandx1", -32, 32),
+        ["y"] = middle_point.y + ei_rng.int("alienrandy1", -32, 32)
     }
 
     return random_point
@@ -399,7 +399,7 @@ function model.que_preset(pos, surface, tick)
     local legendary_range = 200
     local min_artifact_distance = 200
     local treshold = 90
-    local rand = math.random(1, 100)
+    local rand = ei_rng.int("alienquepreset1", 1, 100)
 
     if rand < treshold then
         return
@@ -416,7 +416,7 @@ function model.que_preset(pos, surface, tick)
     -- 70 = common, 80 = rare, 90 = very rare, 100 = legendary
     -- create random number between 1 and 100 and
 
-    local rarity = math.random(1, 100)
+    local rarity = ei_rng.int("alienquepreset2", 1, 100)
     local preset = nil
 
     if rarity < 25 then
@@ -509,7 +509,7 @@ function model.select_preset(rarity)
         return nil
     end
 
-    local rand = math.random(1, #preset_list)
+    local rand = ei_rng.int("alienpresetlist", 1, #preset_list)
 
     return preset_list[rand]
 
