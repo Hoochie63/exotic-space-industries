@@ -1,4 +1,13 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.5.7
+Date: 4-30-25
+    Changes:
+    -lang_ru updated by ashot15
+    Fixes:
+    -reforge_gaia behavior corrected, recursion stabilized
+    -alien_spawner.lua transitioned from math.rand to ei_rng
+
+---------------------------------------------------------------------------------------------------
 Version: 1.5.6
 Date: 4-19-25
     Changes:
