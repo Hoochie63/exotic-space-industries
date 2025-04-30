@@ -1,8 +1,11 @@
 ---------------------------------------------------------------------------------------------------
 Version: 1.5.7
 Date: 4-30-25
+    Additions:
+    -EM Train Carriages now glow alongside EM Locomotives
     Changes:
     -lang_ru updated by ashot15
+    -ei_rng switched from UPS expensive factorio rng to deterministic linear congruential generator
     Fixes:
     -reforge_gaia behavior corrected, recursion stabilized
     -alien_spawner.lua transitioned from math.rand to ei_rng
@@ -11,7 +14,7 @@ Date: 4-30-25
 Version: 1.5.6
 Date: 4-19-25
     Changes:
-    -All math.rand switched to mp friendly synced variants reported by @debuasgaming
+    -All (newly coded) math.rand switched to mp friendly synced variants reported by @debuasgaming
 ---------------------------------------------------------------------------------------------------
 Version: 1.5.5
 Date: 4-17-25
