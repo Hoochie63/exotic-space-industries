@@ -10,16 +10,6 @@ local tier = 0
 
 for _,tech in pairs(data.raw.technology) do
 
-  if tech.prerequisites then
-    for i,t in ipairs(tech.prerequisites) do 
-      if not data.raw.technology[t] then
-        table.remove(data.raw.technology[tech.name].prerequisites, i)
-      elseif data.raw.technology[t].hidden then
-        table.remove(data.raw.technology[tech.name].prerequisites, i)
-      end
-    end
-  end
-
   if ei_lib.config("tech-tree-flatten") then
     for i = 1,4 do
       if tonumber(string.sub(tech.name, -i)) then 
@@ -173,6 +163,7 @@ ei_lib.add_prerequisite("laser-turret","laser")
 ei_lib.add_prerequisite("laser-weapons-damage-1","laser")
 ei_lib.add_prerequisite("personal-laser-defense-equipment","laser")
 ei_lib.add_prerequisite("ei-personal-laser","laser")
+ei_lib.add_prerequisite("ei-black-hole-exploration","ei-fusion-drive")
 
 ei_lib.set_prerequisites("burner-mechanics",{"ei-dark-age"})
 ei_lib.set_prerequisites("kr-automation-core",{"ei-dark-age"})
@@ -194,6 +185,9 @@ ei_lib.set_prerequisites("artillery-shell-speed-1",{"artillery"})
 ei_lib.set_prerequisites("artillery-shell-damage-1",{"artillery"})
 
 ei_lib.set_prerequisites("nuclear-power",{"uranium-mining"})
+
+ei_lib.set_prerequisites("kr-fusion-energy",{"lithium-processing","nuclear-power"})
+ei_lib.set_prerequisites("captive-biter-spawner",{"cryogenic-science-pack","biter-egg-handling"})
 
 -- ======================================================================================
 
