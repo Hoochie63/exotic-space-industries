@@ -1,7 +1,7 @@
 ei_rng = {}
 
 -- Toggle for in-game print debug
-local debug_rng = true
+local debug_rng = false
 
 -- Internal entropy
 local rng_counter = 0

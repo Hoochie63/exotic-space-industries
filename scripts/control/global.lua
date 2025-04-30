@@ -58,29 +58,29 @@ end
 function ei_global.check_init()
     -- TODO: dont hardcode this
     if not storage.ei then
-        storage.ei = {}
-        local que = ei_lib.config("em_updater_que") or "Beam"
-        if que == "Beam" then
-            storage.ei.em_train_que = 1
-        elseif que == "Ring" then
-            storage.ei.em_train_que = 2 --faster to compare a number
-        else
-            storage.ei.em_train_que = 0
-        end
-        local que_width = ei_lib.config("em_updater_que_width") or 6
-        storage.ei.que_width = que_width
-        local que_transparency = ei_lib.config("em_updater_que_transparency") or 80
-        storage.ei.que_transparency = que_transparency/100
-        local que_timetolive = ei_lib.config("em_updater_que_timetolive") or 60
-        storage.ei.que_timetolive = que_timetolive
-        local trainGlowToggle = ei_lib.config("em_train_glow_toggle") or true
-        storage.ei.em_train_glow_toggle = trainGlowToggle
-        local trainGlowTimeToLive = ei_lib.config("em_train_glow_timetolive") or 60
-        storage.ei.em_train_glow_timeToLive = trainGlowTimeToLive
-        local chargerGlowToggle = ei_lib.config("em_charger_glow_toggle") or true
-        storage.ei.em_charger_glow = true
-        local chargerGlowTimeToLive = ei_lib.config("em_charger_glow_timetolive") or 60
-        storage.ei.em_charger_glow_timeToLive = chargerGlowTimeToLive
+	storage.ei = {}
+	local que = ei_lib.config("em_updater_que") or "Beam"
+	if que == "Beam" then
+		storage.ei.em_train_que = 1
+	elseif que == "Ring" then
+		storage.ei.em_train_que = 2 --faster to compare a number
+	else
+		storage.ei.em_train_que = 0
+	end
+	local que_width = ei_lib.config("em_updater_que_width") or 6
+	storage.ei.que_width = que_width
+	local que_transparency = ei_lib.config("em_updater_que_transparency") or 80
+	storage.ei.que_transparency = que_transparency/100
+	local que_timetolive = ei_lib.config("em_updater_que_timetolive") or 60
+	storage.ei.que_timetolive = que_timetolive
+	local trainGlowToggle = ei_lib.config("em_train_glow_toggle") or true
+	storage.ei.em_train_glow_toggle = trainGlowToggle
+	local trainGlowTimeToLive = ei_lib.config("em_train_glow_timetolive") or 60
+	storage.ei.em_train_glow_timeToLive = trainGlowTimeToLive
+	local chargerGlowToggle = ei_lib.config("em_charger_glow_toggle") or true
+	storage.ei.em_charger_glow = true
+	local chargerGlowTimeToLive = ei_lib.config("em_charger_glow_timetolive") or 60
+	storage.ei.em_charger_glow_timeToLive = chargerGlowTimeToLive
     end
 
     if not storage.ei["tech_scaling"] then
