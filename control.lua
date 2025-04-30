@@ -7,6 +7,16 @@ if script.active_mods["gvv"] then require("__gvv__.gvv")() end
 ei_lib = require("lib/lib")
 ei_data = require("lib/data")
 
+local ok, result = pcall(function()
+  return require("scripts/control/ei_rng")
+end)
+ei_rng = result
+if not ok then
+  log("‼️ Failed to require ei_rng: " .. tostring(result))
+else
+  log("✅ ei_rng loaded.")
+end
+
 local ei_tech_scaling = require("scripts/control/tech_scaling")
 local ei_global = require("scripts/control/global")
 local ei_register = require("scripts/control/register_util")
@@ -114,7 +124,26 @@ script.on_nth_tick(settings.startup["ei-ticks_per_spaced_update"].value, functio
 end)
 ]]
 script.on_nth_tick(240, function(e)
-    ei_compat.nth_tick(e)
+  ei_compat.nth_tick(e)
+
+  -- Deferred Gaia surface recreation (after request_to_delete)
+  if storage.ei and storage.ei.defer_gaia_recreation and not game.surfaces["gaia"] then
+    local settings = storage.ei.gaia_settings
+    if settings then
+      local ok, result = pcall(function()
+        return game.create_surface("gaia", settings)
+      end)
+      if ok and result then
+        ei_lib.crystal_echo("✧ [Gaia Restored] — Her surface blooms anew.")
+      else
+        ei_lib.crystal_echo("☠ [Restoration Failed] — Gaia surface creation returned error.")
+      end
+    else
+      ei_lib.crystal_echo("☠ [Missing Settings] — No gaia_settings found in storage.ei.")
+    end
+    storage.ei.defer_gaia_recreation = nil
+    storage.ei.gaia_settings = nil
+  end
 end)
 
 script.on_event(defines.events.on_console_command, function(e)
@@ -283,6 +312,10 @@ local patch_resources = {
 }
 
 function surface_contains_any_resources(surface)
+  if not surface or not surface.count_entities_filtered then
+    log("surface_contains_any_resources: invalid surface object passed")
+    return false
+  end
   for _, resource_name in pairs(patch_resources) do
     local found = surface.count_entities_filtered{
       name = resource_name,
@@ -295,78 +328,115 @@ function surface_contains_any_resources(surface)
   return false
 end
 
+
 function reforge_gaia_surface()
-  local surface = game.surfaces["gaia"]
+	local name = "gaia"
+	local planet = game.planets[name]
+	local patch_resources = {
+	"ei-phytogas-patch", "ei-cryoflux-patch", "ei-ammonia-patch",
+	"ei-morphium-patch", "ei-coal-gas-patch"
+	}
 
-  if not surface then
-    ei_lib.crystal_echo("☄ [Null Echo Detected] — Gaia does not exist in this filament. Initiating planetary weave manifest...")
-    game.planets["gaia"].create_surface()
-  end
+	local gaia_settings = {
+	name = name,
+	cliff_settings = { cliff_elevation_0 = 0, cliff_elevation_interval = 0, richness = 0 },
+	autoplace_controls = {},
+	autoplace_settings = {
+	  entity = { settings = {} },
+	  tile = { settings = {
+		["ei-gaia-grass-1"] = {}, ["ei-gaia-grass-2"] = {},
+		["ei-gaia-grass-1-var"] = {}, ["ei-gaia-grass-2-var"] = {},
+		["ei-gaia-grass-2-var-2"] = {}, ["ei-gaia-rock-1"] = {},
+		["ei-gaia-rock-2"] = {}, ["ei-gaia-rock-3"] = {},
+		["ei-gaia-water"] = {}
+	  }}
+	}
+	}
 
+	for _, r in ipairs(patch_resources) do
+		gaia_settings.autoplace_controls[r] = {frequency = 5, size = 1, richness = 1}
+		gaia_settings.autoplace_settings.entity.settings[r] = {frequency = 5, size = 1, richness = 1}
+	end
 
+	local function compute_checksum(settings)
+	local serialized = serpent.block(settings, {sortkeys = true, numformat = '%0.8f'})
+	local sum = 0
+	for i = 1, #serialized do
+	  sum = (sum + serialized:byte(i)) % 2147483647
+	end
+	return sum
+	end
 
-  -- Search the ley lines for resonance
-  local has_any, res_name, count = surface_contains_any_resources(surface)
+	if not planet then
+		ei_lib.crystal_echo("☠ [Null Planet] — Gaia is undefined. Aborting ritual.")
+		return
+	end
 
-  if has_any then
-    ei_lib.crystal_echo("✔ [Echo Retained] — " .. res_name .. " detected (" .. count .. " crystalline signatures). Gaia remains sovereign.")
-    return
-  end
+	if not planet.surface then
+		ei_lib.crystal_echo("☄ [Gaia Exists But Is Unshaped] — Creating her surface now...")
+		planet.create_surface()
+	end
 
-  -- Evacuate all carbon units
-  for _, player in pairs(game.connected_players) do
-    if player.surface.name == "gaia" then
-      ei_lib.crystal_echo("⚠ [Bioform Displacement Protocol] — The Womb of Gaia trembles. You are being rewritten...")
-      player.teleport({0, 0}, "nauvis")
-    end
-  end
+	local surface = planet.surface
+	if not surface then
+		ei_lib.crystal_echo("☠ [Surface Null] — Gaia creation failed. Terminating.")
+		return
+	end
 
-  -- Begin the ritual collapse
-  ei_lib.crystal_echo("✖ [Silence in the Veins] — No known soul-stones resonate. Commencing structural entropy...")
+	local actual = compute_checksum(surface.map_gen_settings)
+	local expected = compute_checksum(gaia_settings)
 
-  game.delete_surface(surface)
-  ei_lib.crystal_echo("⌬ [Astral Scaffold Deconstructed] — Gaia has been unshaped. Preparing for spectral convergence...")
+	if actual == expected then
+	local has_any, res_name, count = surface_contains_any_resources(surface)
+	if has_any then
+	  ei_lib.crystal_echo("✔ [Echo Retained] — " .. res_name .. " detected (" .. count .. " crystalline signatures). Gaia remains sovereign.")
+	  return
+	end
+	end
 
-  local name = "gaia"
-  local surface = game.surfaces[name]
-  local patch_resources = {"ei-phytogas-patch", "ei-cryoflux-patch", "ei-ammonia-patch", "ei-morphium-patch", "ei-coal-gas-patch"}
+	-- Evacuate players from Gaia
+	for _, player in pairs(game.connected_players) do
+	if player.surface.name == name then
+	  ei_lib.crystal_echo("⚠ [Bioform Displacement Protocol] — Rewriting player: " .. player.name)
+	  player.teleport({0, 0}, "nauvis")
+	end
+	end
 
-  local gaia_settings = {
-    name = name,
-    cliff_settings = { cliff_elevation_0 = 0, cliff_elevation_interval = 0, richness = 0 },
-    autoplace_controls = {},
-    autoplace_settings = {
-      entity = { settings = {} },
-      tile = { settings = {
-        ["ei-gaia-grass-1"] = {}, ["ei-gaia-grass-2"] = {},
-        ["ei-gaia-grass-1-var"] = {}, ["ei-gaia-grass-2-var"] = {},
-        ["ei-gaia-grass-2-var-2"] = {}, ["ei-gaia-rock-1"] = {},
-        ["ei-gaia-rock-2"] = {}, ["ei-gaia-rock-3"] = {},
-        ["ei-gaia-water"] = {}
-      }}
-    }
-  }
+	ei_lib.crystal_echo("✖ [Silence in the Veins] — No soul-stones resonate. Requesting Gaia's collapse...")
 
-  -- Set patch frequencies
-  for _, r in ipairs(patch_resources) do
-    gaia_settings.autoplace_controls[r] = {frequency = 5, size = 1, richness = 1}
-    gaia_settings.autoplace_settings.entity.settings[r] = {frequency = 5, size = 1, richness = 1}
-  end
+	local ok = false
 
-  local new_surface = game.create_surface(name, gaia_settings)
+	-- Try request_to_delete_surface
+	local success, err = pcall(function()
+	  if type(planet.request_to_delete_surface) == "function" then
+		planet:request_to_delete_surface()
+		ei_lib.crystal_echo("⌬ [Deletion Requested] — Awaiting planetary collapse...")
+		storage.ei.defer_gaia_recreation = true
+		storage.ei.gaia_settings = gaia_settings
+		ok = true
+	  end
+	end)
 
-  if new_surface then
-    ei_lib.crystal_echo("✧ [Bloom Reinitiated] — The harmonic skeleton has reemerged. Awaiting resource resonance...")
-  else
-    ei_lib.crystal_echo("☠ [Aether Refused] — Gaia's essence resisted the invocation. Consult the Crystal Chorus.")
-  end
-  count = surface_contains_any_resources(new_surface)
-  if not count then
-      ei_lib.crystal_echo("✖ [Gaian Echo Lost] — No soulstone signature recovered. The garden lies fallow. Restarting terraformation incantation...","default-bold")
- else
-     ei_lib.crystal_echo("⛧ [Core Integrity Verified] — Autogenic substrate lattice normalized. Biome reformation phase stabilized.")
- end
+	-- Fallback if it errored or method not present
+	if not success or not ok then
+	  ei_lib.crystal_echo("⚠ [Fallback] — request_to_delete_surface unavailable or errored. Trying hard delete...")
+	  if planet.surface and game.delete_surface then
+		game.delete_surface(planet.surface)
+		ei_lib.crystal_echo("⌬ [Surface Deleted Instantly] — Fallback succeeded.")
+		local created, new_surface = pcall(function()
+		  return game.create_surface(name, gaia_settings)
+		end)
+		if created and new_surface then
+		  ei_lib.crystal_echo("✧ [Gaia Restored Instantly] — No waiting required.")
+		else
+		  ei_lib.crystal_echo("☠ [Instant Recreation Failed] — Even fallback path failed.")
+		end
+	  else
+		ei_lib.crystal_echo("☠ [Terminal Failure] — Cannot delete or recreate Gaia.")
+	  end
+	end
 end
+
 
 
 script.on_configuration_changed(function(e)
@@ -384,20 +454,29 @@ script.on_configuration_changed(function(e)
     else
         storage.ei.em_train_que = 0
     end
-    local que_width = ei_lib.config("em_updater_que_width") or 6
-    storage.ei.que_width = que_width
-    local que_transparency = ei_lib.config("em_updater_que_transparency") or 80
-    storage.ei.que_transparency = que_transparency/100
-    local que_timetolive = ei_lib.config("em_updater_que_timetolive") or 60
-    storage.ei.que_timetolive = que_timetolive
-    local trainGlowToggle = ei_lib.config("em_train_glow_toggle") or true
-    storage.ei.em_train_glow_toggle = trainGlowToggle
-    local trainGlowTimeToLive = ei_lib.config("em_train_glow_timetolive") or 60
-    storage.ei.em_train_glow_timeToLive = trainGlowTimeToLive
-    local chargerGlowToggle = ei_lib.config("em_charger_glow_toggle") or true
-    storage.ei.em_charger_glow = true
-    local chargerGlowTimeToLive = ei_lib.config("em_charger_glow_timetolive") or 60
-    storage.ei.em_charger_glow_timeToLive = chargerGlowTimeToLive
+	local val
+
+	val = ei_lib.config("em_updater_que_width")
+	storage.ei.que_width = (val ~= nil) and val or 6
+
+	val = ei_lib.config("em_updater_que_transparency")
+	storage.ei.que_transparency = ((val ~= nil) and val or 80) / 100
+
+	val = ei_lib.config("em_updater_que_timetolive")
+	storage.ei.que_timetolive = (val ~= nil) and val or 60
+
+	val = ei_lib.config("em_train_glow_toggle")
+	storage.ei.em_train_glow_toggle = (val ~= nil) and val or true
+
+	val = ei_lib.config("em_train_glow_timetolive")
+	storage.ei.em_train_glow_timeToLive = (val ~= nil) and val or 60
+
+	val = ei_lib.config("em_charger_glow_toggle")
+	storage.ei.em_charger_glow = (val ~= nil) and val or true
+	ei_lib.crystal_echo("Charger glow is: " .. tostring(storage.ei.em_charger_glow))
+
+	val = ei_lib.config("em_charger_glow_timetolive")
+	storage.ei.em_charger_glow_timeToLive = (val ~= nil) and val or 60
     local modes = {
         [0] = "✦ NULL-STATE :: INERTIA LOCKED",
         [1] = "✴ AXIS-FIRE :: DIRECTED CONVERGENCE BEAM",

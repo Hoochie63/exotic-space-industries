@@ -29,21 +29,28 @@ function ei_global.init()
     else
         storage.ei.em_train_que = 0
     end
-    local que_width = ei_lib.config("em_updater_que_width") or 6
-    storage.ei.que_width = que_width
-    local que_transparency = ei_lib.config("em_updater_que_transparency") or 80
-    storage.ei.que_transparency = que_transparency/100
-    local que_timetolive = ei_lib.config("em_updater_que_timetolive") or 60
-    storage.ei.que_timetolive = que_timetolive
-    local trainGlowToggle = ei_lib.config("em_train_glow_toggle") or true
-    storage.ei.em_train_glow_toggle = trainGlowToggle
-    local trainGlowTimeToLive = ei_lib.config("em_train_glow_timetolive") or 60
-    storage.ei.em_train_glow_timeToLive = trainGlowTimeToLive
-    local chargerGlowToggle = ei_lib.config("em_charger_glow_toggle") or true
-    storage.ei.em_charger_glow = true
-    local chargerGlowTimeToLive = ei_lib.config("em_charger_glow_timetolive") or 60
-    storage.ei.em_charger_glow_timeToLive = chargerGlowTimeToLive
+	local val
 
+	val = ei_lib.config("em_updater_que_width")
+	storage.ei.que_width = (val ~= nil) and val or 6
+
+	val = ei_lib.config("em_updater_que_transparency")
+	storage.ei.que_transparency = ((val ~= nil) and val or 80) / 100
+
+	val = ei_lib.config("em_updater_que_timetolive")
+	storage.ei.que_timetolive = (val ~= nil) and val or 60
+
+	val = ei_lib.config("em_train_glow_toggle")
+	storage.ei.em_train_glow_toggle = (val ~= nil) and val or true
+
+	val = ei_lib.config("em_train_glow_timetolive")
+	storage.ei.em_train_glow_timeToLive = (val ~= nil) and val or 60
+
+	val = ei_lib.config("em_charger_glow_toggle")
+	storage.ei.em_charger_glow = (val ~= nil) and val or true
+
+	val = ei_lib.config("em_charger_glow_timetolive")
+	storage.ei.em_charger_glow_timeToLive = (val ~= nil) and val or 60
     ei_lib.crystal_echo("»» INITIALIZING SYSTEM CORE: ＥＸＯＴＩＣ ＳＰΛＣΣ ＩＮＤＵＳＴＲＩＥＳ ««","default-bold")
     ei_lib.crystal_echo(">> Integrating chronometric lattices... Binding entropy to mass... Stand by.","default-semibold")
 end

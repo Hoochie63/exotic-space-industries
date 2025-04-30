@@ -462,61 +462,52 @@ function model.cast_beam(charger, train)
     end
 end
 
-
 function ei_draw_train_glow(train, params)
-    if not (train and train.valid) or not storage.ei.em_train_glow_toggle then return end
-    --if not train.burner or not train.burner.remaining_burning_fuel then return end
+	if not (train and train.valid) or not storage.ei.em_train_glow_toggle then return end
 
-    -- fallback defaults
-    local glow_params = {
-        sprite = "emt_train_glow",
-        scale_range = {1, 4},
-        intensity_range = {0.15, 0.65},
-        color_pool = {
-            {r = 0, g = 0.4, b = 1.0},
-            {r = 0.4, g = 0.2, b = 1.0},
-            {r = 0.2, g = 0.2, b = 1.0},
-            {r = 0.4, g = 0.1, b = 0.8},
-        },
-        blend_mode = "multiplicative",
-        apply_runtime_tint = true,
-        draw_as_glow = true,
-        time_to_live = storage.ei.em_train_glow_timeToLive, --blur into one another
-        count = 1 -- number of lights to spawn
-    }
-    if params then
-        if not params.draw_as_glow then --randomizee if not specified
-            local pick1 = ei_rng.int("bang",1,2)
-            if pick1 == 1 then
-                glow_params.draw_as_glow = false
-            end
-        end
-    end
-    -- override defaults with user params if provided
-    for k, v in pairs(params or {}) do
-        glow_params[k] = v
-    end
+	local glow_params = {
+	sprite = "emt_train_glow",
+	scale_range = {1, 4},
+	intensity_range = {0.2, 0.65},
+	color_pool = {
+	  {r = 0, g = 0.4, b = 1.0},
+	  {r = 0.4, g = 0.2, b = 1.0},
+	  {r = 0.2, g = 0.2, b = 1.0},
+	  {r = 0.4, g = 0.1, b = 0.8},
+	},
+	blend_mode = "multiplicative",
+	apply_runtime_tint = true,
+	draw_as_glow = true,
+	time_to_live = storage.ei.em_train_glow_timeToLive,
+	count = 1
+	}
 
-    for _ = 1, glow_params.count do
-        local color = glow_params.color_pool[ei_rng.int("trainglow",1,#glow_params.color_pool)]
-        local scale = ei_rng.float("trainglowscale") * (glow_params.scale_range[2] - glow_params.scale_range[1]) + glow_params.scale_range[1]
-        local intensity = ei_rng.float("trainglowintensity") * (glow_params.intensity_range[2] - glow_params.intensity_range[1]) + glow_params.intensity_range[1]
+	if params then
+	for k, v in pairs(params) do
+	  glow_params[k] = v
+	end
+	end
 
-        rendering.draw_light {
-            sprite = glow_params.sprite,
-            scale = scale,
-            intensity = intensity,
-            color = color,
-            target = train,
-            surface = train.surface,
-            time_to_live = storage.ei.em_train_glow_timeToLive,
-            players = game.connected_players,
-            blend_mode = glow_params.blend_mode,
-            apply_runtime_tint = glow_params.apply_runtime_tint,
-            draw_as_glow = glow_params.draw_as_glow,
-        }
-    end
+	local color_index = ei_rng.int("trainglow", 1, #glow_params.color_pool)
+	local color = glow_params.color_pool[color_index]
+	local scale = ei_rng.int("trainglowscale",glow_params.scale_range[1],glow_params.scale_range[2])
+	local intensity = ei_rng.float("trainglowintensity",glow_params.intensity_range[1],glow_params.intensity_range[2])
+
+	rendering.draw_light {
+	  sprite = glow_params.sprite,
+	  scale = scale,
+	  intensity = intensity,
+	  color = color,
+	  target = train,
+	  surface = train.surface,
+	  time_to_live = glow_params.time_to_live,
+	  players = game.connected_players,
+	  blend_mode = glow_params.blend_mode,
+	  apply_runtime_tint = glow_params.apply_runtime_tint,
+	  draw_as_glow = glow_params.draw_as_glow,
+	}
 end
+
 
 function model.set_burner(train, state)
     if not train or not train.burner then return "error" end
@@ -596,9 +587,12 @@ function ei_draw_charger_glow(charger, params)
  
      -- randomize additional glow effects from each glow set
      for _, glow_set in pairs(params.glow_sets) do
-         local color = glow_set.colors[ei_rng.int("trainglowscale",1,#glow_set.colors)]
-         local intensity = glow_set.intensity or 0.5
-         local scale = glow_set.scale or 1
+		local seed = "charger_glow_" .. tostring(i) .. "::" .. tostring(game.tick)
+		local set = ei_rng.int(seed, 1, #glow_sets)
+		local color_index = ei_rng.int(seed, 1, #glow_sets[set].colors)
+		local color = glow_sets[set].colors[color_index]
+		local intensity = math.max(0.2, glow_sets[set].intensity or 0.5)
+		local scale = math.max(0.75, glow_sets[set].scale or 1)
  
          rendering.draw_light {
              sprite = params.sprite,
@@ -673,7 +667,7 @@ function model.find_charger(train)
                             end
                         if ei_rng.int("trainglowscale",1,40) == 1 then
                             local offset_x = (ei_rng.float("chargerbeamx")) * 50  -- random between -50 and +50
-                            local offset_y = (er_rng.float("chargerbeamy")) * 50
+                            local offset_y = (ei_rng.float("chargerbeamy")) * 50
                             local target_position = {
                                 x = v.entity.position.x + offset_x,
                                 y = v.entity.position.y + offset_y
