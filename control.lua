@@ -301,7 +301,6 @@ function reforge_gaia_surface()
   if not surface then
     ei_lib.crystal_echo("☄ [Null Echo Detected] — Gaia does not exist in this filament. Initiating planetary weave manifest...")
     game.planets["gaia"].create_surface()
-    return
   end
 
 
@@ -328,7 +327,33 @@ function reforge_gaia_surface()
   game.delete_surface(surface)
   ei_lib.crystal_echo("⌬ [Astral Scaffold Deconstructed] — Gaia has been unshaped. Preparing for spectral convergence...")
 
-  local new_surface = game.planets["gaia"].create_surface()
+  local name = "gaia"
+  local surface = game.surfaces[name]
+  local patch_resources = {"ei-phytogas-patch", "ei-cryoflux-patch", "ei-ammonia-patch", "ei-morphium-patch", "ei-coal-gas-patch"}
+
+  local gaia_settings = {
+    name = name,
+    cliff_settings = { cliff_elevation_0 = 0, cliff_elevation_interval = 0, richness = 0 },
+    autoplace_controls = {},
+    autoplace_settings = {
+      entity = { settings = {} },
+      tile = { settings = {
+        ["ei-gaia-grass-1"] = {}, ["ei-gaia-grass-2"] = {},
+        ["ei-gaia-grass-1-var"] = {}, ["ei-gaia-grass-2-var"] = {},
+        ["ei-gaia-grass-2-var-2"] = {}, ["ei-gaia-rock-1"] = {},
+        ["ei-gaia-rock-2"] = {}, ["ei-gaia-rock-3"] = {},
+        ["ei-gaia-water"] = {}
+      }}
+    }
+  }
+
+  -- Set patch frequencies
+  for _, r in ipairs(patch_resources) do
+    gaia_settings.autoplace_controls[r] = {frequency = 5, size = 1, richness = 1}
+    gaia_settings.autoplace_settings.entity.settings[r] = {frequency = 5, size = 1, richness = 1}
+  end
+
+  local new_surface = game.create_surface(name, gaia_settings)
 
   if new_surface then
     ei_lib.crystal_echo("✧ [Bloom Reinitiated] — The harmonic skeleton has reemerged. Awaiting resource resonance...")
@@ -336,9 +361,8 @@ function reforge_gaia_surface()
     ei_lib.crystal_echo("☠ [Aether Refused] — Gaia's essence resisted the invocation. Consult the Crystal Chorus.")
   end
   count = surface_contains_any_resources(new_surface)
-  if not count then --try again.. could be infinitely recursive.. probably not tho
+  if not count then
       ei_lib.crystal_echo("✖ [Gaian Echo Lost] — No soulstone signature recovered. The garden lies fallow. Restarting terraformation incantation...","default-bold")
-      reforge_gaia_surface()
  else
      ei_lib.crystal_echo("⛧ [Core Integrity Verified] — Autogenic substrate lattice normalized. Biome reformation phase stabilized.")
  end
