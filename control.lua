@@ -7,7 +7,7 @@ require("util")
 ei_lib = require("lib/lib")
 ei_data = require("lib/data")
 
--- Used if gaia spawned in malformed, called in nth tick and/or reforge_gaia
+-- Used if gaia spawned in malformed, called in reforge_gaia
 local ei_full_gaia_map_gen_settings = require("prototypes/alien_structures/reforge-gaia-table")
 
 local ok, result = pcall(function()
@@ -78,7 +78,7 @@ script.on_init(function()
     ei_compat.check_init()
     orbital_combinator.check_init()
     ei_lib.crystal_echo("☄ [Somnolent Awakening] — Gaia stirs from her dream-slumber; her shell begins to coalesce…")
-    game.planets["Gaia"].create_surface() --works
+    game.planets["Gaia"]:create_surface(ei_full_gaia_map_gen_settings) --works
     ei_lib.crystal_echo("✧ [Awakened Triumph] — Gaias shell stands firm, yet the dreams murmur endures…")
     ei_lib.crystal_echo("✧ [Gaias Heart] — The crystalline veins of Gaia pulse with life, awaiting the touch of her children…") 
     storage.ei.gaia_reforged = 1 --0=pre reforge, 1 = post reforge/valid surface, additional #s for future planetary evolution
@@ -128,33 +128,9 @@ script.on_nth_tick(settings.startup["ei-ticks_per_spaced_update"].value, functio
     spaced_updater()
 end)
 ]]
--- deferred recreation on nth_tick
--- this is a workaround for the fact that game.create_surface() doesn't work/well in on_init
+
 script.on_nth_tick(6000, function(e)
     ei_compat.nth_tick(e)
-  
-    if storage.ei and storage.ei.defer_gaia_recreation and not game.surfaces["gaia"] then
-      local settings = ei_full_gaia_map_gen_settings
-      if not settings then
-        ei_lib.crystal_echo("☠ [Echo Lost in the Abyss] — No sacred sigils remain to beckon Gaia’s rebirth.")
-      else
-        -- use util.table.deepcopy instead of table.deepcopy
-        local map_gen = util.table.deepcopy(ei_full_gaia_map_gen_settings)
-        map_gen.name  = nil
-  
-        local ok, surf = pcall(function()
-          return game.create_surface("Gaia", map_gen)
-        end)
-        if ok and surf then
-          ei_lib.crystal_echo("✧ [Gaia Restored] — Her surface blooms anew.")
-          storage.ei.gaia_reforged = 1
-        else
-            ei_lib.crystal_echo("☠ [Invocation Fracture] — Ritual threads snap, and Gaia’s surface slumbers in endless dusk.")
-        end
-      end
-  
-      storage.ei.defer_gaia_recreation = nil
-    end
   end)
   
 
@@ -339,104 +315,88 @@ function surface_contains_any_resources(surface)
   end
   return false
 end
+
 --Uncomment me to teleport to Gaia to test reforge_gaia_surface produced valid result :)
 --[[
-commands.add_command("goto-gaia", "Step onto the crystalline veins of Gaia", function(cmd)
+commands.add_command("goto-gaia", "Teleport to Gaia's surface", function(cmd)
     local player = game.get_player(cmd.player_index)
-    if not player or not game.surfaces["Gaia"] then return end
-    player.teleport({0, 0}, "Gaia")
-    ei_lib.crystal_echo("✧ You stand upon Gaia’s heartstone. ✧")
-  end)
+    if not player then return end
+    local planet = game.planets["Gaia"]
+    local surface = planet and planet.surface
+    if not surface then
+        player.print("[Exotic Space Industries] Gaia surface not found.")
+        return
+    end
+    local position = {0, 0}  -- center of the world
+    player.teleport(position, surface)
+    ei_lib.crystal_echo("✈ [Astral Transit] — " .. player.name .. " arrives upon Gaia’s crust.")
+end)
 ]]
 function reforge_gaia_surface()
     if storage.ei.gaia_reforged == 1 then return end
-    local name    = "Gaia"
-    local planet  = game.planets[name]
+    local planet_name = "Gaia"
+    local planet = game.planets[planet_name]
     if not planet then
-        ei_lib.crystal_echo("☠ [Void’s Echo] — Gaias name lies unwritten; the rite dissolves into silent void.")
+        ei_lib.crystal_echo("☠ [Void’s Echo] — Gaia’s name lies unwritten; the rite dissolves into silent void.")
         return
     end
-  
-    -- 1) Ensure the surface exists
-    if not planet.surface then
-        ei_lib.crystal_echo("☄ [Dreamforged Dawn] — Gaia stirs beyond the veil of slumber; her crust coalesces from the formless night…")
 
-      planet:create_surface()
-    end
-    local surface = planet.surface
-    if not surface then
-        ei_lib.crystal_echo("☠ [Abyssal Silence] — Gaia’s mantle shatters in void’s embrace; the ritual sinks into oblivion.")
-      return
-    end
-  
-    -- 2) Check if the surface is already in the right state (Including morphium as water)
     local gaia_settings = ei_full_gaia_map_gen_settings
-  
-    -- 3) If the world already matches and still has resources, do nothing
     local function checksum(tbl)
-      local s = serpent.block(tbl, {sortkeys=true, numformat="%0.8f"})
-      local sum = 0
-      for i=1,#s do sum = (sum + s:byte(i)) % 2147483647 end
-      return sum
+        local s = serpent.block(tbl, {sortkeys=true, numformat="%0.8f"})
+        local sum = 0 for i = 1, #s do sum = (sum + s:byte(i)) % 2147483647 end
+        return sum
     end
-    if checksum(surface.map_gen_settings) == checksum(gaia_settings) then
-      local has, res, cnt = surface_contains_any_resources(surface)
-      if has then
-        ei_lib.crystal_echo("✔ [Echo Intact] — "..res.." crystals detected ("..cnt.."). Gaia stands.")
-        return --Stop here if checksum good and resources exist
-      end
-    end
-  
-    -- 4) Evacuate any players still on Gaia
-    for _,player in pairs(game.connected_players) do
-      if player.surface.name == name then
-        ei_lib.crystal_echo("⚠ [Displacement] — Shunting "..player.name.." off world.")
-        local playerX = ei_rng.int(player.name .. "-x", 0, 20)
-        local playerY = ei_rng.int(player.name .. "-y", 0, 20)
-        if not playerX then playerX = 0 end
-        if not playerY then playerY = 0 end
-        player.teleport({playerX,playerY}, "nauvis")
-        youHaveArrived(player)
-      end
-    end
-  
-    ei_lib.crystal_echo("✖ [Silence] — No crystal veins resonate. Calling Gaia into the void…")
-  
-    -- 5) Try the high-level planetary API first
-    local deferred = false
-    pcall(function()
-      if type(planet.request_to_delete_surface) == "function" then
-        planet:request_to_delete_surface()
-        storage.ei.defer_gaia_recreation = true
-        ei_lib.crystal_echo("⌬ [Celestial Sundering] — Threads of Gaia’s world unwind; the void readies for her rebirth.")
-        deferred = true
-      end
-    end)
-  
-    -- 6) Fallback: immediate hard-delete + instant recreate
-    if not deferred then
-      ei_lib.crystal_echo("⚠ [Primordial Schism] — Gaia’s essence fractures as the void swallows her form…")
-      game.delete_surface(name)
-      ei_lib.crystal_echo("⌬ [Shattered Strata] — Gaia’s husk dissolves; a new dawn stirs within the void.")
-  
-      -- strip off the name for the low-level API
-      local map_gen = util.table.deepcopy(gaia_settings)
-      map_gen.name = nil
-  
-      local ok, surf = pcall(function()
-        return game.create_surface(name, map_gen)
-      end)
-      if ok and surf then
-        ei_lib.crystal_echo("✧ [Resurrection] — Gaia’s heart ignites once more.")
-        storage.ei.gaia_reforged = 1
-      else
-        ei_lib.crystal_echo("☠ [Invocation Fracture] — Ritual threads snap; dusk endures.")
-        storage.ei.defer_gaia_recreation = true --hail mary
-      end
-    end
-  end
-  
 
+    -- 1) Grab old Gaia surface, if any
+    local old_surface = planet.surface
+
+    -- 2) If old exists and matches desired settings with resources, do nothing
+    if old_surface and old_surface.valid then
+        if checksum(old_surface.map_gen_settings) == checksum(gaia_settings) then
+            local has, res, cnt = surface_contains_any_resources(old_surface)
+            if has then
+                ei_lib.crystal_echo("✔ [Echo Intact] — " .. res .. " crystals detected (" .. cnt .. "). Gaia stands.")
+                storage.ei.gaia_reforged = 1
+                return
+            end
+        end
+    end
+
+    -- 3) Evacuate any players still on old Gaia
+    if old_surface and old_surface.valid then
+        for _, player in pairs(game.connected_players) do
+            if player.surface == old_surface then
+                ei_lib.crystal_echo("⚠ [Displacement] — Shunting " .. player.name .. " off world.")
+                local x = ei_rng.int(player.name .. "-x", 0, 20) or 0
+                local y = ei_rng.int(player.name .. "-y", 0, 20) or 0
+                player.teleport({x, y}, "nauvis")
+                youHaveArrived(player)
+            end
+        end
+        ei_lib.crystal_echo("✖ [Silence] — No crystal veins resonate. Calling Gaia into the void…")
+    end
+
+    -- 4) Stage a new surface via low-level API
+    local map_gen = util.table.deepcopy(gaia_settings)
+    map_gen.name = nil
+    local new_surface = game.create_surface(planet_name, map_gen)
+    if not new_surface or not new_surface.valid then
+        ei_lib.crystal_echo("☠ [Invocation Fracture] — Failed to birth Gaia’s new form; dusk endures.")
+        return
+    end
+
+    -- 5) Associate new surface with the planet
+    planet.associate_surface(new_surface)
+
+    -- 6) Delete old surface after associating
+    if old_surface and old_surface.valid then
+        game.delete_surface(old_surface.name)
+    end
+
+    ei_lib.crystal_echo("✧ [Resurrection] — Gaia’s heart ignites once more upon a cleansed crust.")
+    storage.ei.gaia_reforged = 1
+end
 
 
 script.on_configuration_changed(function(e)
