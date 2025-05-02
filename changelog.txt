@@ -7,7 +7,7 @@ Date: 4-30-25
     -lang_ru updated by ashot15
     -ei_rng switched from UPS expensive factorio rng to deterministic linear congruential generator
     Fixes:
-    -reforge_gaia behavior corrected, recursion stabilized
+    -reforge_gaia behavior corrected, recursion stabilized. You will need to correct your ship schedule.
     -alien_spawner.lua transitioned from math.rand to ei_rng
 
 ---------------------------------------------------------------------------------------------------

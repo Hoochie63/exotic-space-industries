@@ -370,6 +370,8 @@ function reforge_gaia_surface()
                 ei_lib.crystal_echo("⚠ [Displacement] — Shunting " .. player.name .. " off world.")
                 local x = ei_rng.int(player.name .. "-x", 0, 20) or 0
                 local y = ei_rng.int(player.name .. "-y", 0, 20) or 0
+                if not x then x = 0 end
+                if not y then y = 0 end
                 player.teleport({x, y}, "nauvis")
                 youHaveArrived(player)
             end
