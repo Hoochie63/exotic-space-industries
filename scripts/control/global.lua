@@ -1,7 +1,7 @@
 -- Init storage variables for Exotic Industries
 ei_lib = require("lib/lib")
 local ei_global = {}
-
+  
 --====================================================================================================
 --GLOBAL VARIABLES
 --====================================================================================================
@@ -52,6 +52,7 @@ function ei_global.init()
 
 	val = ei_lib.config("em_charger_glow_timetolive")
 	storage.ei.em_charger_glow_timeToLive = (val ~= nil) and val or 60
+    storage.ei.gaia_reforged = 0    --Leaving room for planetary evolution down the road
     ei_lib.crystal_echo("»» INITIALIZING SYSTEM CORE: ＥＸＯＴＩＣ ＳＰΛＣΣ ＩＮＤＵＳＴＲＩＥＳ ««","default-bold")
     ei_lib.crystal_echo(">> Integrating chronometric lattices... Binding entropy to mass... Stand by.","default-semibold")
 end
@@ -59,30 +60,44 @@ end
 function ei_global.check_init()
     -- TODO: dont hardcode this
     if not storage.ei then
-	storage.ei = {}
-	local que = ei_lib.config("em_updater_que") or "Beam"
-	if que == "Beam" then
-		storage.ei.em_train_que = 1
-	elseif que == "Ring" then
-		storage.ei.em_train_que = 2 --faster to compare a number
-	else
-		storage.ei.em_train_que = 0
-	end
-	local que_width = ei_lib.config("em_updater_que_width") or 6
-	storage.ei.que_width = que_width
-	local que_transparency = ei_lib.config("em_updater_que_transparency") or 80
-	storage.ei.que_transparency = que_transparency/100
-	local que_timetolive = ei_lib.config("em_updater_que_timetolive") or 60
-	storage.ei.que_timetolive = que_timetolive
-	local trainGlowToggle = ei_lib.config("em_train_glow_toggle") or true
-	storage.ei.em_train_glow_toggle = trainGlowToggle
-	local trainGlowTimeToLive = ei_lib.config("em_train_glow_timetolive") or 60
-	storage.ei.em_train_glow_timeToLive = trainGlowTimeToLive
-	local chargerGlowToggle = ei_lib.config("em_charger_glow_toggle") or true
-	storage.ei.em_charger_glow = true
-	local chargerGlowTimeToLive = ei_lib.config("em_charger_glow_timetolive") or 60
-	storage.ei.em_charger_glow_timeToLive = chargerGlowTimeToLive
+	    storage.ei = {}
     end
+    if not storage.ei.original_gaia_settings then
+        storage.ei.original_gaia_settings = full_gaia_map_gen_settings
+    end
+    if not storage.ei.gaia_reforged_version then
+        storage.ei.gaia_reforged = 0    --Leaving room for planetary evolution down the road
+    end
+
+    local val = ei_lib.config("em_updater_que") or "Beam"
+    if val == "Beam" then
+        storage.ei.em_train_que = 1
+    elseif val == "Ring" then
+        storage.ei.em_train_que = 2 --faster to compare a number
+    else
+        storage.ei.em_train_que = 0
+    end
+
+    val = ei_lib.config("em_updater_que_width")
+    storage.ei.que_width = (val ~= nil) and val or 6
+
+    val = ei_lib.config("em_updater_que_transparency")
+    storage.ei.que_transparency = ((val ~= nil) and val or 80) / 100
+
+    val = ei_lib.config("em_updater_que_timetolive")
+    storage.ei.que_timetolive = (val ~= nil) and val or 60
+
+    val = ei_lib.config("em_train_glow_toggle")
+    storage.ei.em_train_glow_toggle = (val ~= nil) and val or true
+
+    val = ei_lib.config("em_train_glow_timetolive")
+    storage.ei.em_train_glow_timeToLive = (val ~= nil) and val or 60
+
+    val = ei_lib.config("em_charger_glow_toggle")
+    storage.ei.em_charger_glow = (val ~= nil) and val or true
+
+    val = ei_lib.config("em_charger_glow_timetolive")
+    storage.ei.em_charger_glow_timeToLive = (val ~= nil) and val or 60
 
     if not storage.ei["tech_scaling"] then
         storage.ei["tech_scaling"] = {}

@@ -1,11 +1,14 @@
 if script.active_mods["gvv"] then require("__gvv__.gvv")() end
-
+require("util")
 --====================================================================================================
 --REQUIREMENTS
 --====================================================================================================
 
 ei_lib = require("lib/lib")
 ei_data = require("lib/data")
+
+-- Used if gaia spawned in malformed, called in nth tick and/or reforge_gaia
+local ei_full_gaia_map_gen_settings = require("prototypes/alien_structures/reforge-gaia-table")
 
 local ok, result = pcall(function()
   return require("scripts/control/ei_rng")
@@ -74,9 +77,11 @@ script.on_init(function()
     em_trains_gui.mark_dirty()
     ei_compat.check_init()
     orbital_combinator.check_init()
-    reforge_gaia_surface()
-    --game.planets["gaia"].create_surface() --works
-    --game.planets.gaia.create_surface(gaia.map_gen_settings) --no
+    ei_lib.crystal_echo("☄ [Somnolent Awakening] — Gaia stirs from her dream-slumber; her shell begins to coalesce…")
+    game.planets["Gaia"].create_surface() --works
+    ei_lib.crystal_echo("✧ [Awakened Triumph] — Gaias shell stands firm, yet the dreams murmur endures…")
+    ei_lib.crystal_echo("✧ [Gaias Heart] — The crystalline veins of Gaia pulse with life, awaiting the touch of her children…") 
+    storage.ei.gaia_reforged = 1 --0=pre reforge, 1 = post reforge/valid surface, additional #s for future planetary evolution
 end)
 
 --ENTITY RELATED
@@ -123,28 +128,35 @@ script.on_nth_tick(settings.startup["ei-ticks_per_spaced_update"].value, functio
     spaced_updater()
 end)
 ]]
-script.on_nth_tick(240, function(e)
-  ei_compat.nth_tick(e)
-
-  -- Deferred Gaia surface recreation (after request_to_delete)
-  if storage.ei and storage.ei.defer_gaia_recreation and not game.surfaces["gaia"] then
-    local settings = storage.ei.gaia_settings
-    if settings then
-      local ok, result = pcall(function()
-        return game.create_surface("gaia", settings)
-      end)
-      if ok and result then
-        ei_lib.crystal_echo("✧ [Gaia Restored] — Her surface blooms anew.")
+-- deferred recreation on nth_tick
+-- this is a workaround for the fact that game.create_surface() doesn't work/well in on_init
+script.on_nth_tick(6000, function(e)
+    ei_compat.nth_tick(e)
+  
+    if storage.ei and storage.ei.defer_gaia_recreation and not game.surfaces["gaia"] then
+      local settings = ei_full_gaia_map_gen_settings
+      if not settings then
+        ei_lib.crystal_echo("☠ [Echo Lost in the Abyss] — No sacred sigils remain to beckon Gaia’s rebirth.")
       else
-        ei_lib.crystal_echo("☠ [Restoration Failed] — Gaia surface creation returned error.")
+        -- use util.table.deepcopy instead of table.deepcopy
+        local map_gen = util.table.deepcopy(ei_full_gaia_map_gen_settings)
+        map_gen.name  = nil
+  
+        local ok, surf = pcall(function()
+          return game.create_surface("Gaia", map_gen)
+        end)
+        if ok and surf then
+          ei_lib.crystal_echo("✧ [Gaia Restored] — Her surface blooms anew.")
+          storage.ei.gaia_reforged = 1
+        else
+            ei_lib.crystal_echo("☠ [Invocation Fracture] — Ritual threads snap, and Gaia’s surface slumbers in endless dusk.")
+        end
       end
-    else
-      ei_lib.crystal_echo("☠ [Missing Settings] — No gaia_settings found in storage.ei.")
+  
+      storage.ei.defer_gaia_recreation = nil
     end
-    storage.ei.defer_gaia_recreation = nil
-    storage.ei.gaia_settings = nil
-  end
-end)
+  end)
+  
 
 script.on_event(defines.events.on_console_command, function(e)
     ei_alien_spawner.give_tool(e)
@@ -327,176 +339,168 @@ function surface_contains_any_resources(surface)
   end
   return false
 end
-
-
+--Uncomment me to teleport to Gaia to test reforge_gaia_surface produced valid result :)
+--[[
+commands.add_command("goto-gaia", "Step onto the crystalline veins of Gaia", function(cmd)
+    local player = game.get_player(cmd.player_index)
+    if not player or not game.surfaces["Gaia"] then return end
+    player.teleport({0, 0}, "Gaia")
+    ei_lib.crystal_echo("✧ You stand upon Gaia’s heartstone. ✧")
+  end)
+]]
 function reforge_gaia_surface()
-	local name = "gaia"
-	local planet = game.planets[name]
-	local patch_resources = {
-	"ei-phytogas-patch", "ei-cryoflux-patch", "ei-ammonia-patch",
-	"ei-morphium-patch", "ei-coal-gas-patch"
-	}
+    local name    = "Gaia"
+    local planet  = game.planets[name]
+    if not planet then
+        ei_lib.crystal_echo("☠ [Void’s Echo] — Gaias name lies unwritten; the rite dissolves into silent void.")
+        return
+    end
+  
+    -- 1) Ensure the surface exists
+    if not planet.surface then
+        ei_lib.crystal_echo("☄ [Dreamforged Dawn] — Gaia stirs beyond the veil of slumber; her crust coalesces from the formless night…")
 
-	local gaia_settings = {
-	name = name,
-	cliff_settings = { cliff_elevation_0 = 0, cliff_elevation_interval = 0, richness = 0 },
-	autoplace_controls = {},
-	autoplace_settings = {
-	  entity = { settings = {} },
-	  tile = { settings = {
-		["ei-gaia-grass-1"] = {}, ["ei-gaia-grass-2"] = {},
-		["ei-gaia-grass-1-var"] = {}, ["ei-gaia-grass-2-var"] = {},
-		["ei-gaia-grass-2-var-2"] = {}, ["ei-gaia-rock-1"] = {},
-		["ei-gaia-rock-2"] = {}, ["ei-gaia-rock-3"] = {},
-		["ei-gaia-water"] = {}
-	  }}
-	}
-	}
-
-	for _, r in ipairs(patch_resources) do
-		gaia_settings.autoplace_controls[r] = {frequency = 5, size = 1, richness = 1}
-		gaia_settings.autoplace_settings.entity.settings[r] = {frequency = 5, size = 1, richness = 1}
-	end
-
-	local function compute_checksum(settings)
-	local serialized = serpent.block(settings, {sortkeys = true, numformat = '%0.8f'})
-	local sum = 0
-	for i = 1, #serialized do
-	  sum = (sum + serialized:byte(i)) % 2147483647
-	end
-	return sum
-	end
-
-	if not planet then
-		ei_lib.crystal_echo("☠ [Null Planet] — Gaia is undefined. Aborting ritual.")
-		return
-	end
-
-	if not planet.surface then
-		ei_lib.crystal_echo("☄ [Gaia Exists But Is Unshaped] — Creating her surface now...")
-		planet.create_surface()
-	end
-
-	local surface = planet.surface
-	if not surface then
-		ei_lib.crystal_echo("☠ [Surface Null] — Gaia creation failed. Terminating.")
-		return
-	end
-
-	local actual = compute_checksum(surface.map_gen_settings)
-	local expected = compute_checksum(gaia_settings)
-
-	if actual == expected then
-	local has_any, res_name, count = surface_contains_any_resources(surface)
-	if has_any then
-	  ei_lib.crystal_echo("✔ [Echo Retained] — " .. res_name .. " detected (" .. count .. " crystalline signatures). Gaia remains sovereign.")
-	  return
-	end
-	end
-
-	-- Evacuate players from Gaia
-	for _, player in pairs(game.connected_players) do
-	if player.surface.name == name then
-	  ei_lib.crystal_echo("⚠ [Bioform Displacement Protocol] — Rewriting player: " .. player.name)
-	  player.teleport({0, 0}, "nauvis")
-	end
-	end
-
-	ei_lib.crystal_echo("✖ [Silence in the Veins] — No soul-stones resonate. Requesting Gaia's collapse...")
-
-	local ok = false
-
-	-- Try request_to_delete_surface
-	local success, err = pcall(function()
-	  if type(planet.request_to_delete_surface) == "function" then
-		planet:request_to_delete_surface()
-		ei_lib.crystal_echo("⌬ [Deletion Requested] — Awaiting planetary collapse...")
-		storage.ei.defer_gaia_recreation = true
-		storage.ei.gaia_settings = gaia_settings
-		ok = true
-	  end
-	end)
-
-	-- Fallback if it errored or method not present
-	if not success or not ok then
-	  ei_lib.crystal_echo("⚠ [Fallback] — request_to_delete_surface unavailable or errored. Trying hard delete...")
-	  if planet.surface and game.delete_surface then
-		game.delete_surface(planet.surface)
-		ei_lib.crystal_echo("⌬ [Surface Deleted Instantly] — Fallback succeeded.")
-		local created, new_surface = pcall(function()
-		  return game.create_surface(name, gaia_settings)
-		end)
-		if created and new_surface then
-		  ei_lib.crystal_echo("✧ [Gaia Restored Instantly] — No waiting required.")
-		else
-		  ei_lib.crystal_echo("☠ [Instant Recreation Failed] — Even fallback path failed.")
-		end
-	  else
-		ei_lib.crystal_echo("☠ [Terminal Failure] — Cannot delete or recreate Gaia.")
-	  end
-	end
-end
+      planet:create_surface()
+    end
+    local surface = planet.surface
+    if not surface then
+        ei_lib.crystal_echo("☠ [Abyssal Silence] — Gaia’s mantle shatters in void’s embrace; the ritual sinks into oblivion.")
+      return
+    end
+  
+    -- 2) Check if the surface is already in the right state (Including morphium as water)
+    local gaia_settings = ei_full_gaia_map_gen_settings
+  
+    -- 3) If the world already matches and still has resources, do nothing
+    local function checksum(tbl)
+      local s = serpent.block(tbl, {sortkeys=true, numformat="%0.8f"})
+      local sum = 0
+      for i=1,#s do sum = (sum + s:byte(i)) % 2147483647 end
+      return sum
+    end
+    if checksum(surface.map_gen_settings) == checksum(gaia_settings) then
+      local has, res, cnt = surface_contains_any_resources(surface)
+      if has then
+        ei_lib.crystal_echo("✔ [Echo Intact] — "..res.." crystals detected ("..cnt.."). Gaia stands.")
+        return --Stop here if checksum good and resources exist
+      end
+    end
+  
+    -- 4) Evacuate any players still on Gaia
+    for _,player in pairs(game.connected_players) do
+      if player.surface.name == name then
+        ei_lib.crystal_echo("⚠ [Displacement] — Shunting "..player.name.." off world.")
+        local playerX = ei_rng.int(tostring(player.name), 0, 20)
+        local playerY = ei_rng.int(tostring(player.name), 0, 20)
+        player.teleport({playerX,playerY}, "nauvis")
+        youHaveArrived(player)
+      end
+    end
+  
+    ei_lib.crystal_echo("✖ [Silence] — No crystal veins resonate. Calling Gaia into the void…")
+  
+    -- 5) Try the high-level planetary API first
+    local deferred = false
+    pcall(function()
+      if type(planet.request_to_delete_surface) == "function" then
+        planet:request_to_delete_surface()
+        storage.ei.defer_gaia_recreation = true
+        ei_lib.crystal_echo("⌬ [Celestial Sundering] — Threads of Gaia’s world unwind; the void readies for her rebirth.")
+        deferred = true
+      end
+    end)
+  
+    -- 6) Fallback: immediate hard-delete + instant recreate
+    if not deferred then
+      ei_lib.crystal_echo("⚠ [Primordial Schism] — Gaia’s essence fractures as the void swallows her form…")
+      game.delete_surface(name)
+      ei_lib.crystal_echo("⌬ [Shattered Strata] — Gaia’s husk dissolves; a new dawn stirs within the void.")
+  
+      -- strip off the name for the low-level API
+      local map_gen = util.table.deepcopy(gaia_settings)
+      map_gen.name = nil
+  
+      local ok, surf = pcall(function()
+        return game.create_surface(name, map_gen)
+      end)
+      if ok and surf then
+        ei_lib.crystal_echo("✧ [Resurrection] — Gaia’s heart ignites once more.")
+        storage.ei.gaia_reforged = 1
+      else
+        ei_lib.crystal_echo("☠ [Invocation Fracture] — Ritual threads snap; dusk endures.")
+        storage.ei.defer_gaia_recreation = true --hail mary
+      end
+    end
+  end
+  
 
 
 
 script.on_configuration_changed(function(e)
+    -- Only trigger when *this* mod changes version
+    if e.mod_changes and e.mod_changes["exotic-space-industries"] then
+
+        local val = ei_lib.config("em_updater_que") or "Beam"
+        if val == "Beam" then
+            storage.ei.em_train_que = 1
+        elseif val == "Ring" then
+            storage.ei.em_train_que = 2 --faster to compare a number
+        else
+            storage.ei.em_train_que = 0
+        end
+    
+        val = ei_lib.config("em_updater_que_width")
+        storage.ei.que_width = (val ~= nil) and val or 6
+    
+        val = ei_lib.config("em_updater_que_transparency")
+        storage.ei.que_transparency = ((val ~= nil) and val or 80) / 100
+    
+        val = ei_lib.config("em_updater_que_timetolive")
+        storage.ei.que_timetolive = (val ~= nil) and val or 60
+    
+        val = ei_lib.config("em_train_glow_toggle")
+        storage.ei.em_train_glow_toggle = (val ~= nil) and val or true
+    
+        val = ei_lib.config("em_train_glow_timetolive")
+        storage.ei.em_train_glow_timeToLive = (val ~= nil) and val or 60
+    
+        val = ei_lib.config("em_charger_glow_toggle")
+        storage.ei.em_charger_glow = (val ~= nil) and val or true
+    
+        val = ei_lib.config("em_charger_glow_timetolive")
+        storage.ei.em_charger_glow_timeToLive = (val ~= nil) and val or 60
+        local modes = {
+            [0] = "✦ NULL-STATE :: INERTIA LOCKED",
+            [1] = "✴ AXIS-FIRE :: DIRECTED CONVERGENCE BEAM",
+            [2] = "⟁ OMNI-RESONANCE :: PHASE RING ARRAY"
+        }
+        ei_lib.crystal_echo("『EM CHARGER QUE MODE HAS SHIFTED』 → "..modes[storage.ei.em_train_que].." ("..storage.ei.em_train_que..")","default-bold")
+    
+        em_trains.check_global() --no nil tables
+        em_trains.check_buffs() --updates global buff vals
+        em_trains.printBuffStatus()
+        em_trains.reinitialize_chargers() --applies updated buffs
+        em_trains.reinitialize_trains()
+        em_trains.update_rail_counts()
+        em_trains_gui.mark_dirty()
+    
+        ei_lib.crystal_echo("⟦✦ TRANSCENSION RECOGNIZED ✦⟧","default-bold")
+        ei_lib.crystal_echo("⫷ Sub-layer Recalibration Initiated ⫸")
+        ei_lib.crystal_echo("⫷ Core Heuristics Have Shifted ⫸")
+        ei_lib.crystal_echo("『CONFIGURATION CHANGED – BY WHOM, WE DARE NOT NAME","default-bold")
+
+        storage.ei.original_gaia_settings = full_gaia_map_gen_settings
+
+        -- check that old_version exists to avoid running on a fresh world
+        --local change = e.mod_changes["exotic-space-industries"]
+        --if change.old_version and storage.ei.gaia_reforged == 0 then --Enable later if necessary
+        reforge_gaia_surface() --Must be called AFTER check_global
+
+    end
     ei_tech_scaling.init()
     ei_victory.init()  -- Required for Better Victory Screen
     ei_global.check_init()
     orbital_combinator.check_init()
-    --Clear storage.ei_emt.trains[train_id]
-    reforge_gaia_surface()
-    local que = ei_lib.config("em_updater_que") or "Beam"
-    if que == "Beam" then
-        storage.ei.em_train_que = 1
-    elseif que == "Ring" then
-        storage.ei.em_train_que = 2 --faster to compare a number
-    else
-        storage.ei.em_train_que = 0
-    end
-	local val
-
-	val = ei_lib.config("em_updater_que_width")
-	storage.ei.que_width = (val ~= nil) and val or 6
-
-	val = ei_lib.config("em_updater_que_transparency")
-	storage.ei.que_transparency = ((val ~= nil) and val or 80) / 100
-
-	val = ei_lib.config("em_updater_que_timetolive")
-	storage.ei.que_timetolive = (val ~= nil) and val or 60
-
-	val = ei_lib.config("em_train_glow_toggle")
-	storage.ei.em_train_glow_toggle = (val ~= nil) and val or true
-
-	val = ei_lib.config("em_train_glow_timetolive")
-	storage.ei.em_train_glow_timeToLive = (val ~= nil) and val or 60
-
-	val = ei_lib.config("em_charger_glow_toggle")
-	storage.ei.em_charger_glow = (val ~= nil) and val or true
-	ei_lib.crystal_echo("Charger glow is: " .. tostring(storage.ei.em_charger_glow))
-
-	val = ei_lib.config("em_charger_glow_timetolive")
-	storage.ei.em_charger_glow_timeToLive = (val ~= nil) and val or 60
-    local modes = {
-        [0] = "✦ NULL-STATE :: INERTIA LOCKED",
-        [1] = "✴ AXIS-FIRE :: DIRECTED CONVERGENCE BEAM",
-        [2] = "⟁ OMNI-RESONANCE :: PHASE RING ARRAY"
-    }
-    ei_lib.crystal_echo("『EM CHARGER QUE MODE HAS SHIFTED』 → "..modes[storage.ei.em_train_que].." ("..storage.ei.em_train_que..")","default-bold")
-
-    em_trains.check_global() --no nil tables
-    em_trains.check_buffs() --updates global buff vals
-    em_trains.printBuffStatus()
-    em_trains.reinitialize_chargers() --applies updated buffs
-    em_trains.reinitialize_trains()
-    em_trains.update_rail_counts()
-    em_trains_gui.mark_dirty()
-
-    ei_lib.crystal_echo("⟦✦ TRANSCENSION RECOGNIZED ✦⟧","default-bold")
-    ei_lib.crystal_echo("⫷ Sub-layer Recalibration Initiated ⫸")
-    ei_lib.crystal_echo("⫷ Core Heuristics Have Shifted ⫸")
-    ei_lib.crystal_echo("『CONFIGURATION CHANGED – BY WHOM, WE DARE NOT NAME","default-bold")
-
 end)
 
 local function youHaveArrived(player)

@@ -3,7 +3,7 @@ local asteroid_util = require("__space-age__.prototypes.planet.asteroid-spawn-de
 local presets = require("lib/spawner_presets")
 
 local gaia = table.deepcopy(data.raw.planet.fulgora)
-gaia.name = "gaia"
+gaia.name = "Gaia"
 gaia.order = "g[gaia]"
 gaia.distance = 10
 gaia.orientation = 0.75
@@ -57,13 +57,20 @@ gaia.map_gen_settings.autoplace_settings.tile.settings = {
 -- error(serpent.block(gaia.map_gen_settings))
 
 data:extend({gaia})
-
+--Dumps map settings table in log to use with reforge_gaia
+--[[
+local serpent = require("serpent") --File normally not present in data-stage, locate at https://github.com/pkulchenko/serpent
+local gaia = data.raw.planet.gaia
+if gaia and gaia.map_gen_settings then
+  log(serpent.block(gaia.map_gen_settings, {sortkeys=true, numformat="%0.8f"}))
+end
+]]
 data:extend{{
     type = "space-connection",
     name = "nauvis-gaia",
     subgroup = "planet-connections",
     from = "nauvis",
-    to = "gaia",
+    to = "Gaia",
     order = "0",
     length = 100000,
     asteroid_spawn_definitions = {},
@@ -95,7 +102,7 @@ data:extend{{
     prerequisites = {"rocket-silo"},
     effects = {
       {
-        space_location = "gaia",
+        space_location = "Gaia",
         type = "unlock-space-location",
         use_icon_overlay_constant = true
       }
