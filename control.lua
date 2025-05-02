@@ -349,6 +349,7 @@ commands.add_command("goto-gaia", "Step onto the crystalline veins of Gaia", fun
   end)
 ]]
 function reforge_gaia_surface()
+    if storage.ei.gaia_reforged == 1 then return end
     local name    = "Gaia"
     local planet  = game.planets[name]
     if not planet then
@@ -493,9 +494,6 @@ script.on_configuration_changed(function(e)
 
         storage.ei.original_gaia_settings = full_gaia_map_gen_settings
 
-        -- check that old_version exists to avoid running on a fresh world
-        --local change = e.mod_changes["exotic-space-industries"]
-        --if change.old_version and storage.ei.gaia_reforged == 0 then --Enable later if necessary
         reforge_gaia_surface() --Must be called AFTER check_global
 
     end
