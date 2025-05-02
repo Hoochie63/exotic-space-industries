@@ -390,8 +390,10 @@ function reforge_gaia_surface()
     for _,player in pairs(game.connected_players) do
       if player.surface.name == name then
         ei_lib.crystal_echo("⚠ [Displacement] — Shunting "..player.name.." off world.")
-        local playerX = ei_rng.int(tostring(player.name), 0, 20)
-        local playerY = ei_rng.int(tostring(player.name), 0, 20)
+        local playerX = ei_rng.int(player.name .. "-x", 0, 20)
+        local playerY = ei_rng.int(player.name .. "-y", 0, 20)
+        if not playerX then playerX = 0 end
+        if not playerY then playerY = 0 end
         player.teleport({playerX,playerY}, "nauvis")
         youHaveArrived(player)
       end
