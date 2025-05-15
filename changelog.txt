@@ -1,66 +1,68 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.5.8
+Date: ?-??-25
+  Changes:
+    - placeholder for actual list of changes
+    - fixes for steam-engine and blank-tech-card unlocks
+---------------------------------------------------------------------------------------------------
 Version: 1.5.7
 Date: 4-30-25
-    Additions:
-    -EM Train Carriages now glow alongside EM Locomotives
-    Changes:
-    -lang_ru updated by ashot15
-    -ei_rng switched from UPS expensive factorio rng to deterministic linear congruential generator
-    Fixes:
-    -reforge_gaia behavior corrected, recursion stabilized. You will need to correct your ship schedule.
-    -alien_spawner.lua transitioned from math.rand to ei_rng
-
+  Additions:
+    - EM Train Carriages now glow alongside EM Locomotives
+  Changes:
+    - lang_ru updated by ashot15
+    - ei_rng switched from UPS expensive factorio rng to deterministic linear congruential generator
+  Fixes:
+    - reforge_gaia behavior corrected, recursion stabilized. You will need to correct your ship schedule.
+    - alien_spawner.lua transitioned from math.rand to ei_rng
 ---------------------------------------------------------------------------------------------------
 Version: 1.5.6
 Date: 4-19-25
-    Changes:
-    -All (newly coded) math.rand switched to mp friendly synced variants reported by @debuasgaming
+  Changes:
+    - All (newly coded) math.rand switched to mp friendly synced variants reported by @debuasgaming
 ---------------------------------------------------------------------------------------------------
 Version: 1.5.5
 Date: 4-17-25
   Additions:
-    -Crystal_echo ei_lib command to support colorful printed messages
-    -Custom HID headlights for EM trains. Also projects behind at reduced power.
-    -Custom underglow for EM trains while loading/unloading.
-    -6 Custom whooshing noises for EM trains moving down tracks.
-    -6 Custom crash noises for EM trains.
-    -Custom brake sound for EM trains.
-    -Warp in effect on login ;)
-    -Train diagnostic readout on researching any buff or startup configuration change.
-    -EM Charger Glow, EM Train Glow added to startup settings as startup toggles.
-    -EM Charger glow fade duration and EM train glow fade duration added as startup numeric values.
-    -EM Updater Ring que width added as startup numeric value.
-    -EM Updater Ring que transparency added as startup numeric value.
-    -EM Updater Ring que fade duration added as startup numeric value.
+    - Crystal_echo ei_lib command to support colorful printed messages
+    - Custom HID headlights for EM trains. Also projects behind at reduced power.
+    - Custom underglow for EM trains while loading/unloading.
+    - 6 Custom whooshing noises for EM trains moving down tracks.
+    - 6 Custom crash noises for EM trains.
+    - Custom brake sound for EM trains.
+    - Warp in effect on login ;)
+    - Train diagnostic readout on researching any buff or startup configuration change.
+    - EM Charger Glow, EM Train Glow added to startup settings as startup toggles.
+    - EM Charger glow fade duration and EM train glow fade duration added as startup numeric values.
+    - EM Updater Ring que width added as startup numeric value.
+    - EM Updater Ring que transparency added as startup numeric value.
+    - EM Updater Ring que fade duration added as startup numeric value.
   Changes:
-    -EM Updater Ring que customization added, indicated color will now reflect working/offline/error/etc status.
-    -AAI burner lab disabled due to overlap with EI burner lab. Reported by @L??M??3674
+    - EM Updater Ring que customization added, indicated color will now reflect working/offline/error/etc status.
+    - AAI burner lab disabled due to overlap with EI burner lab. Reported by @L??M??3674
   Fixes:
-    -Gaia correctly receives autoplacement instructions IE the 5 Exotic Industries specific resources will now consistently spawn.. WHEN YOU CONNECT ON CONFIGURATION CHANGE GAIA WILL BE SCANNED AND IF NONE OF THE CUSTOM RESOURCES ARE FOUND, DESTROYED AND REGENERATED ... PLAYERS WILL BE TELEPORTED TO NAUVIS.
-    -EI tanks requirements for previous tier fixed, previously Spherical tank required Silo tank. Reported by @crysiszocker1
-    -Loader prototype complexity setting toggle works again.
+    - Gaia correctly receives autoplacement instructions IE the 5 Exotic Industries specific resources will now consistently spawn.. WHEN YOU CONNECT ON CONFIGURATION CHANGE GAIA WILL BE SCANNED AND IF NONE OF THE CUSTOM RESOURCES ARE FOUND, DESTROYED AND REGENERATED ... PLAYERS WILL BE TELEPORTED TO NAUVIS.
+    - EI tanks requirements for previous tier fixed, previously Spherical tank required Silo tank. Reported by @crysiszocker1
+    - Loader prototype complexity setting toggle works again.
 ---------------------------------------------------------------------------------------------------
 Version: 1.5.4
 Date: 4-16-25
   Changes:
-   -K2 import related errors will log errors instead of preventing game from loading at all
+    - K2 import related errors will log errors instead of preventing game from loading at all
   Fixes:
-   -Duplicate map gen preset name removed from RU locale
-
+    - Duplicate map gen preset name removed from RU locale
 ---------------------------------------------------------------------------------------------------
 Version: 1.5.3
 Date: 4-15-25
   Additions:
-   -Custom sound effects for EM trains & cargo wagons
-
+    - Custom sound effects for EM trains & cargo wagons
 ---------------------------------------------------------------------------------------------------
 Version: 1.5.2
 Date: 4-15-25
   Fixes:
-   -Commented out a naughty line related to inhibitor lamp
-   -Removed errant deregister call from update charger.
-   -Removed register charger debug output.
-
+    - Commented out a naughty line related to inhibitor lamp
+    - Removed errant deregister call from update charger.
+    - Removed register charger debug output.
 ---------------------------------------------------------------------------------------------------
 Version: 1.5.1
 Date: 4-15-25
@@ -81,7 +83,6 @@ Date: 4-15-25
     - EM trains/chargers no longer draw power assuming a 60 tick update cycle, now adjusts to the updaters tick settings.
     - ei_lib.add_unlock_recipe reworked with sanity checks and improved debug output.
     - Lignumis no longer adds unbuildable steam-science-pack to Gaia & some others
-
 ---------------------------------------------------------------------------------------------------
 Version: 1.5.0
 Date: 4-13-25
@@ -224,6 +225,4 @@ Date: 01-03-25
     - Muluna (planet-muluna) compatibility
     - Fixed recipes
     - Foxed localization
-[v1.5.5] - 2025-04-17
 
-[v1.5.5] - 2025-04-17

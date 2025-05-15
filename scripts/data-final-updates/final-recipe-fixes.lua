@@ -200,7 +200,7 @@ if mods and mods["aai-signal-transmission"] then
 end
 ei_lib.add_unlock_recipe("electronics","stone-tablet")
 ei_lib.add_unlock_recipe("ei-steam-power","boiler")
-ei_lib.add_unlock_recipe("ei-steam-power","steam-engine")
+ei_lib.add_unlock_recipe("ei-electricity-power","steam-engine")
 ei_lib.add_unlock_recipe("ei-glass","glass")
 ei_lib.add_unlock_recipe("steel-processing","steel-gear-wheel")
 
