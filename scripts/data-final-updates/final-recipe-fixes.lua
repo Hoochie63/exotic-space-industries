@@ -159,6 +159,7 @@ ei_lib.add_unlock_recipe("ei-morphium-usage","ei-concentrated-morphium-lubricant
 
 ei_lib.enable_from_start("iron-stick")
 ei_lib.enable_from_start("iron-gear-wheel")
+ei_lib.enable_from_start("blank-tech-card")
 
 --ei_lib.add_unlock_recipe("inhibitor-lamp","inhibitor-lamp") --?
 ei_lib.add_unlock_recipe("uranium-mining","centrifuge")
@@ -199,6 +200,7 @@ if mods and mods["aai-signal-transmission"] then
 end
 ei_lib.add_unlock_recipe("electronics","stone-tablet")
 ei_lib.add_unlock_recipe("ei-steam-power","boiler")
+ei_lib.add_unlock_recipe("ei-steam-power","steam-engine")
 ei_lib.add_unlock_recipe("ei-glass","glass")
 ei_lib.add_unlock_recipe("steel-processing","steel-gear-wheel")
 
