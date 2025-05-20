@@ -452,11 +452,11 @@ script.on_configuration_changed(function(e)
         ei_lib.crystal_echo("⟦✦ TRANSCENSION RECOGNIZED ✦⟧","default-bold")
         ei_lib.crystal_echo("⫷ Sub-layer Recalibration Initiated ⫸")
         ei_lib.crystal_echo("⫷ Core Heuristics Have Shifted ⫸")
-        ei_lib.crystal_echo("『CONFIGURATION CHANGED – BY WHOM, WE DARE NOT NAME","default-bold")
+        ei_lib.crystal_echo("CONFIGURATION CHANGED – BY WHOM, WE DARE NOT NAME","default-bold")
 
         storage.ei.original_gaia_settings = full_gaia_map_gen_settings
 
-        reforge_gaia_surface() --Must be called AFTER check_global
+        -- reforge_gaia_surface() --Must be called AFTER check_global
 
     end
     ei_tech_scaling.init()
